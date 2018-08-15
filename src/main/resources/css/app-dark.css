@@ -1,0 +1,42 @@
+.root {
+    -fx-focus-color: transparent;
+    /*-fx-faint-focus-color: #000000;*/
+    -fx-base: rgba(60, 63, 65, 255);
+}
+
+.table-view {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-font-family: "Courier New";
+}
+
+/*
+.table-view .table-row-cell:selected .text {
+    -fx-fill: yellow;
+}
+
+.table-cell:hover {
+    -fx-text-fill: green;
+}
+
+.table-cell {
+    -fx-text-fill: white;
+}*/
+
+.table-cell {
+    -fx-text-fill: #BABAA6;
+}
+
+.table-row-cell:odd:selected {
+    -fx-background-color: #4B6EAF;
+}
+.table-row-cell:even:selected {
+    -fx-background-color: #4B6EAF;
+}
+.table-row-cell:odd {
+    -fx-background-color: rgb(73, 76, 78);
+}
+.table-row-cell:even {
+    -fx-background-color: rgb(82, 85, 87);
+}
+

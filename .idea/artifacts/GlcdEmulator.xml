@@ -1,0 +1,23 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="GlcdEmulator">
+    <output-path>$PROJECT_DIR$/out/artifacts/GlcdEmulator</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="alias" value="" />
+        <option name="appClass" value="sample.Main" />
+        <option name="description" value="A glcd emulator" />
+        <option name="enabledSigning" value="true" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="keystore" value="" />
+        <option name="title" value="GLCD Emulator" />
+        <option name="vendor" value="Rafael Ibasco" />
+        <option name="version" value="1.0" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="glcd-emulator.jar">
+        <element id="module-output" name="glcd-emulator" />
+      </element>
+    </root>
+  </artifact>
+</component>

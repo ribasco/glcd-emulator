@@ -1,0 +1,28 @@
+.root {
+    -fx-focus-color: transparent;
+    /*-fx-faint-focus-color: #000000;*/
+    /* -fx-base: rgba(60, 63, 65, 255);*/
+}
+
+#hbPins {
+    /*-fx-background-color: #c2c2c2;*/
+}
+
+.table-view {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-font-family: "Courier New";
+}
+
+.table-view .table-row-cell:selected .text {
+    -fx-fill: red;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #f9f8f2;
+}
+
+.table-view .table-row-cell:even {
+    -fx-background-color: #dbdad6;
+}
+
