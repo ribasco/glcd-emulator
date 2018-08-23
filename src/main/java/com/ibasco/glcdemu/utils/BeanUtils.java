@@ -1,20 +1,74 @@
 package com.ibasco.glcdemu.utils;
 
-import com.ibasco.glcdemu.annotations.NoCompare;
-import com.ibasco.glcdemu.beans.GlcdConfigEmulatorProfile;
+import com.ibasco.glcdemu.annotations.Auditable;
+import com.ibasco.glcdemu.model.GlcdEmulatorProfile;
 import org.apache.commons.beanutils.BeanMap;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BeanUtils {
 
     private static final Logger log = LoggerFactory.getLogger(BeanUtils.class);
+
+    public static void copyProperties(Object src, Object dest) {
+        try {
+            org.apache.commons.beanutils.BeanUtils.copyProperties(dest, src);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Unable to copy bean properties", e);
+        }
+    }
+
+    public static List<PropertyDescriptor> diff(Object lhs, Object rhs) {
+        if (lhs == null || rhs == null)
+            throw new NullPointerException("Arguments must not be null");
+
+        if (!lhs.getClass().equals(rhs.getClass()))
+            throw new IllegalArgumentException("Beans should be of the same type");
+
+        List<PropertyDescriptor> diffProps = new ArrayList<>();
+
+        BeanMap map = new BeanMap(lhs);
+        PropertyUtilsBean propUtils = new PropertyUtilsBean();
+        Class<?> argType = lhs.getClass();
+
+        List<Field> nonAuditableProperties = FieldUtils.getFieldsListWithAnnotation(argType, Auditable.class);
+
+        try {
+            for (Object propNameObject : map.keySet()) {
+                String propertyName = (String) propNameObject;
+                Object oldValue = propUtils.getProperty(lhs, propertyName);
+                Object newValue = propUtils.getProperty(rhs, propertyName);
+                PropertyDescriptor desc = propUtils.getPropertyDescriptor(lhs, propertyName);
+                Method readMethod = map.getReadMethod(propertyName);
+
+                //Skip excluded properties
+                if ("class".equals(propertyName) || nonAuditableProperties.stream().anyMatch(f -> f.getName().equals(propertyName) && !f.getAnnotation(Auditable.class).enabled())) {
+                    //log.debug("\t[EXCLUDED] Property = {}", propertyName);
+                    continue;
+                } else if (readMethod != null && readMethod.isAnnotationPresent(Auditable.class) && !readMethod.getAnnotation(Auditable.class).enabled()) {
+                    //log.debug("\t[EXCLUDED METHOD] Property = {}", propertyName);
+                    continue;
+                }
+
+                if (!((oldValue == null || newValue == null) ? oldValue == newValue : oldValue.equals(newValue)))
+                    diffProps.add(desc);
+            }
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            log.error("Error while getting bean diff", e);
+        }
+
+        return diffProps;
+    }
 
     public static boolean deepEquals(Object oldObject, Object newObject) {
         log.debug("[START] Bean Comparison: Old = {}, New = {}", oldObject, newObject);
@@ -31,7 +85,7 @@ public class BeanUtils {
 
         Class<?> argType = oldObject.getClass();
 
-        List<Field> excludedProperties = FieldUtils.getFieldsListWithAnnotation(argType, NoCompare.class);
+        List<Field> excludedProperties = FieldUtils.getFieldsListWithAnnotation(argType, Auditable.class);
 
         try {
             for (Object propNameObject : map.keySet()) {
@@ -39,19 +93,21 @@ public class BeanUtils {
                 Object oldValue = propUtils.getProperty(oldObject, propertyName);
                 Object newValue = propUtils.getProperty(newObject, propertyName);
                 boolean isEquals = (oldValue == null || newValue == null) ? oldValue == newValue : oldValue.equals(newValue);
+
                 //Skip excluded properties
-                if ("class".equals(propertyName) || excludedProperties.stream().anyMatch(f -> f.getName().equals(propertyName))) {
+                if ("class".equals(propertyName) || excludedProperties.stream().anyMatch(f -> f.getName().equals(propertyName) && !f.getAnnotation(Auditable.class).enabled())) {
                     log.debug("\t[EXCLUDED] Property = {}", propertyName);
                     continue;
                 }
                 if (!isEquals) {
                     log.debug("[NOT EQUALS]: Property = {}, Old Value = {}, New Value = {}", propertyName, oldValue, newValue);
+
                     return false;
                 }
                 log.debug("\t[EQUALS] Property = {}, Old Value = {}, New Value = {}", propertyName, oldValue, newValue);
             }
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException("Error occured during comparison of two beans for equality", e);
+            throw new RuntimeException("Error occured during comparison of two domain for equality", e);
         } finally {
             log.debug("[END] Bean Comparison: Old = {}, New = {}", oldObject, newObject);
         }
@@ -59,10 +115,17 @@ public class BeanUtils {
     }
 
     public static void main(String[] args) {
-        GlcdConfigEmulatorProfile profileOrig = new GlcdConfigEmulatorProfile();
-        profileOrig.setName("OldProfile");
-        GlcdConfigEmulatorProfile profileNew = new GlcdConfigEmulatorProfile();
-        profileNew.setName("NewProfile");
-        log.info("Equals = {}", BeanUtils.deepEquals(profileOrig, profileNew));
+        GlcdEmulatorProfile profileOrig = new GlcdEmulatorProfile();
+        //profileOrig.setName("OldProfile");
+        GlcdEmulatorProfile profileNew = new GlcdEmulatorProfile();
+        //profileNew.setName("NewProfile");
+
+        try {
+            for (PropertyDescriptor desc : BeanUtils.diff(profileOrig, profileNew)) {
+                log.debug("- Name: {}, Value = {}", desc.getName(), PropertyUtils.getProperty(profileNew, desc.getName()));
+            }
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,6 +1,6 @@
-package com.ibasco.glcdemu.beans;
+package com.ibasco.glcdemu.domain;
 
-import com.ibasco.glcdemu.services.GlcdConfigService;
+import com.ibasco.glcdemu.Context;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,24 +8,26 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
+@Deprecated
 public class GlcdConfigEmulatorProfile extends GlcdConfigEmulator {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdConfigEmulatorProfile.class);
 
-    private int id;
+    private int id = 1;
 
-    private String name;
+    private String name = "default";
 
-    private String description;
+    private String description = "Default Profile";
 
-    public GlcdConfigEmulatorProfile() {}
+    public GlcdConfigEmulatorProfile() {
+    }
 
     public GlcdConfigEmulatorProfile(GlcdConfigEmulatorProfile copy) {
         if (copy == null)
             return;
         try {
             BeanUtils.copyProperties(this, copy);
-            id = GlcdConfigService.getAppConfig().nextId();
+            id = Context.getInstance().getAppConfig().nextProfileId();
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Unable to copy bean properties", e);
         }

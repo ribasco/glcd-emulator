@@ -1,8 +1,9 @@
-package com.ibasco.glcdemu.beans;
+package com.ibasco.glcdemu.domain;
 
 import java.io.File;
 import java.time.ZonedDateTime;
 
+@Deprecated
 public interface GlcdConfig {
     ZonedDateTime getLastUpdated();
 

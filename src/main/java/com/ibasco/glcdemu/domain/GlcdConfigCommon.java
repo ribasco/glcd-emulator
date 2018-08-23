@@ -1,14 +1,15 @@
-package com.ibasco.glcdemu.beans;
+package com.ibasco.glcdemu.domain;
 
 import com.ibasco.glcdemu.annotations.Exclude;
-import com.ibasco.glcdemu.annotations.NoCompare;
+import com.ibasco.glcdemu.annotations.Auditable;
 
 import java.io.File;
 import java.time.ZonedDateTime;
 
-abstract public class GlcdConfigBase implements GlcdConfig {
+@Deprecated
+abstract public class GlcdConfigCommon implements GlcdConfig {
 
-    @NoCompare
+    @Auditable
     private ZonedDateTime lastUpdated = ZonedDateTime.now();
 
     @Exclude

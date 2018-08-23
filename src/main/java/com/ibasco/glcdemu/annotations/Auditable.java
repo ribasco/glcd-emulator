@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface NoCompare {
+@Target({ElementType.FIELD, ElementType.METHOD})
+public @interface Auditable {
+    boolean enabled() default true;
 }

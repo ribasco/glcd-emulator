@@ -1,27 +1,60 @@
 package com.ibasco.glcdemu.controls;
 
+import com.ibasco.glcdemu.enums.PixelShape;
 import javafx.animation.AnimationTimer;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("unused")
 public class GlcdScreen extends Canvas {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdScreen.class);
 
+    //<editor-fold desc="Properties">
     private DoubleProperty pixelSize = new SimpleDoubleProperty(5.0);
 
     private IntegerProperty displayWidth = new SimpleIntegerProperty(128);
 
     private IntegerProperty displayHeight = new SimpleIntegerProperty(64);
 
-    private SimpleObjectProperty<Color> foregroundColor = new SimpleObjectProperty<>(Color.WHITE);
+    private ObjectProperty<Color> inactivePixelColor = new SimpleObjectProperty<>(Color.web("#000000", 0.5f));
 
-    private ObjectProperty<Color> backgroundColor = new SimpleObjectProperty<>(Color.DODGERBLUE);
+    private ObjectProperty<Color> activePixelColor = new SimpleObjectProperty<>(Color.web("#000000", 1.0));
+
+    private ObjectProperty<Color> backlightColor = new SimpleObjectProperty<>(Color.web("#BDD630", 1.0));
+
+    private FloatProperty contrast = new SimpleFloatProperty(0.5f);
+
+    private DoubleProperty spacing = new SimpleDoubleProperty(1.0d);
+
+    private DoubleProperty margin = new SimpleDoubleProperty(20.0d);
+
+    private AtomicBoolean initialized = new AtomicBoolean(false);
+
+    private BooleanProperty invalidatedDisplay = new SimpleBooleanProperty(false);
+
+    private BooleanProperty editable = new SimpleBooleanProperty(false);
+
+    private ObjectProperty<PixelShape> pixelShape = new SimpleObjectProperty<>(PixelShape.RECTANGLE);
+
+    private NumberBinding widthBinding = createCanvasResizeBinding(displayWidth);
+
+    private NumberBinding heightBinding = createCanvasResizeBinding(displayHeight);
+    //</editor-fold>
+
+    private final AtomicBoolean modifierKeyPressed = new AtomicBoolean(false);
 
     private short[][] buffer;
 
@@ -33,15 +66,91 @@ public class GlcdScreen extends Canvas {
         setStyle("-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
         buffer = new short[32][16];
 
-        drawGrid();
+        contrast.addListener((observable, oldValue, newValue) -> {
+            float value = (float) newValue / 100f;
+            inactivePixelColor.set(updateOpacity(inactivePixelColor.get(), value));
+        });
+
+        //drawGrid();
+        refreshOnChange(
+                displayWidth,
+                displayHeight,
+                pixelSize,
+                activePixelColor,
+                inactivePixelColor,
+                backlightColor,
+                contrast,
+                spacing,
+                margin,
+                pixelShape
+        );
+
         animTimer = new AnimationTimer() {
             private long prevMillis = 0;
 
             @Override
             public void handle(long now) {
+                //refresh();
             }
         };
         animTimer.start();
+    }
+
+    //<editor-fold desc="Property Getter/Setters">
+    public PixelShape getPixelShape() {
+        return pixelShape.get();
+    }
+
+    public ObjectProperty<PixelShape> pixelShapeProperty() {
+        return pixelShape;
+    }
+
+    public void setPixelShape(PixelShape pixelShape) {
+        this.pixelShape.set(pixelShape);
+    }
+
+    public double getMargin() {
+        return margin.get();
+    }
+
+    public DoubleProperty marginProperty() {
+        return margin;
+    }
+
+    public void setMargin(double margin) {
+        this.margin.set(margin);
+    }
+
+    public float getContrast() {
+        return contrast.get();
+    }
+
+    public FloatProperty contrastProperty() {
+        return contrast;
+    }
+
+    public void setContrast(float contrast) {
+        this.contrast.set(contrast);
+    }
+
+    public double getSpacing() {
+        return spacing.get();
+    }
+
+    public DoubleProperty spacingProperty() {
+        return spacing;
+    }
+
+    public void setSpacing(double spacing) {
+        this.spacing.set(spacing);
+    }
+
+    private void refreshOnChange(Observable... observables) {
+        for (Observable observable : observables) {
+            observable.addListener(observable1 -> {
+                refresh();
+            });
+        }
     }
 
     public double getPixelSize() {
@@ -54,11 +163,6 @@ public class GlcdScreen extends Canvas {
 
     public void setPixelSize(double pixelSize) {
         this.pixelSize.set(pixelSize);
-    }
-
-    @Override
-    public boolean isResizable() {
-        return false;
     }
 
     public int getDisplayWidth() {
@@ -85,28 +189,58 @@ public class GlcdScreen extends Canvas {
         this.displayHeight.set(displayHeight);
     }
 
-    public Color getForegroundColor() {
-        return foregroundColor.get();
+    public Color getActivePixelColor() {
+        return activePixelColor.get();
     }
 
-    public ObjectProperty<Color> foregroundColorProperty() {
-        return foregroundColor;
+    public ObjectProperty<Color> activePixelColorProperty() {
+        return activePixelColor;
     }
 
-    public void setForegroundColor(Color foregroundColor) {
-        this.foregroundColor.set(foregroundColor);
+    public void setActivePixelColor(Color activePixelColor) {
+        this.activePixelColor.set(activePixelColor);
     }
 
-    public Color getBackgroundColor() {
-        return backgroundColor.get();
+    public Color getInactivePixelColor() {
+        return inactivePixelColor.get();
     }
 
-    public ObjectProperty<Color> backgroundColorProperty() {
-        return backgroundColor;
+    public ObjectProperty<Color> inactivePixelColorProperty() {
+        return inactivePixelColor;
     }
 
-    public void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor.set(backgroundColor);
+    public void setInactivePixelColor(Color inactivePixelColor) {
+        this.inactivePixelColor.set(inactivePixelColor);
+    }
+
+    public Color getBacklightColor() {
+        return backlightColor.get();
+    }
+
+    public ObjectProperty<Color> backlightColorProperty() {
+        return backlightColor;
+    }
+
+    public void setBacklightColor(Color backlightColor) {
+        this.backlightColor.set(backlightColor);
+    }
+
+    public boolean isEditable() {
+        return editable.get();
+    }
+
+    public BooleanProperty editableProperty() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable.set(editable);
+    }
+    //</editor-fold>
+
+    @Override
+    public boolean isResizable() {
+        return false;
     }
 
     @Override
@@ -124,33 +258,86 @@ public class GlcdScreen extends Canvas {
 
     public void refresh() {
         drawGrid();
-        drawPixels();
+        //drawPixels();
     }
 
+    private void updateCanvas() {
+
+    }
+
+    private NumberBinding createCanvasResizeBinding(IntegerProperty property) {
+        return Bindings.add(Bindings.multiply(property, pixelSize), Bindings.multiply(property, spacing)).add(spacing).add(Bindings.multiply(margin, 2));
+    }
+
+    private Color updateOpacity(Color color, float value) {
+        return Color.color(color.getRed(), color.getGreen(), color.getBlue(), value);
+    }
+
+    @SuppressWarnings("UnnecessaryLocalVariable")
     private void drawGrid() {
+        if (!initialized.getAndSet(true)) {
+            widthProperty().bind(widthBinding);
+            heightProperty().bind(heightBinding);
+        }
+
         GraphicsContext gc = getGraphicsContext2D();
 
-        //Update Canvas Size
-        setWidth(displayWidth.get() * pixelSize.get());
-        setHeight(displayHeight.get() * pixelSize.get());
+        double lcdWidth = displayWidth.get();
+        double lcdHeight = displayHeight.get();
+        double pixelSize = this.pixelSize.get();
+        double pixelWidth = pixelSize;
+        double pixelHeight = pixelSize;
+        double spacing = this.spacing.get();
+        double margin = this.margin.get();
+        PixelShape pixelShape = this.pixelShape.get();
 
-        //Set pixel border width
-        gc.setLineWidth(0.1);
+        //Clear the canvas
+        gc.clearRect(0, 0, getWidth(), getHeight());
 
-        for (int row = 0; row < displayHeight.get(); ++row) {
-            for (int col = 0; col < displayWidth.get(); ++col) {
-                int x = (int) (pixelSize.get() * col);
-                int y = (int) (pixelSize.get() * row);
-                gc.strokeRect(x, y, pixelSize.get(), pixelSize.get());
-                gc.setFill(backgroundColor.get());
-                gc.fillRect(x, y, pixelSize.get(), pixelSize.get());
+        //Set backlight color
+        LinearGradient backlightColor = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, new Stop(0.0, this.backlightColor.get()), new Stop(1.0, this.backlightColor.get().darker().darker()));
+        gc.setFill(backlightColor);
+        gc.fillRect(0, 0, getWidth(), getHeight());
+
+        //Set inactive pixel color
+        gc.setFill(computeInactivePixelColor());
+
+        boolean state = false;
+        double x = spacing + margin, y = spacing + margin;
+        for (int pixelY = 0; pixelY < lcdHeight; pixelY++) {
+            for (int pixelX = 0; pixelX < lcdWidth; pixelX++) {
+                drawPixel(x, y, state);
+                state = !state;
+                x += pixelSize + spacing;
             }
+            x = spacing + margin;
+            y += pixelSize + spacing;
         }
+    }
+
+    private void drawPixel(double x, double y, boolean state) {
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.setFill(state ? activePixelColor.get() : computeInactivePixelColor());
+        if (pixelShape.get().equals(PixelShape.CIRCLE)) {
+            gc.fillOval(x, y, pixelSize.get(), pixelSize.get());
+        } else {
+            gc.fillRect(x, y, pixelSize.get(), pixelSize.get());
+        }
+
+    }
+
+    private Color computeInactivePixelColor() {
+        Color baseInactivePixelColor = inactivePixelColor.get();
+        double opacity = contrast.get() / 100.0f;
+        return Color.color(baseInactivePixelColor.getRed(), baseInactivePixelColor.getGreen(), baseInactivePixelColor.getBlue(), opacity);
     }
 
     private void drawPixels() {
         GraphicsContext gc = getGraphicsContext2D();
         int pSize = (int) pixelSize.get();
+        int width = displayWidth.get();
+        int height = displayHeight.get();
+
         for (int y = 0; y < 32; y++) {
             int pixelIndex = 0;
 
@@ -165,7 +352,7 @@ public class GlcdScreen extends Canvas {
                     int pX = (pixelIndex + pxOffset) * pSize;
                     int pY = (pyOffset + y) * pSize;
 
-                    gc.setFill(bit > 0 ? foregroundColor.get() : backgroundColor.get());
+                    gc.setFill(bit > 0 ? activePixelColor.get() : inactivePixelColor.get());
                     gc.fillRect(pX, pY, pSize - 1, pSize - 1);
                     pixelIndex++;
                 }

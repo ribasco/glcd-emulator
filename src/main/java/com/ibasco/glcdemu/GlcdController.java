@@ -1,19 +1,26 @@
 package com.ibasco.glcdemu;
 
-import com.ibasco.glcdemu.beans.GlcdConfigEmulator;
-import com.ibasco.glcdemu.beans.GlcdConfigEmulatorProfile;
-import com.ibasco.glcdemu.services.GlcdConfigProfileService;
-import javafx.fxml.Initializable;
+import javafx.stage.Stage;
 
-abstract public class GlcdController implements Initializable {
+abstract public class GlcdController {
+    protected final Stage stage;
+
+    public GlcdController(Stage stage) {
+        this.stage = stage;
+    }
+
+    /**
+     * This is called once the stage is made available for the {@link GlcdController}
+     */
     abstract public void onInit();
+
     abstract public void onClose();
 
-    protected GlcdConfigProfileService profileManager;
+    public Context getContext() {
+        return Context.getInstance();
+    }
 
-    protected GlcdConfigEmulatorProfile profileConfig;
-
-    public GlcdConfigEmulator getProfileConfig() {
-        return profileConfig;
+    public Stage getStage() {
+        return stage;
     }
 }

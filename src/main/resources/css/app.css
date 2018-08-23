@@ -8,14 +8,14 @@
     /*-fx-background-color: #c2c2c2;*/
 }
 
-.table-view {
+/*.table-view {
     -fx-border-width: 0;
     -fx-border-color: transparent;
-    -fx-font-family: "Courier New";
+    !*-fx-font-family: "Courier New";*!
 }
 
 .table-view .table-row-cell:selected .text {
-    -fx-fill: red;
+    -fx-fill: blue;
 }
 
 .table-view .table-row-cell:odd {
@@ -24,5 +24,31 @@
 
 .table-view .table-row-cell:even {
     -fx-background-color: #dbdad6;
+}*/
+
+
+.table-view {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
 }
 
+.table-cell {
+    -fx-text-fill: #000000;
+}
+
+.table-cell:selected {
+    -fx-text-fill: white;
+}
+
+.table-row-cell:odd:selected {
+    -fx-background-color: #99c9e1;
+}
+.table-row-cell:even:selected {
+    -fx-background-color: #99c9e1;
+}
+.table-row-cell:odd {
+    -fx-background-color: rgb(240, 249, 255);
+}
+.table-row-cell:even {
+    -fx-background-color: rgb(230, 239, 244);
+}

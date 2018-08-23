@@ -7,9 +7,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -18,6 +18,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -29,8 +30,11 @@
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -42,27 +46,27 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem fx:id="menuLoadSettings" onAction="#onLoadSettingsAction" text="Open Settings">
+                  <MenuItem fx:id="menuLoadSettings" text="Open Settings">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
-                  <MenuItem fx:id="menuSaveSettings" mnemonicParsing="false" onAction="#onSaveSettingsAction" text="Save Settings">
+                  <MenuItem fx:id="menuSaveSettings" mnemonicParsing="false" text="Save Settings">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="menuSaveScreen" mnemonicParsing="false" onAction="#onMenuSaveScreenAction" text="Save Screen">
+                  <MenuItem fx:id="menuSaveScreen" mnemonicParsing="false" text="Save Screen">
                       <accelerator>
-                          <KeyCodeCombination alt="ANY" code="F12" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                          <KeyCodeCombination alt="ANY" code="F5" control="ANY" meta="UP" shift="UP" shortcut="UP" />
                       </accelerator>
                   </MenuItem>
-                  <MenuItem fx:id="menuSaveScreenAs" mnemonicParsing="false" onAction="#onMenuSaveScreenAsAction" text="Save Screen As">
+                  <MenuItem fx:id="menuSaveScreenAs" mnemonicParsing="false" text="Save Screen As">
                       <accelerator>
                           <KeyCodeCombination alt="UP" code="F12" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                       </accelerator>
                   </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem fx:id="menuExit" mnemonicParsing="false" onAction="#onMenuExitAction" text="Exit">
+              <MenuItem fx:id="menuExit" mnemonicParsing="false" text="Exit">
                      <accelerator>
                         <KeyCodeCombination alt="ANY" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
@@ -70,22 +74,22 @@
           </Menu>
             <Menu mnemonicParsing="false" text="View">
               <items>
-                  <CheckMenuItem fx:id="menuAlwaysOnTop" mnemonicParsing="false" onAction="#onMenuAlwaysOnTopAction" text="Always on Top" />
-                  <MenuItem fx:id="menuFitScreenToWindow" mnemonicParsing="false" onAction="#onFitScreenToWindowAction" text="Fit Window to Screen" />
+                  <CheckMenuItem fx:id="menuAlwaysOnTop" mnemonicParsing="false" text="Always on Top" />
+                  <MenuItem fx:id="menuFitScreenToWindow" mnemonicParsing="false" text="Fit Window to Screen" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem fx:id="menuOpenFontBrowser" mnemonicParsing="false" onAction="#onMenuOpenFontBrowserAction" text="Font Browser" />
+                <MenuItem fx:id="menuOpenFontBrowser" mnemonicParsing="false" text="Font Browser" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <CheckMenuItem fx:id="menuSettings" mnemonicParsing="false" onAction="#onMenuTogglePaneAction" text="Settings" />
-                  <CheckMenuItem fx:id="menuPinActivity" mnemonicParsing="false" onAction="#onMenuTogglePaneAction" text="Pin Activity" />
+                  <CheckMenuItem fx:id="menuSettings" mnemonicParsing="false" text="Settings" />
+                  <CheckMenuItem fx:id="menuPinActivity" mnemonicParsing="false" text="Pin Activity" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <Menu mnemonicParsing="false" text="Themes">
                      <items>
-                        <RadioMenuItem fx:id="menuThemeDefault" mnemonicParsing="false" onAction="#onMenuThemeSelection" text="Default">
+                        <RadioMenuItem fx:id="menuThemeDefault" mnemonicParsing="false" text="Default" userData="menuThemeDefault">
                            <toggleGroup>
                               <ToggleGroup fx:id="menuThemes" />
                            </toggleGroup>
                         </RadioMenuItem>
-                        <RadioMenuItem fx:id="menuThemeDark" mnemonicParsing="false" onAction="#onMenuThemeSelection" text="Dark" toggleGroup="$menuThemes" />
+                        <RadioMenuItem fx:id="menuThemeDark" mnemonicParsing="false" text="Dark" toggleGroup="$menuThemes" userData="menuThemeDark" />
                      </items>
                   </Menu>
               </items>
@@ -109,20 +113,20 @@
                <graphic>
                   <MaterialDesignIconView glyphName="CONTENT_SAVE" size="20" />
                </graphic></Button>
-          <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Save Capture" textAlignment="CENTER" wrapText="true">
+          <Button fx:id="btnToolOpenSettings" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Save Capture" textAlignment="CENTER" wrapText="true">
                <graphic>
-                  <FontAwesomeIconView glyphName="CAMERA_RETRO" size="20" />
+                  <FontAwesomeIconView glyphName="FOLDER_OPEN_ALT" size="20" />
                </graphic></Button>
-            <Button fx:id="btnFitScreenToWindow" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onFitScreenToWindowAction" prefHeight="29.0" prefWidth="31.0" text="Fit to Window" textAlignment="CENTER" wrapText="true">
+            <Button fx:id="btnFitScreenToWindow" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Fit to Window" textAlignment="CENTER" wrapText="true">
                <graphic>
                   <FontAwesomeIconView glyphName="WINDOW_MAXIMIZE" size="20" />
                </graphic></Button>
             <Pane prefHeight="28.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
-            <ToggleButton fx:id="btnShowPinActivity" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onShowPinActivityAction" prefHeight="29.0" prefWidth="31.0" text="Pin Activity" textAlignment="CENTER" wrapText="true">
+            <ToggleButton fx:id="btnShowPinActivity" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Pin Activity" textAlignment="CENTER" wrapText="true">
                <graphic>
                   <FontAwesomeIconView glyphName="MAP_PIN" size="20" />
                </graphic></ToggleButton>
-            <ToggleButton fx:id="btnShowSettings" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onShowSettingsAction" prefHeight="29.0" prefWidth="31.0" text="Settings" textAlignment="CENTER" wrapText="true">
+            <ToggleButton fx:id="btnShowSettings" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Settings" textAlignment="CENTER" wrapText="true">
                <graphic>
                   <MaterialDesignIconView glyphName="SETTINGS" size="20" />
                </graphic></ToggleButton>
@@ -146,64 +150,70 @@
                   </ScrollPane>
                </center>
                <bottom>
-                  <TabPane fx:id="tpSettings" prefHeight="197.0" prefWidth="855.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+                  <TabPane fx:id="tpSettings" prefHeight="217.0" prefWidth="1119.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
                     <tabs>
                       <Tab text="Emulator">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ColorPicker fx:id="cpBackground" layoutX="111.0" layoutY="9.0" onAction="#onLcdBackgroundAction" promptText="LCD Background Color" />
-                                    <Label layoutX="13.0" layoutY="14.0" text="LCD Background" />
-                                    <ColorPicker fx:id="cpForeground" layoutX="111.0" layoutY="42.0" onAction="#onLcdForegroundAction" promptText="LCD Foreground Color" />
-                                    <Label layoutX="14.0" layoutY="46.0" text="LCD Foreground" />
-                                    <Separator layoutX="14.0" layoutY="73.0" prefHeight="17.0" prefWidth="242.0" />
-                                    <Pane layoutX="14.0" layoutY="123.0">
+                                    <ColorPicker fx:id="cpInactivePixel" layoutX="15.0" layoutY="34.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Inactive Pixel Color" />
+                                    <ColorPicker fx:id="cpActivePixel" layoutX="16.0" layoutY="90.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Active Pixel Color" />
+                                    <Label layoutX="16.0" layoutY="66.0" text="Active Pixel: ">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font></Label>
+                                    <Pane layoutX="606.0" layoutY="40.0" prefHeight="39.0" prefWidth="214.0">
                                        <children>
-                                          <TextField fx:id="tfCustomSizeWidth" onScroll="#onSizeScroll" prefHeight="25.0" prefWidth="68.0" promptText="width">
-                                             <font>
-                                                <Font name="Courier New" size="12.0" />
-                                             </font>
-                                          </TextField>
-                                          <TextField fx:id="tfCustomSizeHeight" layoutX="88.0" onScroll="#onSizeScroll" prefHeight="25.0" prefWidth="68.0" promptText="height">
-                                              <font>
-                                                  <Font name="Courier New" size="12.0" />
-                                              </font>
-                                          </TextField>
-                                          <Label layoutX="75.0" layoutY="4.0" text="x" />
+                                          <Label layoutX="100.0" layoutY="11.0" text="x" />
+                                          <Spinner fx:id="spnDisplayWidth" editable="true" layoutY="7.0" prefHeight="25.0" prefWidth="90.0" />
+                                          <Spinner fx:id="spnDisplayHeight" editable="true" layoutX="116.0" layoutY="7.0" prefHeight="25.0" prefWidth="90.0" />
                                        </children>
                                     </Pane>
-                                    <Button fx:id="btnSaveSettings" defaultButton="true" layoutX="749.0" layoutY="124.0" mnemonicParsing="false" onAction="#onSaveSettingsAction" prefHeight="25.0" prefWidth="92.0" text="Save" AnchorPane.bottomAnchor="19.0" AnchorPane.rightAnchor="14.0" />
-                                    <Separator layoutX="258.0" layoutY="5.0" orientation="VERTICAL" prefHeight="156.0" prefWidth="6.0" />
-                                    <TextField fx:id="tfListenIp" layoutX="272.0" layoutY="124.0" prefHeight="25.0" prefWidth="110.0" promptText="Listen IP">
-                                       <font>
-                                          <Font name="Courier New" size="12.0" />
-                                       </font>
-                                    </TextField>
-                                    <TextField fx:id="tfListenPort" layoutX="396.0" layoutY="124.0" prefHeight="25.0" prefWidth="110.0" promptText="Listen Port">
-                                       <font>
-                                          <Font name="Courier New" size="12.0" />
-                                       </font>
-                                    </TextField>
-                                    <Separator layoutX="264.0" layoutY="81.0" prefHeight="2.0" prefWidth="586.0" AnchorPane.leftAnchor="264.0" AnchorPane.rightAnchor="0.0" />
-                                    <Label layoutX="270.0" layoutY="10.0" text="Pixel Size:">
+                                    <Separator layoutX="202.0" layoutY="12.0" orientation="VERTICAL" prefHeight="156.0" prefWidth="6.0" />
+                                    <Separator layoutX="216.0" layoutY="87.0" prefHeight="6.0" prefWidth="348.0" />
+                                    <Label layoutX="216.0" layoutY="11.0" text="Pixel Size:">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font>
                                     </Label>
-                                    <Slider fx:id="slPixelSize" blockIncrement="1.0" layoutX="270.0" layoutY="36.0" majorTickUnit="1.0" max="20.0" minorTickCount="1" prefHeight="38.0" prefWidth="565.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" AnchorPane.leftAnchor="270.0" AnchorPane.rightAnchor="20.0" />
-                                    <Button fx:id="btnApplySettings" layoutX="650.0" layoutY="123.0" mnemonicParsing="false" onAction="#onApplySettingsAction" prefHeight="25.0" prefWidth="92.0" text="Apply" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="113.0" />
-                                    <Label layoutX="13.0" layoutY="96.0" text="Display Size:">
+                                    <Slider fx:id="slPixelSize" blockIncrement="1.0" layoutX="216.0" layoutY="34.0" majorTickUnit="10.0" max="50.0" minorTickCount="5" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" AnchorPane.leftAnchor="216.0" />
+                                    <Label layoutX="605.0" layoutY="11.0" text="Display Size (Width x Height)">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font>
                                     </Label>
-                                    <Label layoutX="272.0" layoutY="96.0" text="Listen IP:">
+                                    <Label layoutX="16.0" layoutY="124.0" text="Backlight: ">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font></Label>
+                                    <ColorPicker fx:id="cpBacklight" layoutX="16.0" layoutY="151.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Backlight Color" />
+                                    <Label layoutX="12.0" layoutY="11.0" text="Inactive Pixel: ">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font></Label>
+                                    <Slider fx:id="slContrast" blockIncrement="0.1" layoutX="216.0" layoutY="122.0" majorTickUnit="20.0" minorTickCount="5" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="50.0" />
+                                    <Label layoutX="216.0" layoutY="103.0" text="Contrast:">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font></Label>
+                                    <Separator layoutX="588.0" layoutY="11.0" orientation="VERTICAL" prefHeight="183.0" prefWidth="6.0" />
+                                    <Slider fx:id="slPixelSpacing" blockIncrement="0.1" layoutX="400.0" layoutY="34.0" majorTickUnit="1.0" max="10.0" minorTickCount="1" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="1.0" />
+                                    <Label layoutX="400.0" layoutY="11.0" text="Pixel Spacing:">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font>
                                     </Label>
-                                    <Label layoutX="398.0" layoutY="96.0" text="Listen Port:" />
-                                    <Button fx:id="btnReset" cancelButton="true" layoutX="545.0" layoutY="124.0" mnemonicParsing="false" onAction="#onResetDefaultSettingsAction" prefHeight="25.0" prefWidth="98.0" text="Reset" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="212.0" />
+                                    <Slider fx:id="slMargin" layoutX="400.0" layoutY="122.0" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" />
+                                    <Label layoutX="400.0" layoutY="103.0" text="Margin:">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <ChoiceBox fx:id="cbPixelShape" layoutX="605.0" layoutY="129.0" prefHeight="25.0" prefWidth="210.0" />
+                                    <Label layoutX="605.0" layoutY="103.0" text="Pixel Shape:">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font></Label>
                                  </children>
                               </AnchorPane>
                         </content>
@@ -212,16 +222,24 @@
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ListView fx:id="lvProfiles" layoutX="12.0" layoutY="11.0" prefHeight="116.0" prefWidth="295.0" />
-                                    <Button fx:id="btnSaveProfile" layoutX="315.0" layoutY="70.0" mnemonicParsing="false" onAction="#onProfileSaveAction" prefHeight="25.0" prefWidth="100.0" text="Save" />
-                                    <Button fx:id="btnDeleteProfile" layoutX="315.0" layoutY="101.0" mnemonicParsing="false" onAction="#onProfileDeleteAction" prefHeight="25.0" prefWidth="100.0" text="Delete" />
-                                    <Button fx:id="btnLoadProfile" layoutX="315.0" layoutY="132.0" mnemonicParsing="false" onAction="#onProfileLoadAction" prefHeight="25.0" prefWidth="100.0" text="Load" />
-                                    <TextField fx:id="tfProfileFilter" layoutX="12.0" layoutY="133.0" onAction="#onProfileFilterInput" prefHeight="25.0" prefWidth="296.0" promptText="Filter" />
-                                    <Button fx:id="btnNewProfile" layoutX="315.0" layoutY="39.0" mnemonicParsing="false" onAction="#onProfileNewAction" prefHeight="25.0" prefWidth="100.0" text="New" />
-                                    <Button fx:id="btnMakeDefault" layoutX="315.0" layoutY="9.0" mnemonicParsing="false" onAction="#onProfileSetDefaultAction" prefHeight="25.0" prefWidth="100.0" text="Make Default" />
-                                    <Separator layoutX="430.0" layoutY="10.0" orientation="VERTICAL" prefHeight="145.0" prefWidth="5.0" />
-                                    <TextField fx:id="tfProfileDirPath" layoutX="447.0" layoutY="9.0" prefHeight="25.0" prefWidth="330.0" promptText="Profile Directory Path" />
-                                    <Button fx:id="btnOpenProfileDirPath" layoutX="784.0" layoutY="9.0" mnemonicParsing="false" onAction="#onProfileOpenDirPath" text="..." />
+                                    <GridPane AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <children>
+                                          <TableView fx:id="tvProfiles" prefHeight="152.0" prefWidth="1152.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                                            <columns>
+                                              <TableColumn prefWidth="75.0" text="C1" />
+                                              <TableColumn prefWidth="75.0" text="C2" />
+                                            </columns>
+                                          </TableView>
+                                          <TextField fx:id="tfProfileFilter" prefHeight="25.0" prefWidth="100.0" promptText="Filter" GridPane.rowIndex="1" />
+                                       </children>
+                                    </GridPane>
                                  </children>
                               </AnchorPane>
                           </content>
@@ -230,11 +248,26 @@
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <CheckBox fx:id="cbConfirmExit" layoutX="14.0" layoutY="21.0" mnemonicParsing="false" onAction="#onCheckConfirmExitAction" text="Confirm on Exit" />
-                                    <CheckBox fx:id="cbAutoSaveSettings" layoutX="14.0" layoutY="52.0" mnemonicParsing="false" onAction="#onCheckAutoSaveAction" text="Remember settings on exit" />
-                                    <TextField fx:id="tfScreenshotPath" layoutX="14.0" layoutY="114.0" prefHeight="25.0" prefWidth="334.0" promptText="Screenshot Directory Path" />
-                                    <Button fx:id="btnOpenScreenshotPath" layoutX="351.0" layoutY="114.0" mnemonicParsing="false" onAction="#onChooseScreenshotPathAction" prefHeight="25.0" prefWidth="30.0" text="..." />
-                                    <CheckBox fx:id="cbFitWindowToScreen" layoutX="14.0" layoutY="84.0" mnemonicParsing="false" onAction="#onCheckFitWindowToScreenAction" text="Fit window to screen" />
+                                    <CheckBox fx:id="cbConfirmExit" accessibleText="Confirm on Exit" layoutX="14.0" layoutY="21.0" mnemonicParsing="false" text="Confirm on Exit" />
+                                    <CheckBox fx:id="cbAutoSaveSettings" accessibleText="Remember settings on exit" layoutX="14.0" layoutY="52.0" mnemonicParsing="false" text="Remember settings on exit" />
+                                    <TextField fx:id="tfScreenshotPath" accessibleText="Screenshot Directory Path" layoutX="231.0" layoutY="17.0" prefHeight="25.0" prefWidth="334.0" promptText="Screenshot Directory Path" />
+                                    <Button fx:id="btnOpenScreenshotPath" layoutX="568.0" layoutY="17.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" text="..." />
+                                    <CheckBox fx:id="cbFitWindowToScreen" accessibleHelp="Automatically fit the window with the glcd screen canvas" accessibleText="Fit window to screen" layoutX="14.0" layoutY="84.0" mnemonicParsing="false" text="Fit window to screen" />
+                                    <Separator layoutX="207.0" layoutY="14.0" orientation="VERTICAL" prefHeight="138.0" prefWidth="4.0" />
+                                    <TextField fx:id="tfProfileDirPath" accessibleText="Profile Directory Path" layoutX="231.0" layoutY="48.0" prefHeight="25.0" prefWidth="334.0" promptText="Profile Directory Path" />
+                                    <Button fx:id="btnOpenProfileDirPath" layoutX="568.0" layoutY="48.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" text="..." />
+                                    <TextField fx:id="tfListenIp" layoutX="231.0" layoutY="107.0" prefHeight="25.0" prefWidth="262.0" promptText="Listen IP">
+                                       <font>
+                                          <Font name="Courier New" size="12.0" />
+                                       </font>
+                                    </TextField>
+                                    <Label layoutX="231.0" layoutY="84.0" text="Listen IP/Port:">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Spinner fx:id="spnListenPort" editable="true" layoutX="500.0" layoutY="107.0" prefHeight="25.0" prefWidth="98.0" />
+                                    <Button fx:id="btnReset" cancelButton="true" layoutX="946.0" layoutY="152.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="159.0" text="Reset Settings" AnchorPane.rightAnchor="14.0" />
                                  </children>
                               </AnchorPane>
                           </content>

@@ -4,11 +4,6 @@
     -fx-base: rgba(60, 63, 65, 255);
 }
 
-.table-view {
-    -fx-border-width: 0;
-    -fx-border-color: transparent;
-    -fx-font-family: "Courier New";
-}
 
 /*
 .table-view .table-row-cell:selected .text {
@@ -22,6 +17,11 @@
 .table-cell {
     -fx-text-fill: white;
 }*/
+
+.table-view {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
 
 .table-cell {
     -fx-text-fill: #BABAA6;
