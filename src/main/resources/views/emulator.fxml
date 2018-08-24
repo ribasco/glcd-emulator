@@ -101,6 +101,7 @@
                         <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
+                  <MenuItem mnemonicParsing="false" text="Report an Issue" />
                   <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" text="About" />
             </items>
@@ -122,6 +123,10 @@
                   <FontAwesomeIconView glyphName="WINDOW_MAXIMIZE" size="20" />
                </graphic></Button>
             <Pane prefHeight="28.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnDonate" mnemonicParsing="false" prefHeight="29.0" prefWidth="113.0" text="DONATE">
+               <graphic>
+                  <FontAwesomeIconView glyphName="PAYPAL" size="16" />
+               </graphic></Button>
             <ToggleButton fx:id="btnShowPinActivity" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Pin Activity" textAlignment="CENTER" wrapText="true">
                <graphic>
                   <FontAwesomeIconView glyphName="MAP_PIN" size="20" />
@@ -191,7 +196,7 @@
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font></Label>
-                                    <Slider fx:id="slContrast" blockIncrement="0.1" layoutX="216.0" layoutY="122.0" majorTickUnit="20.0" minorTickCount="5" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="50.0" />
+                                    <Slider fx:id="slContrast" blockIncrement="0.5" layoutX="216.0" layoutY="122.0" majorTickUnit="20.0" minorTickCount="5" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="50.0" />
                                     <Label layoutX="216.0" layoutY="103.0" text="Contrast:">
                                        <font>
                                           <Font name="System Bold" size="12.0" />

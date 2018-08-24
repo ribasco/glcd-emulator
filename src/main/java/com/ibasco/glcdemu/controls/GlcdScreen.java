@@ -6,18 +6,20 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnnecessaryLocalVariable"})
 public class GlcdScreen extends Canvas {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdScreen.class);
@@ -56,15 +58,12 @@ public class GlcdScreen extends Canvas {
 
     private final AtomicBoolean modifierKeyPressed = new AtomicBoolean(false);
 
-    private short[][] buffer;
-
-    private byte[][] bufferext = new byte[8][16];
+    private byte[][] buffer;
 
     private AnimationTimer animTimer;
 
     public GlcdScreen() {
         setStyle("-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
-        buffer = new short[32][16];
 
         contrast.addListener((observable, oldValue, newValue) -> {
             float value = (float) newValue / 100f;
@@ -72,7 +71,7 @@ public class GlcdScreen extends Canvas {
         });
 
         //drawGrid();
-        refreshOnChange(
+        /*refreshOnChange(
                 displayWidth,
                 displayHeight,
                 pixelSize,
@@ -83,14 +82,27 @@ public class GlcdScreen extends Canvas {
                 spacing,
                 margin,
                 pixelShape
-        );
+        );*/
+
+        ChangeListener<Number> sizeValidator = (observable, oldValue, newValue) -> {
+            if (newValue != null && (((int) newValue % 8) != 0)) {
+                SimpleIntegerProperty property = (SimpleIntegerProperty) observable;
+                if (!property.isBound()) {
+                    property.setValue(oldValue);
+                }
+                throw new RuntimeException("Illegal display width/height. Must be a multiple of 8 (" + observable.getClass().getSimpleName() + ")");
+            }
+        };
+
+        displayWidthProperty().addListener(sizeValidator);
+        displayHeightProperty().addListener(sizeValidator);
 
         animTimer = new AnimationTimer() {
             private long prevMillis = 0;
 
             @Override
             public void handle(long now) {
-                //refresh();
+                drawGrid();
             }
         };
         animTimer.start();
@@ -238,6 +250,7 @@ public class GlcdScreen extends Canvas {
     }
     //</editor-fold>
 
+    //<editor-fold desc="Overriden Methods">
     @Override
     public boolean isResizable() {
         return false;
@@ -247,33 +260,16 @@ public class GlcdScreen extends Canvas {
     public void resize(double width, double height) {
         super.resize(width, height);
     }
-
-    public void setCursor() {
-
-    }
-
-    public void setPixel() {
-
-    }
+    //</editor-fold>
 
     public void refresh() {
         drawGrid();
         //drawPixels();
     }
 
-    private void updateCanvas() {
-
-    }
-
-    private NumberBinding createCanvasResizeBinding(IntegerProperty property) {
-        return Bindings.add(Bindings.multiply(property, pixelSize), Bindings.multiply(property, spacing)).add(spacing).add(Bindings.multiply(margin, 2));
-    }
-
-    private Color updateOpacity(Color color, float value) {
-        return Color.color(color.getRed(), color.getGreen(), color.getBlue(), value);
-    }
-
-    @SuppressWarnings("UnnecessaryLocalVariable")
+    /**
+     * Reads the internal graphics buffer and draws it to the dot-matrix display screen
+     */
     private void drawGrid() {
         if (!initialized.getAndSet(true)) {
             widthProperty().bind(widthBinding);
@@ -302,12 +298,10 @@ public class GlcdScreen extends Canvas {
         //Set inactive pixel color
         gc.setFill(computeInactivePixelColor());
 
-        boolean state = false;
         double x = spacing + margin, y = spacing + margin;
         for (int pixelY = 0; pixelY < lcdHeight; pixelY++) {
             for (int pixelX = 0; pixelX < lcdWidth; pixelX++) {
-                drawPixel(x, y, state);
-                state = !state;
+                drawPixel(x, y, getBitState(pixelX, pixelY));
                 x += pixelSize + spacing;
             }
             x = spacing + margin;
@@ -315,6 +309,25 @@ public class GlcdScreen extends Canvas {
         }
     }
 
+    /**
+     * Checks the bit state in the internal display buffer based on the specified x, y pixel coordinates.
+     *
+     * @param x The x-coordinate of the LCD
+     * @param y The y-coordinate of the LCD
+     * @return Returns <code>True</code> if the bit/pixel is set
+     */
+    private boolean getBitState(int x, int y) {
+        GraphicsContext gc = getGraphicsContext2D();
+        return RandomUtils.nextBoolean();
+    }
+
+    /**
+     * Draw a pixel on the canvas
+     *
+     * @param x     The X-coordinate of the canvas.
+     * @param y     The Y-coordinate of the canvas.
+     * @param state <code>True</code> to turn on the pixel
+     */
     private void drawPixel(double x, double y, boolean state) {
         GraphicsContext gc = getGraphicsContext2D();
         gc.setFill(state ? activePixelColor.get() : computeInactivePixelColor());
@@ -358,5 +371,19 @@ public class GlcdScreen extends Canvas {
                 }
             }
         }
+    }
+
+    /**
+     * <p>Creates a {@link NumberBinding} binding to calculate the display's width and height based on the pixel size, spacing and margin properties.</p>
+     *
+     * @param property The property to be updated (e.g. width or height)
+     * @return The {@link NumberBinding} instance
+     */
+    private NumberBinding createCanvasResizeBinding(IntegerProperty property) {
+        return Bindings.add(Bindings.multiply(property, pixelSize), Bindings.multiply(property, spacing)).add(spacing).add(Bindings.multiply(margin, 2));
+    }
+
+    private Color updateOpacity(Color color, float value) {
+        return Color.color(color.getRed(), color.getGreen(), color.getBlue(), value);
     }
 }

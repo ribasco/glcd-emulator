@@ -17,7 +17,7 @@ public class GpioActivity {
         this.desc = desc;
     }
 
-    public int getMsg() {
+    public int getMessage() {
         return msg;
     }
 

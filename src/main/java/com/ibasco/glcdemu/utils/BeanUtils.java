@@ -2,6 +2,7 @@ package com.ibasco.glcdemu.utils;
 
 import com.ibasco.glcdemu.annotations.Auditable;
 import com.ibasco.glcdemu.model.GlcdEmulatorProfile;
+import javafx.scene.paint.Color;
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.beanutils.PropertyUtilsBean;
@@ -15,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BeanUtils {
 
@@ -53,15 +55,26 @@ public class BeanUtils {
 
                 //Skip excluded properties
                 if ("class".equals(propertyName) || nonAuditableProperties.stream().anyMatch(f -> f.getName().equals(propertyName) && !f.getAnnotation(Auditable.class).enabled())) {
-                    //log.debug("\t[EXCLUDED] Property = {}", propertyName);
                     continue;
                 } else if (readMethod != null && readMethod.isAnnotationPresent(Auditable.class) && !readMethod.getAnnotation(Auditable.class).enabled()) {
-                    //log.debug("\t[EXCLUDED METHOD] Property = {}", propertyName);
                     continue;
                 }
 
-                if (!((oldValue == null || newValue == null) ? oldValue == newValue : oldValue.equals(newValue)))
+                if ((oldValue == null || newValue == null) && oldValue != newValue)  {
                     diffProps.add(desc);
+                    continue;
+                }
+
+                if (desc.getPropertyType().equals(Color.class)) {
+                    String oldColor = UIUtil.toHexString((Color) oldValue);
+                    String newColor = UIUtil.toHexString((Color) newValue);
+                    if (!oldColor.equalsIgnoreCase(newColor))
+                        diffProps.add(desc);
+                } else   {
+                    assert oldValue != null;
+                    if (!oldValue.equals(newValue))
+                        diffProps.add(desc);
+                }
             }
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             log.error("Error while getting bean diff", e);

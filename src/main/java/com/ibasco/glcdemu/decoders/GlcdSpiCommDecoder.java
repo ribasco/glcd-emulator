@@ -20,7 +20,7 @@ public class GlcdSpiCommDecoder extends GlcdCommDecoder {
 
     @Override
     public void decode(GpioActivity event) {
-        int msg = event.getMsg();
+        int msg = event.getMessage();
         switch (msg) {
             case U8X8_MSG_BYTE_INIT:
                 break;
@@ -33,7 +33,7 @@ public class GlcdSpiCommDecoder extends GlcdCommDecoder {
                 bitIndex = 7; //set the starting bit index
                 break;
             case U8X8_MSG_GPIO_D0: //spi-clock
-                //for every clock tick, check if we have a whole byte
+                //for every clock tick, check if we have received a whole byte
                 if (event.getValue() == 1) {
                     if (bitIndex < 0) {
                         emitByteEvent(data);

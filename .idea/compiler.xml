@@ -17,10 +17,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="glcd-emulator" />
+        <module name="glcd-emulator-client" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8">
       <module name="glcd-emulator" target="8" />
+      <module name="glcd-emulator-client" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -14,7 +14,7 @@ abstract public class GlcdController {
      */
     abstract public void onInit();
 
-    abstract public void onClose();
+    abstract public boolean onClose();
 
     public Context getContext() {
         return Context.getInstance();

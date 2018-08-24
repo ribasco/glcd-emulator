@@ -190,7 +190,8 @@ public class Main extends Application {
             closeConfirmation.initOwner(stage);
 
             Optional<ButtonType> closeResponse = closeConfirmation.showAndWait();
-            if (closeResponse.isPresent() && !ButtonType.YES.equals(closeResponse.get())) {
+
+            if (closeResponse.isPresent() && ButtonType.NO.equals(closeResponse.get())) {
                 windowEvent.consume();
             } else {
                 controller.onClose();

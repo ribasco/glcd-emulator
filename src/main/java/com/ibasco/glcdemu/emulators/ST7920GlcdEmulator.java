@@ -40,6 +40,9 @@ public class ST7920GlcdEmulator {
 
     private int xAddress = 0;
 
+    /**
+     * Used to monitor the first and second byte received
+     */
     private int dataCtr = 0;
 
     @FunctionalInterface
@@ -104,7 +107,7 @@ public class ST7920GlcdEmulator {
      */
     private void processGpioEvents(GpioActivity gpioActivity) {
         protocolDecoder.decode(gpioActivity);
-        gpioActivityListener.onGpioActivity(gpioActivity.getMsg(), gpioActivity.getValue());
+        gpioActivityListener.onGpioActivity(gpioActivity.getMessage(), gpioActivity.getValue());
     }
 
     /**
@@ -155,7 +158,6 @@ public class ST7920GlcdEmulator {
                     }
                     break;
                 case GlcdInstruction.F_DISPLAY_CLEAR:
-                    log.info("DISPLAY CLEAR");
                     //not yet implemented
                     break;
                 case GlcdInstruction.F_ENTRY_MODE_SET:

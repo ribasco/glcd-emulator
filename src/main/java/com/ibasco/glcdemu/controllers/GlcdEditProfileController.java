@@ -85,8 +85,8 @@ public class GlcdEditProfileController extends GlcdController {
     }
 
     @Override
-    public void onClose() {
-
+    public boolean onClose() {
+        return true;
     }
 
     public GlcdEmulatorProfile getProfile() {

@@ -6,6 +6,7 @@
 
     <groupId>com.ibasco.glcdemu</groupId>
     <artifactId>glcd-emulator</artifactId>
+    <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
 
     <properties>

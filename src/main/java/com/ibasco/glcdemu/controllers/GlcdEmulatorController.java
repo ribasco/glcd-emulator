@@ -34,7 +34,10 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.*;
 import javafx.util.StringConverter;
 import org.apache.commons.io.FilenameUtils;
@@ -152,25 +155,13 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
     private ColorPicker cpActivePixel;
 
     @FXML
-    private Button btnSaveSettings;
-
-    @FXML
     private Slider slPixelSize;
-
-    @FXML
-    private Button btnApplySettings;
 
     @FXML
     private Button btnReset;
 
     @FXML
     private TextField tfProfileFilter;
-
-    @FXML
-    private Button btnNewProfile;
-
-    @FXML
-    private Button btnMakeDefault;
 
     @FXML
     private TextField tfProfileDirPath;
@@ -415,25 +406,41 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         return alert;
     }
 
+    private boolean userYesNoConfirmation(String header, String content) {
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION, content, ButtonType.YES, ButtonType.NO);
+        confirmAlert.setHeaderText(header);
+
+        confirmAlert.getDialogPane().getStylesheets().add(getStage().getScene().getStylesheets().get(0));
+        Optional<ButtonType> answer = confirmAlert.showAndWait();
+        return answer.isPresent() && answer.get().equals(ButtonType.YES);
+    }
+
+    private void profileLoadSelected() {
+        GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
+        GlcdEmulatorProfile activeProfile = getContext().getProfileManager().getActiveProfile();
+        if (activeProfile != null && activeProfile.equals(selectedProfile))
+            return;
+        if (userYesNoConfirmation("Load Profile '" + selectedProfile.getName() + "'?", selectedProfile.getDescription())) {
+            getContext().getProfileManager().setActiveProfile(selectedProfile);
+        }
+    }
+
+    private EventHandler<KeyEvent> profileTableKeyEventHandler = event -> {
+        if (event.getCode() == KeyCode.ENTER) {
+            profileLoadSelected();
+        } else if (event.getCode() == KeyCode.DELETE) {
+            profileDeleteAction(null);
+        }
+    };
+
     private void setupProfileTable() {
         buildProfileContextMenu();
         tvProfiles.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         tvProfiles.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-        tvProfiles.setOnKeyReleased(event -> {
-            GlcdProfileManager profileManager = getContext().getProfileManager();
-            if (event.getCode() == KeyCode.ENTER) {
-                GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
-                profileManager.setActiveProfile(selectedProfile);
-            } else if (event.getCode() == KeyCode.DELETE) {
-                profileDeleteAction(null);
-            }
-        });
+        tvProfiles.setOnKeyReleased(profileTableKeyEventHandler);
         tvProfiles.setOnMouseClicked(event -> {
-            GlcdProfileManager profileManager = getContext().getProfileManager();
-            if (event.getClickCount() == 2) {
-                GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
-                profileManager.setActiveProfile(selectedProfile);
-            }
+            if (event.getClickCount() == 2)
+                profileLoadSelected();
         });
 
         TableColumn<GlcdEmulatorProfile, Boolean> activeCol = new TableColumn<>("Active");
@@ -505,6 +512,7 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
             }
         });
 
+        //noinspection unchecked
         tvProfiles.getColumns().setAll(idCol, nameCol, descCol, displayWidthCol, displayHeightCol, pixelSizeCol, activeCol, defaultCol, fileCol);
     }
 
@@ -740,8 +748,11 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
 
     private void profileCheckModified() {
         List<GlcdEmulatorProfile> modifiedProfiles = getContext().getProfileManager().findList(GlcdProfileManager.Predicates.modified());
-        if (modifiedProfiles.isEmpty())
+        if (modifiedProfiles.isEmpty()) {
             return;
+        }
+
+        log.debug("Uncommitted profiles: {}", modifiedProfiles);
 
         boolean alwaysOnTop = stage.isAlwaysOnTop();
 
@@ -751,6 +762,7 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
             alert.setTitle("Confirm Save Action");
             alert.setContentText("You have uncommitted changes present, would you like to save them?");
             alert.setHeaderText("Save uncommitted changes?");
+
             Optional<ButtonType> result = alert.showAndWait();
 
             if (result.isPresent() && result.get() == ButtonType.YES) {
@@ -866,7 +878,7 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
     }
 
     @Override
-    public void onClose() {
+    public boolean onClose() {
         try {
             profileCheckModified();
 
@@ -874,9 +886,11 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
                 getContext().getConfigService().save(appConfig);
                 //getContext().getProfileManager().save();
             }
+            return true;
         } catch (IOException e) {
             log.error("Unable to save settings", e);
         }
+        return false;
     }
 
     private ChangeListener<String> createNonNumericInputFilter(Consumer<Integer> c) {
@@ -998,7 +1012,6 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
             if (!imageFile.getName().endsWith(".png")) {
                 imageFile = new File(imageFile.getAbsolutePath() + ".png");
             }
-            int pixelSize = (int) glcdScreen.getPixelSize();
             WritableImage wim = new WritableImage((int) glcdScreen.getWidth(), (int) glcdScreen.getHeight());
             glcdScreen.snapshot(null, wim);
             try {
