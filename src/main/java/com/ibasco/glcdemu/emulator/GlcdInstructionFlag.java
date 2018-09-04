@@ -1,4 +1,4 @@
-package com.ibasco.glcdemu.emulators;
+package com.ibasco.glcdemu.emulator;
 
 /**
  * An interface representing an instruction of the display.

@@ -1,4 +1,4 @@
-package com.ibasco.glcdemu.emulators;
+package com.ibasco.glcdemu.emulator;
 
 import com.ibasco.pidisplay.core.util.ByteUtils;
 

@@ -1,6 +1,6 @@
-package com.ibasco.glcdemu.emulators.st7920;
+package com.ibasco.glcdemu.emulator.st7920;
 
-import com.ibasco.glcdemu.emulators.GlcdInstructionFlag;
+import com.ibasco.glcdemu.emulator.GlcdInstructionFlag;
 
 import java.util.Arrays;
 

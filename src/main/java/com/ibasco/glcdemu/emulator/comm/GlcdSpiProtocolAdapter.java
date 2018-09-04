@@ -1,4 +1,4 @@
-package com.ibasco.glcdemu.emulators.comms;
+package com.ibasco.glcdemu.emulator.comm;
 
 
 import com.ibasco.glcdemu.GlcdCommDecoder;
@@ -6,6 +6,7 @@ import com.ibasco.glcdemu.GlcdCommEncoder;
 import com.ibasco.pidisplay.core.exceptions.NotImplementedException;
 import com.ibasco.pidisplay.core.u8g2.U8g2GpioEvent;
 import com.ibasco.pidisplay.core.u8g2.U8g2Message;
+
 import java.util.Objects;
 
 public class GlcdSpiProtocolAdapter implements GlcdCommDecoder, GlcdCommEncoder {

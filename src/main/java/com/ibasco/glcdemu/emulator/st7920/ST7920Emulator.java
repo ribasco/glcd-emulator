@@ -1,7 +1,7 @@
-package com.ibasco.glcdemu.emulators.st7920;
+package com.ibasco.glcdemu.emulator.st7920;
 
-import com.ibasco.glcdemu.emulators.GlcdEmulatorBase;
-import com.ibasco.glcdemu.emulators.st7920.instructions.DdramSet;
+import com.ibasco.glcdemu.emulator.GlcdEmulatorBase;
+import com.ibasco.glcdemu.emulator.st7920.instructions.DdramSet;
 import com.ibasco.pidisplay.core.u8g2.U8g2GpioEvent;
 import com.ibasco.pidisplay.drivers.glcd.Glcd;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
