@@ -2,7 +2,6 @@ package com.ibasco.glcdemu.emulator.st7920;
 
 import com.ibasco.glcdemu.emulator.GlcdEmulatorBase;
 import com.ibasco.glcdemu.emulator.st7920.instructions.DdramSet;
-import com.ibasco.pidisplay.core.u8g2.U8g2GpioEvent;
 import com.ibasco.pidisplay.drivers.glcd.Glcd;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
 import org.slf4j.Logger;
@@ -40,18 +39,6 @@ public class ST7920Emulator extends GlcdEmulatorBase {
 
     private final AtomicInteger dataCtr = new AtomicInteger(0);
     //</editor-fold>
-
-    /**
-     * Process and decode raw GPIO events into a readable byte format
-     *
-     * @param event
-     *         Gpio Event
-     */
-    private void processGpioEvents(U8g2GpioEvent event) {
-        /*Byte data = protocolDecoder.decode(event);
-        if (data != null)
-            processByte(Byte.toUnsignedInt(data));*/
-    }
 
     @Override
     public void processByte(int data) {
