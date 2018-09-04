@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Represents a group of bindable bindings. This allows simultaneous binding/unbinding of bindings.
+ * Represents a group of properties which facilitates
  *
  * @author Rafael Ibasco
  */
@@ -68,24 +68,24 @@ public class BindGroup {
         bindings.add(new UnidirectionalBindingPair<>(property1, property2));
     }
 
-    public void attach() {
+    public void bind() {
         for (BindingPair pair : bindings)
             pair.bind();
     }
 
-    public void detach() {
+    public void unbind() {
         for (BindingPair pair : bindings)
             pair.unbind();
     }
 
     public void clear() {
-        detach();
+        unbind();
         bindings.clear();
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        detach();
+        unbind();
     }
 }

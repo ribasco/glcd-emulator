@@ -1,11 +1,9 @@
 package com.ibasco.glcdemu.utils;
 
 import com.ibasco.glcdemu.GlcdController;
-import com.ibasco.glcdemu.Main;
+import com.ibasco.glcdemu.Bootstrap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Dialog;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -13,6 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
+//TODO: Consider refactoring this, should we have a single accessible registry for controllers?
 @SuppressWarnings("Duplicates")
 public class ResourceUtil {
 
@@ -23,7 +22,7 @@ public class ResourceUtil {
     private static GlcdController controller;
 
     public static URL getResource(String resourceName) {
-        return Main.class.getClassLoader().getResource(resourceName);
+        return Bootstrap.class.getClassLoader().getResource(resourceName);
     }
 
     public static URL getStylesheet(String stylesheetName) {

@@ -35,6 +35,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -110,7 +111,7 @@
       </MenuBar>
       <ToolBar fx:id="tbMain" prefHeight="26.0" prefWidth="1119.0">
         <items>
-            <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Save Settings" textAlignment="CENTER" wrapText="true">
+            <Button fx:id="btnToolBarSave" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Save Settings" textAlignment="CENTER" wrapText="true">
                <graphic>
                   <MaterialDesignIconView glyphName="CONTENT_SAVE" size="20" />
                </graphic></Button>
@@ -123,6 +124,7 @@
                   <FontAwesomeIconView glyphName="WINDOW_MAXIMIZE" size="20" />
                </graphic></Button>
             <Pane prefHeight="28.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
+            <ToggleButton fx:id="tbDisplayTest" mnemonicParsing="false" prefHeight="29.0" prefWidth="87.0" text="Test Display" />
             <Button fx:id="btnDonate" mnemonicParsing="false" prefHeight="29.0" prefWidth="113.0" text="DONATE">
                <graphic>
                   <FontAwesomeIconView glyphName="PAYPAL" size="16" />
@@ -148,7 +150,11 @@
                      <content>
                         <HBox fx:id="hbGlcd" alignment="CENTER" prefHeight="377.0" prefWidth="805.0">
                            <children>
-                              <GlcdScreen fx:id="glcdScreen" height="317.0" width="624.0" />
+                              <StackPane fx:id="spGlcd" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <GlcdScreen fx:id="glcdScreen" height="317.0" width="624.0" />
+                                 </children>
+                              </StackPane>
                            </children>
                         </HBox>
                      </content>
@@ -273,6 +279,8 @@
                                     </Label>
                                     <Spinner fx:id="spnListenPort" editable="true" layoutX="500.0" layoutY="107.0" prefHeight="25.0" prefWidth="98.0" />
                                     <Button fx:id="btnReset" cancelButton="true" layoutX="946.0" layoutY="152.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="159.0" text="Reset Settings" AnchorPane.rightAnchor="14.0" />
+                                    <ToggleButton fx:id="tbListen" layoutX="776.0" layoutY="152.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="110.0" text="Listen" AnchorPane.rightAnchor="180.0" />
+                                    <Button fx:id="btnSendTestData" layoutX="712.0" layoutY="152.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="110.0" text="Send Test Data" AnchorPane.rightAnchor="297.0" />
                                  </children>
                               </AnchorPane>
                           </content>

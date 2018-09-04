@@ -65,7 +65,7 @@ fabric.properties
 *.class
 
 # Log file
-*.log
+logs/pi-display-main.log
 
 # BlueJ files
 *.ctxt

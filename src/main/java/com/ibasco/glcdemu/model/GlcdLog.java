@@ -15,6 +15,10 @@ public class GlcdLog {
 
     private StringProperty data = new SimpleStringProperty();
 
+    public GlcdLog(String type, String data) {
+        this(LocalDateTime.now(), type, data);
+    }
+
     public GlcdLog(LocalDateTime timestamp, String type, String data) {
         setTimestamp(timestamp);
         setType(type);

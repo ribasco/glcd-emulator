@@ -2,6 +2,8 @@ package com.ibasco.glcdemu;
 
 import com.ibasco.glcdemu.model.GlcdConfigApp;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ListView;
 
@@ -14,13 +16,13 @@ import static com.ibasco.glcdemu.constants.Common.APP_CONFIG_PATH;
  *
  * @author Rafael Ibasco
  */
-public class Context {
+public final class Context {
 
     private static class InstanceHolder {
         private static Context INSTANCE = new Context();
     }
 
-    private ObjectProperty<GlcdConfigApp> appConfig;
+    private ReadOnlyObjectWrapper<GlcdConfigApp> appConfig;
 
     private GlcdConfigManager configService;
 
@@ -28,29 +30,26 @@ public class Context {
 
     private Context() {}
 
-    public GlcdConfigApp getAppConfig() {
+    public final GlcdConfigApp getAppConfig() {
         return appConfigProperty().get();
     }
 
-    public ObjectProperty<GlcdConfigApp> appConfigProperty() {
+    public final ReadOnlyObjectProperty<GlcdConfigApp> appConfigProperty() {
         if (appConfig == null) {
-            appConfig = new SimpleObjectProperty<>(getConfigService().getConfig(new File(APP_CONFIG_PATH), GlcdConfigApp.class, new GlcdConfigApp()));
+            GlcdConfigApp config = getConfigService().getConfig(new File(APP_CONFIG_PATH), GlcdConfigApp.class, new GlcdConfigApp());
+            appConfig = new ReadOnlyObjectWrapper<>(config);
         }
-        return appConfig;
+        return appConfig.getReadOnlyProperty();
     }
 
-    public void setAppConfig(GlcdConfigApp appConfig) {
-        appConfigProperty().set(appConfig);
-    }
-
-    public GlcdProfileManager getProfileManager() {
+    public final GlcdProfileManager getProfileManager() {
         if (profileService == null) {
             profileService = new GlcdProfileManager();
         }
         return profileService;
     }
 
-    public GlcdConfigManager getConfigService() {
+    public final GlcdConfigManager getConfigService() {
         if (configService == null) {
             configService = new GlcdConfigManager();
         }

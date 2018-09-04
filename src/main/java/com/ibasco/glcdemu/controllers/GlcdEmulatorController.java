@@ -1,24 +1,41 @@
 package com.ibasco.glcdemu.controllers;
 
+import com.ibasco.glcdemu.Bootstrap;
 import com.ibasco.glcdemu.GlcdController;
 import com.ibasco.glcdemu.GlcdProfileManager;
 import com.ibasco.glcdemu.constants.Common;
 import com.ibasco.glcdemu.controls.GlcdScreen;
+import com.ibasco.glcdemu.emulators.st7920.ST7920Emulator;
 import com.ibasco.glcdemu.enums.PixelShape;
 import com.ibasco.glcdemu.model.GlcdConfigApp;
 import com.ibasco.glcdemu.model.GlcdEmulatorProfile;
+import com.ibasco.glcdemu.model.GlcdLog;
 import com.ibasco.glcdemu.utils.BindGroup;
 import com.ibasco.glcdemu.utils.FileUtils;
+import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.glcdemu.utils.ResourceUtil;
+import com.ibasco.pidisplay.core.exceptions.XBMDecodeException;
+import com.ibasco.pidisplay.core.u8g2.U8g2ByteEvent;
+import com.ibasco.pidisplay.core.util.XBMUtils;
+import com.ibasco.pidisplay.drivers.glcd.Glcd;
+import com.ibasco.pidisplay.drivers.glcd.GlcdConfig;
+import com.ibasco.pidisplay.drivers.glcd.GlcdDriver;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdCommInterface;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdFont;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdRotation;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -39,8 +56,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.*;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +67,22 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -231,7 +260,24 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
 
     @FXML
     private ChoiceBox<PixelShape> cbPixelShape;
+
+    @FXML
+    private Button btnDonate;
+
+    @FXML
+    private ToggleButton tbDisplayTest;
+
+    @FXML
+    private Button btnToolBarSave;
+
+    @FXML
+    private ToggleButton tbListen;
+
+    @FXML
+    private Button btnSendTestData;
     //</editor-fold>
+
+    private ObservableList<GlcdLog> logEntries = FXCollections.observableArrayList();
 
     private final DateTimeFormatter imageFileNameFormatter = DateTimeFormatter.ofPattern("YYYYMMddkkmmss'_GlcdCapture'");
 
@@ -249,21 +295,54 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
 
     private DecimalFormat decimalFormatter = new DecimalFormat("##.00");
 
-    public GlcdEmulatorController(Stage stage) {
-        super(stage);
-    }
+    private FadeTransition screenshotTransition;
+
+    private ObjectProperty<PixelBuffer> displayBuffer = new SimpleObjectProperty<>();
+
+    private Task<Void> pixelWriterTask;
+
+    private LongProperty displaySpeed = new SimpleLongProperty(1);
 
     @FunctionalInterface
     private interface CommandNoArg {
         void execute();
     }
 
+    private ExecutorService taskService = Executors.newFixedThreadPool(5, r -> {
+        Thread t = new Thread(r);
+        t.setDaemon(true);
+        return t;
+    });
+
+    private EventHandler<KeyEvent> profileTableKeyEventHandler = event -> {
+        if (event.getCode() == KeyCode.ENTER) {
+            profileLoadSelected();
+        } else if (event.getCode() == KeyCode.DELETE) {
+            profileDeleteAction(null);
+        }
+    };
+
+    public GlcdEmulatorController(Stage stage) {
+        super(stage);
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        screenshotTransition = new FadeTransition(Duration.millis(500), glcdScreen);
+        screenshotTransition.setFromValue(0.0);
+        screenshotTransition.setToValue(1.0);
+        screenshotTransition.setAutoReverse(false);
+        screenshotTransition.setCycleCount(1);
+        screenshotTransition.setInterpolator(Interpolator.EASE_BOTH);
+
         //Listen invalidation changes in active profile property
         getContext().getProfileManager().activeProfileProperty().addListener((observable, oldValue, newValue) -> {
+            glcdScreen.stop();
             log.debug("Active profile changed from '{}' to '{}'", oldValue, newValue);
             updateProfileBindings(newValue);
+            //Refresh the display buffer
+            refreshDisplayBuffer();
+            glcdScreen.play();
         });
         getContext().appConfigProperty().addListener(new ChangeListener<GlcdConfigApp>() {
             @Override
@@ -291,10 +370,47 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         updateProfileBindings(getContext().getProfileManager().getActiveProfile());
         updateAppBindings(appConfig);
         applyTheme(appConfig.getThemeId(), stage);
+
+        tbDisplayTest.setOnAction(event -> {
+            ToggleButton tb = (ToggleButton) event.getSource();
+            if (tb.isSelected()) {
+                pixelWriterTask = createPixelWriterTask();
+                taskService.execute(pixelWriterTask);
+            } else {
+                if (pixelWriterTask != null && pixelWriterTask.isRunning())
+                    pixelWriterTask.cancel();
+            }
+        });
+    }
+
+    /**
+     * Simulates a service writing to the pixel buffer
+     */
+    private Task<Void> createPixelWriterTask() {
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                while (!pixelWriterTask.isCancelled()) {
+                    GlcdEmulatorProfile activeProfile = getContext().getProfileManager().getActiveProfile();
+                    for (int y = 0; y < activeProfile.getDisplaySizeHeight(); y++) {
+                        for (int x = 0; x < activeProfile.getDisplaySizeWidth(); x++) {
+                            displayBuffer.get().write(x, y, RandomUtils.nextBoolean());
+                        }
+                    }
+                }
+                return null;
+            }
+        };
+    }
+
+    private void refreshDisplayBuffer() {
+        GlcdEmulatorProfile activeProfile = getContext().getProfileManager().getActiveProfile();
+        displayBuffer.set(new PixelBuffer(activeProfile.getDisplaySizeWidth(), activeProfile.getDisplaySizeHeight()));
+        emulator.bufferProperty().bind(displayBuffer);
+        log.debug("Display buffer refreshed (Width: {}, Height: {})", activeProfile.getDisplaySizeWidth(), activeProfile.getDisplaySizeHeight());
     }
 
     private void buildProfileContextMenu() {
-        GlcdProfileManager profileManager = getContext().getProfileManager();
         ContextMenu profileContextMenu = new ContextMenu();
         MenuItem miProfileNew = new MenuItem("New Profile");
         miProfileNew.setOnAction(this::profileNewAction);
@@ -324,61 +440,6 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
                 profileContextMenu.hide();
             }
         });
-    }
-
-    private void profileEditAction(ActionEvent event) {
-        try {
-            GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
-            Stage stage = new Stage();
-            stage.setResizable(false);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(this.stage);
-            stage.setTitle("Edit Profile");
-            GlcdEditProfileController controller = new GlcdEditProfileController(stage);
-            Parent root = ResourceUtil.loadFxmlResource("edit-profile-dialog", controller);
-            if (root == null)
-                return;
-            controller.setProfile(selectedProfile);
-            stage.setScene(new Scene(root));
-            applyTheme(appConfig.getThemeId(), stage);
-            controller.onInit();
-            stage.showAndWait();
-        } catch (IOException e) {
-            log.error("Error during edit", e);
-        }
-    }
-
-    private void profileDeleteAction(ActionEvent event) {
-        //GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
-        BooleanProperty deleteProfileInFS = new SimpleBooleanProperty(false);
-        Alert confirmDeleteAlert = createAlertDialogWithCheckbox(Alert.AlertType.CONFIRMATION,
-                "Delete Profile Confirmation",
-                "Are you sure you want to delete the selected profile(s)?",
-                "", "Also delete profile in file-system",
-                deleteProfileInFS::set,
-                ButtonType.YES, ButtonType.NO
-        );
-
-        Optional<ButtonType> buttonPressed = confirmDeleteAlert.showAndWait();
-        if (buttonPressed.isPresent() && buttonPressed.get().equals(ButtonType.YES)) {
-            for (GlcdEmulatorProfile selectedProfile : tvProfiles.getSelectionModel().getSelectedItems()) {
-
-                if (deleteProfileInFS.get()) {
-                    log.info("Deleting profile from file system = {}", selectedProfile);
-                    File file = selectedProfile.getFile();
-                    if (file != null && file.isFile() && file.exists()) {
-                        String path = file.getPath();
-                        if (file.delete()) {
-                            log.info("Profile successfully deleted from the file-system = {}", path);
-                        } else {
-                            log.warn("Unable to delete profile '{}' from the file-system", path);
-                        }
-                    }
-                }
-                getContext().getProfileManager().delete(selectedProfile);
-                log.info("Deleted Profile {}", selectedProfile);
-            }
-        }
     }
 
     private Alert createAlertDialogWithCheckbox(Alert.AlertType type, String title, String header, String content, String optOutMessage, Consumer<Boolean> optOutAction, ButtonType... buttonTypes) {
@@ -414,24 +475,6 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         Optional<ButtonType> answer = confirmAlert.showAndWait();
         return answer.isPresent() && answer.get().equals(ButtonType.YES);
     }
-
-    private void profileLoadSelected() {
-        GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
-        GlcdEmulatorProfile activeProfile = getContext().getProfileManager().getActiveProfile();
-        if (activeProfile != null && activeProfile.equals(selectedProfile))
-            return;
-        if (userYesNoConfirmation("Load Profile '" + selectedProfile.getName() + "'?", selectedProfile.getDescription())) {
-            getContext().getProfileManager().setActiveProfile(selectedProfile);
-        }
-    }
-
-    private EventHandler<KeyEvent> profileTableKeyEventHandler = event -> {
-        if (event.getCode() == KeyCode.ENTER) {
-            profileLoadSelected();
-        } else if (event.getCode() == KeyCode.DELETE) {
-            profileDeleteAction(null);
-        }
-    };
 
     private void setupProfileTable() {
         buildProfileContextMenu();
@@ -561,14 +604,169 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
             activeProfile.decrementPixel(step);
     }
 
+    @SuppressWarnings("unchecked")
+    private void initializeLogView() {
+        logEntries.addListener((ListChangeListener<GlcdLog>) c -> {
+            Platform.runLater(() -> tvLog.scrollTo(tvLog.getItems().size() - 1));
+        });
+
+        TableColumn<GlcdLog, LocalDateTime> timestampCol = new TableColumn<>("Timestamp");
+        timestampCol.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
+        timestampCol.setCellFactory(tc -> new TableCell<GlcdLog, LocalDateTime>() {
+            @Override
+            protected void updateItem(LocalDateTime item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(formatter.format(item));
+                }
+            }
+        });
+
+        TableColumn<GlcdLog, String> typeCol = new TableColumn<>("Type");
+        typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+
+        TableColumn<GlcdLog, String> dataCol = new TableColumn<>("Data");
+        dataCol.setCellValueFactory(new PropertyValueFactory<>("data"));
+
+        tvLog.getColumns().setAll(timestampCol, typeCol, dataCol);
+        tvLog.setItems(logEntries);
+    }
+
+    private Selector selector;
+
+    private ServerSocketChannel socketChannel;
+
+    private Task<Void> listenTask;
+
+    private void initSocketServer() {
+        try {
+            socketChannel = ServerSocketChannel.open();
+            selector = Selector.open();
+            socketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+            socketChannel.configureBlocking(false);
+            socketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            socketChannel.bind(new InetSocketAddress(appConfig.getListenIp(), appConfig.getListenPort()));
+        } catch (IOException e) {
+            log.error("Problem initializing listen service", e);
+        }
+    }
+
+    private AtomicInteger frameCounter = new AtomicInteger();
+
+    private void startListenServer() {
+        if (listenTask != null && listenTask.isRunning()) {
+            log.debug("Listen task already running");
+            return;
+        }
+
+        listenTask = new Task<Void>() {
+            @Override
+            protected Void call() {
+                log.debug("Running listen task");
+                try {
+                    ByteBuffer recv = ByteBuffer.allocate(1024).order(ByteOrder.LITTLE_ENDIAN);
+
+                    //Listen for events
+                    while (!isCancelled()) {
+                        selector.select();
+                        Set<SelectionKey> selectedKeys = selector.selectedKeys();
+                        Iterator<SelectionKey> iter = selectedKeys.iterator();
+
+                        while (iter.hasNext()) {
+                            SelectionKey key = iter.next();
+                            if (key.isAcceptable()) {
+                                register(selector, socketChannel);
+                            }
+
+                            if (key.isReadable()) {
+                                try {
+                                    SocketChannel client = (SocketChannel) key.channel();
+
+                                    recv.clear();
+                                    int bytesRead = client.read(recv);
+                                    recv.flip();
+
+                                    if (bytesRead == -1) {
+                                        client.close();
+                                        log.debug("Client closed connection. End of stream");
+                                        continue;
+                                    }
+
+                                    while (recv.hasRemaining()) {
+                                        U8g2ByteEvent event = new U8g2ByteEvent(recv.get(), recv.get());
+                                        switch (event.getMessage()) {
+                                            case U8X8_MSG_START:
+                                                break;
+                                            case U8X8_MSG_END:
+                                                break;
+                                            case U8X8_MSG_BYTE_SEND:
+                                                emulator.processByte(event.getValue());
+                                                break;
+                                        }
+                                    }
+                                } catch (IOException e) {
+                                    log.warn(e.getMessage(), e);
+                                    key.cancel();
+                                }
+                            }
+                            iter.remove();
+                        }
+                    }
+                } catch (Exception ex) {
+                    log.error("Error on listen service", ex);
+                } finally {
+                    log.debug("Exiting listen service");
+                }
+                return null;
+            }
+        };
+
+        listenTask.addEventHandler(WorkerStateEvent.ANY, new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                log.debug("Worker Event: {}", event.getEventType());
+            }
+        });
+
+        taskService.execute(listenTask);
+    }
+
+    private static void register(Selector selector, ServerSocketChannel serverSocket) throws IOException {
+        SocketChannel client = serverSocket.accept();
+        client.configureBlocking(false);
+        client.register(selector, SelectionKey.OP_READ);
+        log.debug("Registered accepted client");
+    }
+
+    private void stopListenServer() {
+        if (listenTask != null) {
+            listenTask.cancel();
+            log.debug("Cancel request sent");
+        }
+    }
+
     /**
      * Configure node properties once
      */
     private void setupNodeProperties() {
+        initializeLogView();
+        initSocketServer();
+        initEmulator();
+
+        tbListen.setOnAction(event -> {
+            ToggleButton button = (ToggleButton) event.getSource();
+            if (button.isSelected())
+                startListenServer();
+            else
+                stopListenServer();
+        });
         menuExit.setOnAction(event -> stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST)));
         menuSaveScreen.setOnAction(event -> saveScreenCapture());
         menuLoadSettings.setOnAction(this::openSettingsFileAction);
         btnReset.setOnAction(event -> getContext().getProfileManager().setActiveProfile(new GlcdEmulatorProfile()));
+        btnDonate.setOnAction(event -> Platform.runLater(() -> Bootstrap.getInstance().getHostServices().showDocument("http://www.ibasco.com")));
         btnToolOpenSettings.setOnAction(this::openSettingsFileAction);
         btnOpenScreenshotPath.setOnAction(createOpenDirPathEventHandler("Select screenshot directory", tfScreenshotPath.textProperty()));
         btnOpenProfileDirPath.setOnAction(createOpenDirPathEventHandler("Select profile directory", tfProfileDirPath.textProperty()));
@@ -615,11 +813,71 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         });
     }
 
+    private XBMUtils.XBMData raspberryPiLogo;
+    private GlcdDriver driver;
+    private ST7920Emulator emulator;
+
+    AtomicReference<PixelBuffer> testFrame = new AtomicReference<>();
+
+    private void initEmulator() {
+        try {
+            URI resRaspberryPiLogo = this.getClass().getClassLoader().getResource("images/raspberrypi-small.xbm").toURI();
+            raspberryPiLogo = XBMUtils.decodeXbmFile(new File(resRaspberryPiLogo));
+
+            GlcdConfig config = new GlcdConfig();
+            config.setDisplay(Glcd.ST7920.D_128x64);
+            config.setCommInterface(GlcdCommInterface.SPI_HW_4WIRE_ST7920);
+            config.setRotation(GlcdRotation.ROTATION_NONE);
+            config.setEmulated(true);
+
+            driver = new GlcdDriver(config);
+            emulator = new ST7920Emulator();
+            btnSendTestData.setOnAction(event -> {
+            });
+        } catch (URISyntaxException | XBMDecodeException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    private void drawText() {
+        driver.setFont(GlcdFont.FONT_ASTRAGAL_NBP_TR);
+        driver.drawString(5, 50, "Hello World");
+    }
+
+    private void drawRpiLogo() {
+        driver.setBitmapMode(1);
+        if (raspberryPiLogo != null)
+            driver.drawXBM(40, -5, 95, 74, raspberryPiLogo.getData());
+    }
+
+    private void drawU8G2Logo() {
+        driver.setFontMode(1);
+
+        driver.setFontDirection(0);
+        driver.setFont(GlcdFont.FONT_INB16_MF);
+        driver.drawString(0, 22, "U");
+
+        driver.setFontDirection(1);
+        driver.setFont(GlcdFont.FONT_INB19_MN);
+        driver.drawString(14, 8, "8");
+
+        driver.setFontDirection(0);
+        driver.setFont(GlcdFont.FONT_INB16_MF);
+        driver.drawString(36, 22, "g");
+        driver.drawString(48, 22, "2");
+
+        driver.drawHLine(2, 25, 34);
+        driver.drawHLine(3, 26, 34);
+        driver.drawVLine(32, 22, 12);
+        driver.drawVLine(33, 23, 12);
+    }
+
     private void updateAppBindings(GlcdConfigApp appConfig) {
         if (appConfig == null)
             return;
 
         appBindGroup.clear();
+        appBindGroup.registerBidirectional(glcdScreen.pixelBufferProperty(), displayBuffer);
         appBindGroup.registerUnidirectional(hbGlcd.prefWidthProperty(), Bindings.subtract(scpGlcd.widthProperty(), 3));
         appBindGroup.registerUnidirectional(hbGlcd.prefHeightProperty(), Bindings.subtract(scpGlcd.heightProperty(), 3));
         appBindGroup.registerUnidirectional(bpGlcd.topProperty(), createNodeToBorderPaneBinding(hbPins, appConfig.showPinActivityPaneProperty()));
@@ -641,7 +899,7 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         appBindGroup.registerBidirectional(spnListenPort.getValueFactory().valueProperty(), appConfig.listenPortProperty());
 
         applyThemeBindings();
-        appBindGroup.attach();
+        appBindGroup.bind();
     }
 
     private ObjectBinding<Predicate<GlcdEmulatorProfile>> createFilterObjectBinding() {
@@ -659,7 +917,8 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
     /**
      * Register profile bindings. This can be safely called multiple times in case the reference of the profile model changes
      *
-     * @param profile The {@link GlcdEmulatorProfile} instance to apply the bindings to
+     * @param profile
+     *         The {@link GlcdEmulatorProfile} instance to apply the bindings to
      */
     private void updateProfileBindings(GlcdEmulatorProfile profile) {
         if (profile == null)
@@ -670,8 +929,15 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
 
         //Unidirectional Bindings
         profileBindGroup.registerUnidirectional(lblStatus.textProperty(), Bindings.format("Active Profile = %s", profile.nameProperty()));
-        profileBindGroup.registerUnidirectional(glcdScreen.displayWidthProperty(), profile.displaySizeWidthProperty());
-        profileBindGroup.registerUnidirectional(glcdScreen.displayHeightProperty(), profile.displaySizeHeightProperty());
+
+        profile.displaySizeWidthProperty().addListener((observable, oldValue, newValue) -> {
+            log.debug("Resizing Pixel Buffer: Old Width = {}, New Width = {}", oldValue, newValue);
+            displayBuffer.get().resize(newValue, null);
+        });
+        profile.displaySizeHeightProperty().addListener((observable, oldValue, newValue) -> {
+            log.debug("Resizing Pixel Buffer: Old Height = {}, New Height = {}", oldValue, newValue);
+            displayBuffer.get().resize(null, newValue);
+        });
 
         //Bidirectional Bindings
         profileBindGroup.registerBidirectional(glcdScreen.activePixelColorProperty(), profile.lcdActivePixelColorProperty());
@@ -696,7 +962,7 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
 
         profileBindGroup.registerBidirectional(cbPixelShape.valueProperty(), profile.lcdPixelShapeProperty());
 
-        profileBindGroup.attach();
+        profileBindGroup.bind();
     }
 
     private ObjectBinding<Node> createNodeToBorderPaneBinding(Node showNode, ObservableValue<Boolean> criteriaProperty) {
@@ -710,6 +976,7 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         }, criteriaProperty);
     }
 
+    //<editor-fold desc="Profile Management">
     private String createProfileNameFromSettings() {
         return "Glcd_" +
                 glcdScreen.getDisplayWidth() +
@@ -718,6 +985,47 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
                 "_" +
                 Math.round(getContext().getProfileManager().getActiveProfile().getLcdPixelSize()) +
                 "PX";
+    }
+
+    private void profileLoadSelected() {
+        GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
+        GlcdEmulatorProfile activeProfile = getContext().getProfileManager().getActiveProfile();
+        if (activeProfile != null && activeProfile.equals(selectedProfile))
+            return;
+        if (userYesNoConfirmation("Load Profile '" + selectedProfile.getName() + "'?", selectedProfile.getDescription())) {
+            getContext().getProfileManager().setActiveProfile(selectedProfile);
+        }
+    }
+
+    /**
+     * Check for uncommitted changes in profile list
+     */
+    private void profileCheckModified() {
+        List<GlcdEmulatorProfile> modifiedProfiles = getContext().getProfileManager().findList(GlcdProfileManager.Predicates.modified());
+        if (modifiedProfiles.isEmpty()) {
+            return;
+        }
+        log.debug("Uncommitted profiles: {}", modifiedProfiles);
+        boolean alwaysOnTop = stage.isAlwaysOnTop();
+
+        try {
+            stage.setAlwaysOnTop(false);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "", ButtonType.YES, ButtonType.NO);
+            alert.setTitle("Confirm Save Action");
+            alert.setContentText("You have uncommitted changes present, would you like to save them?");
+            alert.setHeaderText("Save uncommitted changes?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.YES) {
+                for (GlcdEmulatorProfile profile : modifiedProfiles) {
+                    getContext().getProfileManager().save(profile);
+                    log.debug("Saved Profile: '{}' to '{}'", profile.getName(), profile.getFile());
+                }
+            }
+        } finally {
+            stage.setAlwaysOnTop(alwaysOnTop);
+        }
     }
 
     private void profileNewAction(ActionEvent event) {
@@ -746,33 +1054,57 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         }
     }
 
-    private void profileCheckModified() {
-        List<GlcdEmulatorProfile> modifiedProfiles = getContext().getProfileManager().findList(GlcdProfileManager.Predicates.modified());
-        if (modifiedProfiles.isEmpty()) {
-            return;
-        }
-
-        log.debug("Uncommitted profiles: {}", modifiedProfiles);
-
-        boolean alwaysOnTop = stage.isAlwaysOnTop();
-
+    private void profileEditAction(ActionEvent event) {
         try {
-            stage.setAlwaysOnTop(false);
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "", ButtonType.YES, ButtonType.NO);
-            alert.setTitle("Confirm Save Action");
-            alert.setContentText("You have uncommitted changes present, would you like to save them?");
-            alert.setHeaderText("Save uncommitted changes?");
+            GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(this.stage);
+            stage.setTitle("Edit Profile");
+            GlcdEditProfileController controller = new GlcdEditProfileController(stage);
+            Parent root = ResourceUtil.loadFxmlResource("edit-profile-dialog", controller);
+            if (root == null)
+                return;
+            controller.setProfile(selectedProfile);
+            stage.setScene(new Scene(root));
+            applyTheme(appConfig.getThemeId(), stage);
+            controller.onInit();
+            stage.showAndWait();
+        } catch (IOException e) {
+            log.error("Error during edit", e);
+        }
+    }
 
-            Optional<ButtonType> result = alert.showAndWait();
+    private void profileDeleteAction(ActionEvent event) {
+        //GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
+        BooleanProperty deleteProfileInFS = new SimpleBooleanProperty(false);
+        Alert confirmDeleteAlert = createAlertDialogWithCheckbox(Alert.AlertType.CONFIRMATION,
+                "Delete Profile Confirmation",
+                "Are you sure you want to delete the selected profile(s)?",
+                "", "Also delete profile in file-system",
+                deleteProfileInFS::set,
+                ButtonType.YES, ButtonType.NO
+        );
 
-            if (result.isPresent() && result.get() == ButtonType.YES) {
-                for (GlcdEmulatorProfile profile : modifiedProfiles) {
-                    getContext().getProfileManager().save(profile);
-                    log.debug("Saved Profile: '{}' to '{}'", profile.getName(), profile.getFile());
+        Optional<ButtonType> buttonPressed = confirmDeleteAlert.showAndWait();
+        if (buttonPressed.isPresent() && buttonPressed.get().equals(ButtonType.YES)) {
+            for (GlcdEmulatorProfile selectedProfile : tvProfiles.getSelectionModel().getSelectedItems()) {
+                if (deleteProfileInFS.get()) {
+                    log.info("Deleting profile from file system = {}", selectedProfile);
+                    File file = selectedProfile.getFile();
+                    if (file != null && file.isFile() && file.exists()) {
+                        String path = file.getPath();
+                        if (file.delete()) {
+                            log.info("Profile successfully deleted from the file-system = {}", path);
+                        } else {
+                            log.warn("Unable to delete profile '{}' from the file-system", path);
+                        }
+                    }
                 }
+                getContext().getProfileManager().delete(selectedProfile);
+                log.info("Deleted Profile {}", selectedProfile);
             }
-        } finally {
-            stage.setAlwaysOnTop(alwaysOnTop);
         }
     }
 
@@ -802,7 +1134,9 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
             }
         }
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Theme management">
     private void applyThemeBindings() {
         menuThemes.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -850,6 +1184,7 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         //Update selection if applicable
         selectThemeMenuItem(themeId);
     }
+    //</editor-fold>
 
     private File openFileFromDialog(String title, String initDirectory, FileChooser.ExtensionFilter extFilters) {
         FileChooser fileChooser = new FileChooser();
@@ -884,7 +1219,6 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
 
             if (appConfig.isRememberSettingsOnExit()) {
                 getContext().getConfigService().save(appConfig);
-                //getContext().getProfileManager().save();
             }
             return true;
         } catch (IOException e) {
@@ -1012,14 +1346,19 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
             if (!imageFile.getName().endsWith(".png")) {
                 imageFile = new File(imageFile.getAbsolutePath() + ".png");
             }
-            WritableImage wim = new WritableImage((int) glcdScreen.getWidth(), (int) glcdScreen.getHeight());
-            glcdScreen.snapshot(null, wim);
-            try {
-                ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", imageFile);
-                log.info("Saved file to : {}", FilenameUtils.getFullPath(imageFile.getAbsolutePath()));
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
+            File finalImageFile = imageFile;
+            Platform.runLater(() -> {
+                try {
+                    glcdScreen.setWatermarkText(getContext().getProfileManager().getActiveProfile().getName() + " - " + getContext().getProfileManager().getActiveProfile().getDescription());
+                    WritableImage wim = new WritableImage((int) glcdScreen.getWidth(), (int) glcdScreen.getHeight());
+                    glcdScreen.snapshot(null, wim);
+                    ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", finalImageFile);
+                    screenshotTransition.playFromStart();
+                } catch (IOException e) {
+                    log.error("Error encoutnered during screen capture", e);
+                }
+            });
+            log.info("Saved file to : {}", FilenameUtils.getFullPath(imageFile.getAbsolutePath()));
         }
     }
 }

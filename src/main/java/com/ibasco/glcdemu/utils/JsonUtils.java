@@ -4,15 +4,12 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ibasco.glcdemu.adapters.ColorTypeAdapter;
-import com.ibasco.glcdemu.adapters.GlcdEmulatorProfileTypeAdapter;
-import com.ibasco.glcdemu.adapters.ZonedDateTimeAdapter;
+import com.ibasco.glcdemu.utils.json.adapters.ColorTypeAdapter;
+import com.ibasco.glcdemu.utils.json.adapters.ZonedDateTimeAdapter;
 import com.ibasco.glcdemu.annotations.Exclude;
-import com.ibasco.glcdemu.model.GlcdEmulatorProfile;
 import javafx.scene.paint.Color;
 import org.hildan.fxgson.FxGson;
 
-import java.beans.Transient;
 import java.lang.reflect.Type;
 import java.time.ZonedDateTime;
 
