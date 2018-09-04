@@ -5,7 +5,7 @@ import com.ibasco.glcdemu.GlcdController;
 import com.ibasco.glcdemu.GlcdProfileManager;
 import com.ibasco.glcdemu.constants.Common;
 import com.ibasco.glcdemu.controls.GlcdScreen;
-import com.ibasco.glcdemu.emulators.st7920.ST7920Emulator;
+import com.ibasco.glcdemu.emulator.st7920.ST7920Emulator;
 import com.ibasco.glcdemu.enums.PixelShape;
 import com.ibasco.glcdemu.model.GlcdConfigApp;
 import com.ibasco.glcdemu.model.GlcdEmulatorProfile;
