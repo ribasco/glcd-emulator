@@ -4,13 +4,13 @@
     <properties id="javafx-properties">
       <options>
         <option name="alias" value="" />
-        <option name="appClass" value="sample.Main" />
-        <option name="description" value="A glcd emulator" />
+        <option name="appClass" value="com.ibasco.glcdemu.Bootstrap" />
+        <option name="description" value="A GLCD emulator for u8g2 library" />
         <option name="enabledSigning" value="true" />
         <option name="htmlPlaceholderId" value="" />
         <option name="keystore" value="" />
         <option name="title" value="GLCD Emulator" />
-        <option name="vendor" value="Rafael Ibasco" />
+        <option name="vendor" value="Rafael Luis Ibasco" />
         <option name="version" value="1.0" />
       </options>
     </properties>
