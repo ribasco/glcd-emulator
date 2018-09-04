@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="GlcdEmulator">
-    <output-path>$PROJECT_DIR$/out/artifacts/GlcdEmulator</output-path>
+  <artifact type="javafx" build-on-make="true" name="glcd-emulator-gui">
+    <output-path>$PROJECT_DIR$/out/artifacts/glcd_emulator_gui</output-path>
     <properties id="javafx-properties">
       <options>
         <option name="alias" value="" />
