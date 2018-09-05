@@ -89,3 +89,4 @@ hs_err_pid*
 /screenshots/
 /glcd-emulator.iml
 /settings.json
+/logs/*
