@@ -6,6 +6,11 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Objects;
 
+/**
+ * Base class for emulators providing basic functionality
+ *
+ * @author Rafael Ibasco
+ */
 abstract public class GlcdEmulatorBase implements GlcdEmulator {
 
     private ObjectProperty<PixelBuffer> buffer = new SimpleObjectProperty<>();
@@ -26,5 +31,12 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
     @Override
     public void setBuffer(PixelBuffer buffer) {
         this.buffer.set(buffer);
+    }
+
+    @Override
+    public void reset() {
+        if (buffer.get() != null) {
+            buffer.get().clear();
+        }
     }
 }

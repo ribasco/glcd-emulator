@@ -21,6 +21,7 @@ import javafx.animation.Interpolator;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -43,10 +44,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.*;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
@@ -64,6 +62,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -88,6 +87,12 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
 
     @FXML
     public MenuItem menuSaveSettings;
+
+    @FXML
+    public Pane sizePane;
+
+    @FXML
+    public AnchorPane apProfiles;
 
     @FXML
     private MenuItem menuSaveScreen;
@@ -591,7 +596,26 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         service.listenPortProperty().bind(appConfig.listenPortProperty());
         service.setExecutor(taskService);
         service.setEmulator(emulator);
-        service.connectedProperty().addListener((observable, oldValue, newValue) -> tbListen.setSelected(newValue));
+        service.listeningProperty().addListener((observable, oldValue, newValue) -> {
+            tbListen.setSelected(newValue);
+            sizePane.setDisable(newValue);
+            apProfiles.setDisable(newValue);
+        });
+        service.connectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                log.debug("Client Connected: {}", newValue);
+            }
+        });
+
+        StringBinding statusBinding = Bindings.createStringBinding(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return " Service: " + (service.isListening() ? "Listening" : "Not Listening") + ", Client: " + (service.isConnected() ? "Connected" : "Disconnected");
+            }
+        }, service.listeningProperty(), service.connectedProperty());
+
+        lblStatus.textProperty().bind(statusBinding);
     }
 
     private void startListenServer() {
@@ -710,7 +734,8 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
     }
 
     /**
-     * Register profile bindings. This can be safely called multiple times in case the reference of the profile model changes
+     * Register profile bindings. This can be safely called multiple times in case the reference of the profile model
+     * changes
      *
      * @param profile
      *         The {@link GlcdEmulatorProfile} instance to apply the bindings to
@@ -723,8 +748,6 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
         profileBindGroup.clear();
 
         //Unidirectional Bindings
-        profileBindGroup.registerUnidirectional(lblStatus.textProperty(), Bindings.format("Active Profile = %s", profile.nameProperty()));
-
         profile.displaySizeWidthProperty().addListener((observable, oldValue, newValue) -> {
             log.debug("Resizing Pixel Buffer: Old Width = {}, New Width = {}", oldValue, newValue);
             displayBuffer.get().resize(newValue, null);
@@ -733,6 +756,17 @@ public class GlcdEmulatorController extends GlcdController implements Initializa
             log.debug("Resizing Pixel Buffer: Old Height = {}, New Height = {}", oldValue, newValue);
             displayBuffer.get().resize(null, newValue);
         });
+
+        StringBinding displaySizeStatus = Bindings.createStringBinding(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                int width = profile.getDisplaySizeWidth();
+                int height = profile.getDisplaySizeHeight();
+                return String.valueOf(width) + " x " + String.valueOf(height);
+            }
+        }, profile.displaySizeWidthProperty(), profile.displaySizeHeightProperty());
+
+        profileBindGroup.registerUnidirectional(lblDisplaySize.textProperty(), displaySizeStatus);
 
         //Bidirectional Bindings
         profileBindGroup.registerBidirectional(glcdScreen.activePixelColorProperty(), profile.lcdActivePixelColorProperty());

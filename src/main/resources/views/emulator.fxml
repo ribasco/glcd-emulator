@@ -143,7 +143,8 @@
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font></Label>
-                                    <Pane layoutX="606.0" layoutY="40.0" prefHeight="39.0" prefWidth="214.0">
+                                     <Pane fx:id="sizePane" layoutX="606.0" layoutY="40.0" prefHeight="39.0"
+                                           prefWidth="214.0">
                                        <children>
                                           <Label layoutX="100.0" layoutY="11.0" text="x" />
                                           <Spinner fx:id="spnDisplayWidth" editable="true" layoutY="7.0" prefHeight="25.0" prefWidth="90.0" />
@@ -201,7 +202,8 @@
                       </Tab>
                         <Tab text="Profiles">
                           <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                              <AnchorPane fx:id="apProfiles" minHeight="0.0" minWidth="0.0" prefHeight="180.0"
+                                          prefWidth="200.0">
                                  <children>
                                     <GridPane AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <columnConstraints>
@@ -253,7 +255,7 @@
                               </AnchorPane>
                           </content>
                         </Tab>
-                        <Tab text="Log Activity">
+                        <Tab disable="true" text="Log Activity">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -278,12 +280,12 @@
            <VBox.margin>
                <Insets left="10.0" right="10.0" />
            </VBox.margin>
-           <Label fx:id="lblStatusHeader" text="Connection Status: ">
+           <Label fx:id="lblStatusHeader" text="Status:">
               <font>
                   <Font name="System Bold" size="12.0" />
               </font>
            </Label>
-           <Label fx:id="lblStatus" text="Not Connected" />
+           <Label fx:id="lblStatus"/>
            <Pane prefHeight="30.0" prefWidth="300.0" HBox.hgrow="ALWAYS" />
            <Label fx:id="lblDisplaySizeHeader" text="Display Size: ">
               <font>
