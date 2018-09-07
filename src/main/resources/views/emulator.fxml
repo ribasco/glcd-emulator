@@ -12,14 +12,12 @@
 <?import javafx.scene.text.*?>
 <VBox fx:id="vbRoot" minHeight="726.0" minWidth="1119.0" prefHeight="726.0" prefWidth="1119.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemu.controllers.GlcdEmulatorController">
    <children>
-      <MenuBar fx:id="mbMain">
+       <MenuBar fx:id="mbMain" VBox.vgrow="ALWAYS">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem fx:id="menuLoadSettings" text="Open Settings">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator></MenuItem>
+                <MenuItem fx:id="menuEmulatorControl" mnemonicParsing="false" text="Start Emulator"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
                   <MenuItem fx:id="menuSaveSettings" mnemonicParsing="false" text="Save Settings">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -45,8 +43,16 @@
             <Menu mnemonicParsing="false" text="View">
               <items>
                   <CheckMenuItem fx:id="menuAlwaysOnTop" mnemonicParsing="false" text="Always on Top" />
-                  <CheckMenuItem fx:id="menuCompactMode" mnemonicParsing="false" text="Compact Mode"/>
-                  <MenuItem fx:id="menuFitScreenToWindow" mnemonicParsing="false" text="Fit Window to Screen" />
+                  <CheckMenuItem fx:id="menuShowToolbar" mnemonicParsing="false" text="Show Toolbar">
+                      <accelerator>
+                          <KeyCodeCombination alt="UP" code="H" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                      </accelerator>
+                  </CheckMenuItem>
+                  <MenuItem fx:id="menuFitScreenToWindow" mnemonicParsing="false" text="Fit Window to Screen">
+                      <accelerator>
+                          <KeyCodeCombination alt="UP" code="T" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                      </accelerator>
+                  </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
                 <MenuItem fx:id="menuOpenFontBrowser" mnemonicParsing="false" text="Font Browser" />
                   <SeparatorMenuItem mnemonicParsing="false" />
@@ -79,22 +85,20 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ToolBar fx:id="tbMain" prefHeight="26.0" prefWidth="1119.0">
+       <ToolBar fx:id="tbMain" prefHeight="26.0" prefWidth="1119.0" VBox.vgrow="ALWAYS">
         <items>
             <Button fx:id="btnToolBarSave" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Save Settings" textAlignment="CENTER" wrapText="true">
                <graphic>
                   <MaterialDesignIconView glyphName="CONTENT_SAVE" size="20" />
                </graphic></Button>
-          <Button fx:id="btnToolOpenSettings" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Save Capture" textAlignment="CENTER" wrapText="true">
-               <graphic>
-                  <FontAwesomeIconView glyphName="FOLDER_OPEN_ALT" size="20" />
-               </graphic></Button>
             <Button fx:id="btnFitScreenToWindow" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="29.0" prefWidth="31.0" text="Fit to Window" textAlignment="CENTER" wrapText="true">
                <graphic>
-                  <FontAwesomeIconView glyphName="WINDOW_MAXIMIZE" size="20" />
+                   <MaterialDesignIconView glyphName="WINDOW_MAXIMIZE" size="20"/>
                </graphic></Button>
             <Pane prefHeight="28.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
-            <ToggleButton fx:id="tbListen" mnemonicParsing="false" prefHeight="29.0" prefWidth="110.0" text="START"/>
+            <ToggleButton id="toggle-button" fx:id="tbListen"
+                          accessibleHelp="Toggle to start listening for remote connections" mnemonicParsing="false"
+                          prefHeight="29.0" prefWidth="110.0" text="START"/>
             <Button fx:id="btnDonate" mnemonicParsing="false" prefHeight="29.0" prefWidth="113.0" text="DONATE">
                <graphic>
                   <FontAwesomeIconView glyphName="PAYPAL" size="16" />
@@ -142,7 +146,8 @@
                                     <Label layoutX="16.0" layoutY="66.0" text="Active Pixel: ">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
-                                       </font></Label>
+                                       </font>
+                                    </Label>
                                      <Pane fx:id="sizePane" layoutX="606.0" layoutY="40.0" prefHeight="39.0"
                                            prefWidth="214.0">
                                        <children>
@@ -167,17 +172,20 @@
                                     <Label layoutX="16.0" layoutY="124.0" text="Backlight: ">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
-                                       </font></Label>
+                                       </font>
+                                    </Label>
                                     <ColorPicker fx:id="cpBacklight" layoutX="16.0" layoutY="151.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Backlight Color" />
                                     <Label layoutX="12.0" layoutY="11.0" text="Inactive Pixel: ">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
-                                       </font></Label>
+                                       </font>
+                                    </Label>
                                     <Slider fx:id="slContrast" blockIncrement="0.5" layoutX="216.0" layoutY="122.0" majorTickUnit="20.0" minorTickCount="5" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="50.0" />
                                     <Label layoutX="216.0" layoutY="103.0" text="Contrast:">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
-                                       </font></Label>
+                                       </font>
+                                    </Label>
                                     <Separator layoutX="588.0" layoutY="11.0" orientation="VERTICAL" prefHeight="183.0" prefWidth="6.0" />
                                     <Slider fx:id="slPixelSpacing" blockIncrement="0.1" layoutX="400.0" layoutY="34.0" majorTickUnit="1.0" max="10.0" minorTickCount="1" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="1.0" />
                                     <Label layoutX="400.0" layoutY="11.0" text="Pixel Spacing:">
@@ -195,7 +203,8 @@
                                     <Label layoutX="605.0" layoutY="103.0" text="Pixel Shape:">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
-                                       </font></Label>
+                                       </font>
+                                    </Label>
                                  </children>
                               </AnchorPane>
                         </content>
@@ -255,7 +264,7 @@
                               </AnchorPane>
                           </content>
                         </Tab>
-                        <Tab disable="true" text="Log Activity">
+                        <Tab disable="true" text="Log">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
