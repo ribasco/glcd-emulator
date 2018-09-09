@@ -1,7 +1,7 @@
 package com.ibasco.glcdemu.utils;
 
-import com.ibasco.glcdemu.GlcdController;
 import com.ibasco.glcdemu.Bootstrap;
+import com.ibasco.glcdemu.GlcdController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
@@ -10,16 +10,21 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicReference;
 
-//TODO: Consider refactoring this, should we have a single accessible registry for controllers?
+/**
+ * Helper class for loading application resource files (e.g. fxml stylesheets etc). This class is NOT thread-safe
+ *
+ * @author Rafael Ibasco
+ */
 @SuppressWarnings("Duplicates")
 public class ResourceUtil {
 
-    private static FXMLLoader loader;
-
     private static Callback<Class<?>, Object> controllerFactory;
 
-    private static GlcdController controller;
+    private static AtomicReference<GlcdController> lastController = new AtomicReference<>();
+
+    private static AtomicReference<Parent> lastRootNode = new AtomicReference<>();
 
     public static URL getResource(String resourceName) {
         return Bootstrap.class.getClassLoader().getResource(resourceName);
@@ -33,57 +38,75 @@ public class ResourceUtil {
         return getResource(String.format("views/%s.fxml", resourceName));
     }
 
-    public static Parent loadFxmlResource(String resourceName) throws IOException {
-        return loadFxmlResource(resourceName, (GlcdController) null);
+
+    /**
+     * <p>Loads an FXML resource file with the controller specified. Using this method requires that you already have an fx:controller attribute assigned for the FXML file you are loading.</p>
+     *
+     * @param resourceName
+     *         The FXML resource name (excluding the extension)
+     * @param <T>
+     *         Any subclass of {@link Parent} node
+     *
+     * @return The {@link javafx.scene.Node} or {@link Parent} root instance of the view
+     */
+    public static <T extends Parent> T loadFxmlResource(String resourceName) throws IOException {
+        return loadFxmlResource(resourceName, null);
     }
 
-    public static Parent loadFxmlResource(String resourceName, Stage stage) throws IOException {
+    /**
+     * <p>Loads an FXML resource file with the controller specified. This assumes that no fx:controller attribute has been explicitly set on the FXML resource, otherwise an exception will be thrown.</p>
+     *
+     * @param resourceName
+     *         The FXML resource name (excluding the extension)
+     * @param controller
+     *         The {@link GlcdController} wthat will be assigned for the resource
+     * @param <T>
+     *         Any subclass of {@link Parent} node
+     *
+     * @return The {@link javafx.scene.Node} or {@link Parent} root instance of the view
+     */
+    public static <T extends Parent> T loadFxmlResource(String resourceName, GlcdController controller) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        T node = null;
         try {
             URL viewUrl = getFxmlResource(resourceName);
             if (viewUrl == null)
                 return null;
-            FXMLLoader loader = getLoader(stage);
+            loader.setClassLoader(ResourceUtil.class.getClassLoader());
             loader.setLocation(viewUrl);
             loader.setRoot(null);
-            return loader.load();
+            if (controller != null)
+                loader.setController(controller);
+            node = loader.load();
+            return node;
         } finally {
-            controller = loader.getController();
+            lastController.set(loader.getController());
+            lastRootNode.set(node);
         }
     }
 
-    public static Parent loadFxmlResource(String resourceName, GlcdController controller) throws IOException {
-        try {
-            URL viewUrl = getFxmlResource(resourceName);
-            if (viewUrl == null)
-                return null;
-            FXMLLoader loader = getLoader(controller.getStage());
-            loader.setLocation(viewUrl);
-            loader.setRoot(null);
-            loader.setController(controller);
-            return loader.load();
-        } finally {
-            controller = loader.getController();
-        }
+    /**
+     * Get the last {@link Parent} node returned by {@link #loadFxmlResource}.
+     *
+     * @return The last {@link Parent} node returned
+     */
+    public static Parent getLastRootNode() {
+        return lastRootNode.get();
     }
 
+    /**
+     * Get the last {@link GlcdController} instance returned by {@link #loadFxmlResource}.
+     *
+     * @param <T>
+     *         Any valid subclass of {@link GlcdController}
+     *
+     * @return An instance of {@link GlcdController}
+     */
     @SuppressWarnings("unchecked")
     public static <T extends GlcdController> T getLastController() {
-        if (controller == null)
+        if (lastController == null)
             return null;
-        return (T) controller;
-    }
-
-    public static FXMLLoader getLoader() {
-        return getLoader(null);
-    }
-
-    public static FXMLLoader getLoader(Stage stage) {
-        if (loader == null) {
-            loader = new FXMLLoader();
-            loader.setControllerFactory(getControllerFactory(stage));
-            loader.setClassLoader(ResourceUtil.class.getClassLoader());
-        }
-        return loader;
+        return (T) lastController.get();
     }
 
     private static Callback<Class<?>, Object> getControllerFactory(Stage stage) {

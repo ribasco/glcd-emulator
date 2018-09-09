@@ -4,9 +4,11 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ibasco.glcdemu.utils.json.adapters.ColorTypeAdapter;
-import com.ibasco.glcdemu.utils.json.adapters.ZonedDateTimeAdapter;
 import com.ibasco.glcdemu.annotations.Exclude;
+import com.ibasco.glcdemu.model.FontCacheEntry;
+import com.ibasco.glcdemu.utils.json.adapters.ColorTypeAdapter;
+import com.ibasco.glcdemu.utils.json.adapters.FontCacheEntryAdapter;
+import com.ibasco.glcdemu.utils.json.adapters.ZonedDateTimeAdapter;
 import javafx.scene.paint.Color;
 import org.hildan.fxgson.FxGson;
 
@@ -41,7 +43,7 @@ public class JsonUtils {
         builder.setPrettyPrinting();
         builder.registerTypeAdapter(Color.class, new ColorTypeAdapter());
         builder.registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter());
-        //builder.registerTypeAdapter(GlcdEmulatorProfile.class, new GlcdEmulatorProfileTypeAdapter());
+        builder.registerTypeAdapter(FontCacheEntry.class, new FontCacheEntryAdapter());
         builder.addSerializationExclusionStrategy(excludeAnnotation);
         builder.addDeserializationExclusionStrategy(excludeAnnotation);
         gson = builder.create();

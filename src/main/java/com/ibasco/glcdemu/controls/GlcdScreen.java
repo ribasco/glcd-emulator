@@ -4,10 +4,10 @@ import com.ibasco.glcdemu.enums.PixelShape;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.glcdemu.utils.UIUtil;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.*;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlurType;
@@ -23,9 +23,8 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
-@SuppressWarnings({"unused", "UnnecessaryLocalVariable"})
+@SuppressWarnings({"unused", "UnnecessaryLocalVariable", "WeakerAccess"})
 public class GlcdScreen extends Canvas {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdScreen.class);
@@ -37,17 +36,17 @@ public class GlcdScreen extends Canvas {
 
     private ReadOnlyIntegerWrapper displayHeight = new ReadOnlyIntegerWrapper();
 
-    private ObjectProperty<Color> inactivePixelColor = new SimpleObjectProperty<>(Color.web("#000000", 0.5f));
+    private ObjectProperty<Color> inactivePixelColor = new SimpleObjectProperty<>(Color.web("#000000", 0.0598f));
 
     private ObjectProperty<Color> activePixelColor = new SimpleObjectProperty<>(Color.web("#000000", 1.0));
 
-    private ObjectProperty<Color> backlightColor = new SimpleObjectProperty<>(Color.web("#BDD630", 1.0));
+    private ObjectProperty<Color> backlightColor = new SimpleObjectProperty<>(Color.web("#a5f242", 1.0));
 
     private FloatProperty contrast = new SimpleFloatProperty(0.5f);
 
-    private DoubleProperty spacing = new SimpleDoubleProperty(1.0d);
+    private DoubleProperty spacing = new SimpleDoubleProperty(0.0f);
 
-    private DoubleProperty margin = new SimpleDoubleProperty(20.0d);
+    private DoubleProperty margin = new SimpleDoubleProperty(15.0d);
 
     private BooleanProperty invalidatedDisplay = new SimpleBooleanProperty(false);
 
@@ -59,7 +58,7 @@ public class GlcdScreen extends Canvas {
 
     private NumberBinding heightBinding = createCanvasResizeBinding(displayHeight);
 
-    private ObjectProperty<PixelBuffer> pixelBuffer = new SimpleObjectProperty<>();
+    private ObjectProperty<PixelBuffer> buffer = new SimpleObjectProperty<>();
 
     private BooleanProperty dropShadowVisible = new SimpleBooleanProperty(true);
 
@@ -68,6 +67,12 @@ public class GlcdScreen extends Canvas {
     private ObjectProperty<Font> watermarkFont = new SimpleObjectProperty<>(new Font("Verdana", 14.0));
 
     private ObjectProperty<Color> watermarkColor = new SimpleObjectProperty<>(Color.color(0, 0, 0, 0.20d));
+
+    private BooleanProperty showFPS = new SimpleBooleanProperty(false);
+
+    private BooleanProperty autoStart = new SimpleBooleanProperty(false);
+
+    private BooleanProperty gradientBacklight = new SimpleBooleanProperty(true);
     //</editor-fold>
 
     private DropShadow displayDropShadow;
@@ -76,22 +81,40 @@ public class GlcdScreen extends Canvas {
 
     private AtomicBoolean showWatermark = new AtomicBoolean(false);
 
-    private AnimationTimer animationTimer = new AnimationTimer() {
+    private Renderer renderer;
 
-        GraphicsContext gc = getGraphicsContext2D();
+    private final class Renderer extends AnimationTimer {
 
-        AtomicInteger fpsCounter = new AtomicInteger(0);
+        private GraphicsContext gc = getGraphicsContext2D();
+
+        private AtomicInteger fpsCounter = new AtomicInteger(0);
 
         private long prevMillis = 0;
 
         private static final int interval = 1000000000;
 
-        private Font fpsFont = new Font("Verdana", 24);
+        private Font fpsFont = new Font("Verdana", 18);
 
         private int fps = 0;
 
+        private BooleanProperty running = new SimpleBooleanProperty(false);
+
+        @Override
+        public void start() {
+            super.start();
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            running.set(false);
+        }
+
         @Override
         public void handle(long now) {
+            if (!running.get())
+                running.set(true);
+
             if (displayWidth.get() <= 0 || displayHeight.get() <= 0)
                 return;
 
@@ -102,34 +125,36 @@ public class GlcdScreen extends Canvas {
                 fps = fpsCounter.getAndSet(0);
             }
 
-            /*gc.setFont(fpsFont);
-            gc.setFill(Color.BLACK);
-            gc.setStroke(Color.WHITE);
-            gc.setLineWidth(0.8);
-            String text = "FPS: " + String.valueOf(fps);
-            double height = UIUtil.computeStringHeight(text, fpsFont);
-            gc.strokeText(text, margin.get() + pixelSize.get(), height + margin.get());*/
-            fpsCounter.incrementAndGet();
+            if (isShowFPS()) {
+                gc.setFont(fpsFont);
+                gc.setFill(backlightColor.get().invert());
+                String text = "FPS: " + String.valueOf(fps);
+                double height = UIUtil.computeStringHeight(text, fpsFont);
+                gc.fillText(text, margin.get() + pixelSize.get(), height + margin.get());
+                fpsCounter.incrementAndGet();
+            }
         }
-    };
+
+        private boolean isRunning() {
+            return running.get();
+        }
+
+        public BooleanProperty runningProperty() {
+            return running;
+        }
+
+        private void setRunning(boolean running) {
+            this.running.set(running);
+        }
+    }
 
     //<editor-fold desc="Constructor">
     public GlcdScreen() {
-        setStyle("-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+        this(false);
+    }
 
-        //Bind the display width and height as soon as the pixel buffer has been set
-        pixelBufferProperty().addListener((observable, oldValue, newValue) -> {
-            log.debug("Pixel Buffer changed from {} to {}", oldValue, newValue);
-            if (newValue != null) {
-                displayWidth.bind(newValue.widthProperty());
-                displayHeight.bind(newValue.heightProperty());
-                //Bind the canvas width and height properties to automatically
-                //adjust when dependent properties have changed
-                widthProperty().bind(widthBinding);
-                heightProperty().bind(heightBinding);
-                draw();
-            }
-        });
+    public GlcdScreen(boolean autoStart) {
+        setStyle("-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
 
         contrast.addListener((observable, oldValue, newValue) -> {
             float value = (float) newValue / 100f;
@@ -144,18 +169,77 @@ public class GlcdScreen extends Canvas {
         displayDropShadow.setRadius(35.0);
 
         effectProperty().bind(Bindings.createObjectBinding((Callable<Effect>) () -> isDropShadowVisible() ? displayDropShadow : null, dropShadowVisible));
+
+        renderer = new Renderer();
+
+        if (autoStart)
+            renderer.start();
+        else
+            Platform.runLater(this::draw);
+
+        //Bind the display width and height as soon as the pixel buffer is made available
+        bufferProperty().addListener((observable, oldBuffer, newBuffer) -> {
+           /*if (oldBuffer != null && newBuffer == null) {
+                displayWidth.unbind();
+                displayHeight.unbind();
+                widthProperty().unbind();
+                heightProperty().unbind();
+            }*/
+
+            if (newBuffer != null) {
+                displayWidth.bind(newBuffer.widthProperty());
+                displayHeight.bind(newBuffer.heightProperty());
+                //Bind the canvas width and height properties to automatically
+                //adjust when dependent properties have changed
+                widthProperty().bind(widthBinding);
+                heightProperty().bind(heightBinding);
+                draw();
+            }
+        });
     }
     //</editor-fold>
-
-    public void play() {
-        animationTimer.start();
+    public void start() {
+        if (!renderer.isRunning())
+            renderer.start();
     }
 
     public void stop() {
-        animationTimer.stop();
+        renderer.stop();
     }
 
     //<editor-fold desc="Property Getter/Setters">
+    public boolean isGradientBacklight() {
+        return gradientBacklight.get();
+    }
+
+    public BooleanProperty gradientBacklightProperty() {
+        return gradientBacklight;
+    }
+
+    public void setGradientBacklight(boolean gradientBacklight) {
+        this.gradientBacklight.set(gradientBacklight);
+    }
+
+    private boolean isRunning() {
+        return this.renderer.running.get();
+    }
+
+    public ReadOnlyBooleanProperty runningProperty() {
+        return ReadOnlyBooleanProperty.readOnlyBooleanProperty(this.renderer.running);
+    }
+
+    public boolean isShowFPS() {
+        return showFPS.get();
+    }
+
+    public BooleanProperty showFPSProperty() {
+        return showFPS;
+    }
+
+    public void setShowFPS(boolean showFPS) {
+        this.showFPS.set(showFPS);
+    }
+
     public Color getWatermarkColor() {
         return watermarkColor.get();
     }
@@ -204,16 +288,16 @@ public class GlcdScreen extends Canvas {
         this.dropShadowVisible.set(dropShadowVisible);
     }
 
-    public PixelBuffer getPixelBuffer() {
-        return pixelBuffer.get();
+    public PixelBuffer getBuffer() {
+        return buffer.get();
     }
 
-    public ObjectProperty<PixelBuffer> pixelBufferProperty() {
-        return pixelBuffer;
+    public ObjectProperty<PixelBuffer> bufferProperty() {
+        return buffer;
     }
 
-    public void setPixelBuffer(PixelBuffer pixelBuffer) {
-        this.pixelBuffer.set(pixelBuffer);
+    public void setBuffer(PixelBuffer pixelBuffer) {
+        this.buffer.set(pixelBuffer);
     }
 
     public PixelShape getPixelShape() {
@@ -354,23 +438,33 @@ public class GlcdScreen extends Canvas {
     }
     //</editor-fold>
 
-    @Override
-    public WritableImage snapshot(SnapshotParameters params, WritableImage image) {
+    public WritableImage screenshot(WritableImage image) {
         boolean prev = dropShadowVisible.get();
         try {
             showWatermark.set(true);
             setDropShadowVisible(false);
             draw(); //re-draw to make sure that the screen dimensions are up to date
-            return super.snapshot(params, image);
+            return super.snapshot(null, image);
         } finally {
             setDropShadowVisible(prev);
         }
     }
 
     /**
+     * Method to re-draw the canvas. This is a no-op if the internal animation timer is already running.
+     */
+    public void refresh() {
+        if (!renderer.isRunning())
+            draw();
+    }
+
+    /**
      * Reads the internal graphics buffer and draws it to the dot-matrix display screen
      */
     private void draw() {
+        if (buffer.get() == null)
+            return;
+
         GraphicsContext gc = getGraphicsContext2D();
 
         double lcdWidth = displayWidth.get();
@@ -386,23 +480,32 @@ public class GlcdScreen extends Canvas {
         gc.clearRect(0, 0, getWidth(), getHeight());
 
         //Set backlight color
-        gc.setFill(createGradientBacklightColor());
+        if (isGradientBacklight()) {
+            gc.setFill(createGradientBacklightColor());
+        } else {
+            gc.setFill(getBacklightColor());
+        }
         gc.fillRect(0, 0, getWidth(), getHeight());
 
         //Set inactive pixel color
         gc.setFill(computeInactivePixelColor());
 
+        //note x and y represents the actual pixel coordinates of the canvas
+        //while pixelX and pixelY represents the coordinates of the GLCD
         double x = spacing + margin, y = spacing + margin;
         for (int pixelY = 0; pixelY < lcdHeight; pixelY++) {
+
+            //process one column at a time
             for (int pixelX = 0; pixelX < lcdWidth; pixelX++) {
-                int pixelState = pixelBuffer.get().read(pixelX, pixelY);
-                if (pixelState == -1) {
+                int pixelState = buffer.get().read(pixelX, pixelY);
+                if (pixelState == -1)
                     pixelState = 0;
-                }
                 drawPixel(x, y, pixelState);
                 x += pixelSize + spacing;
             }
-            x = spacing + margin; //reset x
+
+            //reset x including the space and margin properties
+            x = spacing + margin;
             y += pixelSize + spacing;
         }
 
@@ -449,7 +552,6 @@ public class GlcdScreen extends Canvas {
         } else {
             gc.fillRect(x, y, pixelSize.get(), pixelSize.get());
         }
-
     }
 
     private Color changeColorOpacity(Property<Color> colorProperty, double opacity) {
@@ -462,34 +564,6 @@ public class GlcdScreen extends Canvas {
         double opacity = contrast.get() / 100.0f;
         return Color.color(baseInactivePixelColor.getRed(), baseInactivePixelColor.getGreen(), baseInactivePixelColor.getBlue(), opacity);
     }
-
-/*    private void drawPixels() {
-        GraphicsContext gc = getGraphicsContext2D();
-        int pSize = (int) pixelSize.get();
-        int width = displayWidth.get();
-        int height = displayHeight.get();
-
-        for (int y = 0; y < 32; y++) {
-            int pixelIndex = 0;
-
-            for (int x = 0; x < 16; x++) {
-                short data = buffer[y][x];
-
-                //Start from MSB to LSB
-                for (int bitIndex = 16; bitIndex > 0; bitIndex--) {
-                    int bit = data & (1 << bitIndex);
-                    int pxOffset = (x > 7) ? -128 : 0;
-                    int pyOffset = (x > 7) ? 32 : 0;
-                    int pX = (pixelIndex + pxOffset) * pSize;
-                    int pY = (pyOffset + y) * pSize;
-
-                    gc.setFill(bit > 0 ? activePixelColor.get() : inactivePixelColor.get());
-                    gc.fillRect(pX, pY, pSize - 1, pSize - 1);
-                    pixelIndex++;
-                }
-            }
-        }
-    }*/
 
     /**
      * <p>Creates a {@link NumberBinding} binding to calculate the display's width and height based on the pixel size, spacing and margin properties.</p>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <BorderPane VBox.vgrow="ALWAYS">
+            <VBox.margin>
+                <Insets right="3.0"/>
+            </VBox.margin>
+            <center>
+                <JFXListView fx:id="lvFonts"/>
+            </center>
+        </BorderPane>
+    </children>
+</VBox>

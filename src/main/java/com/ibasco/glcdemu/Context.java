@@ -1,13 +1,15 @@
 package com.ibasco.glcdemu;
 
 import com.ibasco.glcdemu.model.GlcdConfigApp;
-import javafx.beans.property.ObjectProperty;
+import javafx.application.HostServices;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.ListView;
+import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 
 import static com.ibasco.glcdemu.constants.Common.APP_CONFIG_PATH;
 
@@ -28,7 +30,14 @@ public final class Context {
 
     private GlcdProfileManager profileService;
 
-    private Context() {}
+    private ExecutorService taskExecutor;
+
+    private ThemeManager themeManager;
+
+    private HostServices hostServices;
+
+    private Context() {
+    }
 
     public final GlcdConfigApp getAppConfig() {
         return appConfigProperty().get();
@@ -56,7 +65,38 @@ public final class Context {
         return configService;
     }
 
+    public static ExecutorService getTaskExecutor() {
+        if (getInstance().taskExecutor == null) {
+            final ForkJoinPool.ForkJoinWorkerThreadFactory forkThreadFactory = pool -> {
+                final ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+                worker.setName("glcd-task-" + worker.getPoolIndex());
+                return worker;
+            };
+            getInstance().taskExecutor = new ForkJoinPool(Runtime.getRuntime().availableProcessors(), forkThreadFactory, null, true);
+        }
+        return getInstance().taskExecutor;
+    }
+
+    public HostServices getHostServices() {
+        return getInstance().hostServices;
+    }
+
+    public ThemeManager getThemeManager() {
+        if (themeManager == null) {
+            themeManager = new ThemeManager();
+        }
+        return themeManager;
+    }
+
+    public static Stage getPrimaryStage() {
+        return Stages.getPrimaryStage();
+    }
+
     public static Context getInstance() {
         return InstanceHolder.INSTANCE;
+    }
+
+    void setHostServices(HostServices services) {
+        this.hostServices = services;
     }
 }

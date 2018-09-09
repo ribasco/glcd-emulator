@@ -6,7 +6,8 @@ import javafx.beans.property.*;
 
 import java.io.File;
 
-import static com.ibasco.glcdemu.GlcdProfileManager.*;
+import static com.ibasco.glcdemu.GlcdProfileManager.DEFAULT_PROFILE_DIR_PATH;
+import static com.ibasco.glcdemu.GlcdProfileManager.DEFAULT_PROFILE_ID;
 
 public class GlcdConfigApp extends GlcdConfig {
 
@@ -18,6 +19,8 @@ public class GlcdConfigApp extends GlcdConfig {
     private IntegerProperty lastGeneratedProfileId = new SimpleIntegerProperty(DEFAULT_PROFILE_ID);
 
     private BooleanProperty alwaysOnTop = new SimpleBooleanProperty(false);
+
+    private BooleanProperty toolbarVisible = new SimpleBooleanProperty(true);
 
     private BooleanProperty showSettingsPane = new SimpleBooleanProperty(false);
 
@@ -47,15 +50,29 @@ public class GlcdConfigApp extends GlcdConfig {
 
     private SimpleBooleanProperty autoFitWindowToScreen = new SimpleBooleanProperty(false);
 
-    private StringProperty screenshotDirPath = new SimpleStringProperty(System.getProperty("user.dir") + File.separator + "screenshots");
+    private StringProperty screenshotDirPath = new SimpleStringProperty(Common.USER_DIR + File.separator + "screenshots");
 
-    private StringProperty themeId = new SimpleStringProperty("menuThemeDefault");
+    private BooleanProperty runEmulatorAtStartup = new SimpleBooleanProperty(false);
+
+    private StringProperty themeId = new SimpleStringProperty(Common.THEME_DEFAULT_DARK);
     //</editor-fold>
 
     public GlcdConfigApp() {
     }
 
     //<editor-fold desc="Getter/Setters">
+    public boolean isRunEmulatorAtStartup() {
+        return runEmulatorAtStartup.get();
+    }
+
+    public BooleanProperty runEmulatorAtStartupProperty() {
+        return runEmulatorAtStartup;
+    }
+
+    public void setRunEmulatorAtStartup(boolean runEmulatorAtStartup) {
+        this.runEmulatorAtStartup.set(runEmulatorAtStartup);
+    }
+
     public String getProfileDirPath() {
         return profileDirPath.get();
     }
@@ -309,5 +326,17 @@ public class GlcdConfigApp extends GlcdConfig {
     public int nextProfileId() {
         lastGeneratedProfileId.set(lastGeneratedProfileId.get() + 1);
         return lastGeneratedProfileId.get();
+    }
+
+    public boolean isToolbarVisible() {
+        return toolbarVisible.get();
+    }
+
+    public BooleanProperty toolbarVisibleProperty() {
+        return toolbarVisible;
+    }
+
+    public void setToolbarVisible(boolean toolbarVisible) {
+        this.toolbarVisible.set(toolbarVisible);
     }
 }

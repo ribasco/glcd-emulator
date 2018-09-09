@@ -1,50 +1,41 @@
 package com.ibasco.glcdemu;
 
+import com.ibasco.glcdemu.constants.Views;
 import com.ibasco.glcdemu.model.GlcdConfigApp;
+import com.ibasco.glcdemu.utils.DialogUtil;
 import com.ibasco.glcdemu.utils.ResourceUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Callback;
-import org.apache.commons.lang3.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.ibasco.glcdemu.utils.DialogUtil.REPORT_BUTTON;
+
+/**
+ * Main application bootstrap
+ *
+ * @author Rafael Ibasco
+ */
 public class Bootstrap extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
     private static Bootstrap instance;
 
-    private Callback<Class<?>, Object> controllerFactory;
-
-    private GlcdController controller;
-
     private static final String APP_TITLE = "GLCD Emulator";
-
-    private FXMLLoader loader;
-
-    private Stage stage;
 
     private GlcdConfigApp appConfig;
 
@@ -52,9 +43,7 @@ public class Bootstrap extends Application {
 
     private static final double MIN_STAGE_WIDTH_DEFAULT = 100.0;
 
-    private static final int MAX_ERRORS = 5;
-
-    private static final CountDownLatch latch = new CountDownLatch(5);
+    private static final int MAX_REPEATED_ERRORS = 2;
 
     public static Bootstrap getInstance() {
         return instance;
@@ -64,19 +53,19 @@ public class Bootstrap extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //launchEditableGrid(primaryStage);
-        this.stage = primaryStage;
+        Stages.setPrimaryStage(primaryStage);
+
         this.appConfig = Context.getInstance().getAppConfig();
         Thread.currentThread().setUncaughtExceptionHandler((t, e) -> {
-            if (errorCount.incrementAndGet() > 5) {
+            if (errorCount.incrementAndGet() > MAX_REPEATED_ERRORS) {
                 return;
             }
             log.error("Uncaught system exception occured", e);
             Platform.runLater(() -> {
-                Alert dialog = createExceptionDialog(e);
+                Alert dialog = DialogUtil.createExceptionDialog("Ooops, an unexpected error has occured!", e.toString(), e);
                 try {
                     Optional<ButtonType> result = dialog.showAndWait();
-                    if (result.isPresent() && result.get().equals(reportType)) {
+                    if (result.isPresent() && REPORT_BUTTON.equals(result.get())) {
                         //TODO: Implement report to Github
                         log.debug("Reporting Issue to Github...");
                     }
@@ -89,98 +78,38 @@ public class Bootstrap extends Application {
         launchEmulator();
     }
 
-    private ButtonType reportType = new ButtonType("Report Issue", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-    private Alert createExceptionDialog(Throwable ex) {
-        Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK, reportType);
-        alert.setTitle("Ooops, an unexpected error has occured!");
-        alert.setHeaderText(ex.getMessage());
-        alert.setContentText(ex.getCause() != null ? "Cause: " + ex.getCause().getMessage() : "");
-
-        // Create expandable Exception.
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        ex.printStackTrace(pw);
-        String exceptionText = sw.toString();
-
-        Label label = new Label("The exception stacktrace was:");
-
-        TextArea textArea = new TextArea(exceptionText);
-        textArea.setStyle("-fx-font-family: \"Courier New\"; -fx-font-size: 12px");
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-        GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-        expContent.add(label, 0, 0);
-        expContent.add(textArea, 0, 1);
-        alert.getDialogPane().setExpandableContent(expContent);
-
-        return alert;
-    }
-
-    private Callback<Class<?>, Object> getControllerFactory(Stage stage) {
-        if (controllerFactory == null) {
-            controllerFactory = param -> {
-                try {
-                    return param.getConstructor(Stage.class).newInstance(stage);
-                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                    throw new RuntimeException("Unable to produce controller", e);
-                }
-            };
-        }
-        return controllerFactory;
-    }
-
     private void launchEmulator() throws IOException {
-        initStageProperties(stage);
-        initStageBindings(stage);
-
-        Parent root = loadFXMLResource("emulator");
-        controller = loader.getController();
+        initStageProperties();
+        initStageBindings();
+        Parent root = ResourceUtil.loadFxmlResource(Views.EMULATOR, Controllers.getEmulatorController());
+        if (root == null)
+            throw new IOException("Could not load primary view");
+        Stage stage = Context.getPrimaryStage();
         stage.setScene(new Scene(root));
-        controller.onInit();
         stage.show();
         stage.toFront();
     }
 
-    private Parent loadFXMLResource(String resource) throws IOException {
-        FXMLLoader loader = getLoader();
-        loader.setLocation(ResourceUtil.getFxmlResource(resource));
-        return loader.load();
-    }
-
-    private FXMLLoader getLoader() {
-        if (loader == null) {
-            FXMLLoader.setDefaultClassLoader(getClass().getClassLoader());
-            loader = new FXMLLoader();
-            loader.setControllerFactory(getControllerFactory(stage));
-            loader.setClassLoader(getClass().getClassLoader());
-        }
-        return loader;
-    }
-
-    private void initStageBindings(Stage stage) {
+    private void initStageBindings() {
+        Stage stage = Stages.getPrimaryStage();
         appConfig.alwaysOnTopProperty().addListener((observable, oldValue, newValue) -> stage.setAlwaysOnTop(newValue));
         appConfig.maximizedProperty().bind(stage.maximizedProperty());
         appConfig.prefWindowWidthProperty().bind(stage.widthProperty());
         appConfig.prefWindowHeightProperty().bind(stage.heightProperty());
         stage.minWidthProperty().bind(Bindings.createDoubleBinding(() -> appConfig.isShowSettingsPane() ? MIN_STAGE_WIDTH_SETTINGS : MIN_STAGE_WIDTH_DEFAULT, appConfig.showSettingsPaneProperty()));
+        stage.minHeightProperty().bindBidirectional(appConfig.minWindowHeightProperty());
     }
 
-    private void initStageProperties(Stage stage) {
+    private void initStageProperties() {
+        Stage stage = Context.getPrimaryStage();
+
         //Initialize Stage Properties
         stage.setTitle(APP_TITLE);
         stage.setIconified(false);
         stage.setAlwaysOnTop(appConfig.isAlwaysOnTop());
         stage.setMinWidth(appConfig.getMinWindowWidth());
         stage.setMinHeight(appConfig.getMinWindowHeight());
-        stage.setOnCloseRequest(confirmCloseEventHandler(stage));
+        stage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::handleWindowCloseRequests);
 
         if (appConfig.isMaximized())
             stage.setMaximized(appConfig.isMaximized());
@@ -190,36 +119,31 @@ public class Bootstrap extends Application {
         }
     }
 
-    private EventHandler<WindowEvent> confirmCloseEventHandler(Stage stage) {
-        return windowEvent -> {
-            GlcdConfigApp settings = Context.getInstance().getAppConfig();
+    private void handleWindowCloseRequests(WindowEvent event) {
+        GlcdConfigApp settings = Context.getInstance().getAppConfig();
 
-            if (!settings.isConfirmOnExit()) {
-                controller.onClose();
-                return;
-            }
+        if (!settings.isConfirmOnExit()) {
+            return;
+        }
 
-            Alert closeConfirmation = new Alert(
-                    Alert.AlertType.CONFIRMATION,
-                    "Confirm action", ButtonType.YES, ButtonType.NO
-            );
-            Button exitButton = (Button) closeConfirmation.getDialogPane().lookupButton(ButtonType.YES);
-            Button cancelButton = (Button) closeConfirmation.getDialogPane().lookupButton(ButtonType.NO);
-            exitButton.setDefaultButton(false);
-            cancelButton.setDefaultButton(true);
+        Alert closeConfirmation = new Alert(
+                Alert.AlertType.CONFIRMATION,
+                "Confirm action", ButtonType.YES, ButtonType.NO
+        );
+        Button exitButton = (Button) closeConfirmation.getDialogPane().lookupButton(ButtonType.YES);
+        Button cancelButton = (Button) closeConfirmation.getDialogPane().lookupButton(ButtonType.NO);
+        exitButton.setDefaultButton(false);
+        cancelButton.setDefaultButton(true);
 
-            closeConfirmation.setHeaderText("Are you sure you want to exit?");
-            closeConfirmation.initModality(Modality.APPLICATION_MODAL);
-            closeConfirmation.initOwner(stage);
+        closeConfirmation.setHeaderText("Are you sure you want to exit?");
+        closeConfirmation.initModality(Modality.APPLICATION_MODAL);
+        closeConfirmation.initOwner(Stages.getPrimaryStage());
 
-            Optional<ButtonType> closeResponse = closeConfirmation.showAndWait();
+        Optional<ButtonType> closeResponse = closeConfirmation.showAndWait();
 
-            if (closeResponse.isPresent() && ButtonType.NO.equals(closeResponse.get())) {
-                windowEvent.consume();
-            } else {
-                controller.onClose();
-            }
-        };
+        if (closeResponse.isPresent() && ButtonType.NO.equals(closeResponse.get())) {
+            event.consume();
+        }
     }
 
     public static void main(String[] args) {

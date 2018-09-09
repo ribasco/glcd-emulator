@@ -43,7 +43,7 @@ public interface GlcdEmulator {
     ObjectProperty<PixelBuffer> bufferProperty();
 
     /**
-     * Clears the current buffer and resets the properties to their initial state.
+     * Clears the current buffer and resets the properties back to their initial state.
      */
     void reset();
 }

@@ -28,6 +28,8 @@ public class PixelBuffer {
 
     private ReadOnlyBooleanWrapper invalidated = new ReadOnlyBooleanWrapper();
 
+    private boolean fair = true;
+
     public PixelBuffer(byte[][] copy) {
         this.buffer = new byte[copy.length][copy[0].length];
         this.width.set(copy[0].length);
@@ -44,10 +46,25 @@ public class PixelBuffer {
      *         The height of the display (in pixels)
      */
     public PixelBuffer(int width, int height) {
+        this(width, height, true);
+    }
+
+    /**
+     * Create a new instance of {@link PixelBuffer} using the dimensions provided
+     *
+     * @param width
+     *         The width of the display (in pixels)
+     * @param height
+     *         The height of the display (in pixels)
+     * @param fair
+     *         If true, no exceptions will be thrown if x or y coordinates exceed it's boundary limits.
+     */
+    public PixelBuffer(int width, int height, boolean fair) {
         checkDimensions(width, height);
         this.buffer = allocate(width, height);
         this.width.set(width);
         this.height.set(height);
+        this.fair = fair;
     }
 
     public boolean isInvalidated() {
@@ -72,8 +89,42 @@ public class PixelBuffer {
         write(x, y, state > 0);
     }
 
+    //TODO: Implement
     public void write(PixelBuffer buffer) {
         copyBuffer(buffer.getBuffer(), this.buffer);
+    }
+
+    /**
+     * Writes an 8-bit value to the buffer. The cursor will automatically be incremented by 8.
+     *
+     * @param data
+     *         A byte of data (8-bit) to be written
+     */
+    public void write(byte data) {
+
+    }
+
+    public void write(short data) {
+
+    }
+
+    public void reset() {
+
+    }
+
+    /**
+     * Convenience method to check if the buffer is empty (all zero bits)
+     *
+     * @return True if the buffer is empty
+     */
+    public boolean isEmpty() {
+        for (byte[] row : buffer) {
+            for (byte col : row) {
+                if (col != 0)
+                    return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -88,7 +139,11 @@ public class PixelBuffer {
      */
     public void write(int x, int y, boolean state) {
         Objects.requireNonNull(buffer);
-        checkBounds(x, y);
+        if (!checkBounds(x, y)) {
+            if (fair)
+                return;
+            throw new IndexOutOfBoundsException(String.format("X or Y indices are out of bounds. (ACTUAL: x=%d, y=%d, MAX: x=%d, y=%d)", x, y, width.get() - 1, height.get() - 1));
+        }
         int xpos = calculateXPos(x);
         if ((BitUtils.readBit(buffer[y][xpos], x) == 1) != state) {
             buffer[y][xpos] = BitUtils.writeBit(buffer[y][xpos], x, state);
@@ -104,14 +159,17 @@ public class PixelBuffer {
      * @param y
      *         The y-coordinate of the pixel in the buffer
      *
-     * @return The pixel state 1 = on, 0 = off
+     * @return The pixel state 1 = on, 0 = off. -1 if the the coordinates provided are out of bounds
      */
     public int read(int x, int y) {
         Objects.requireNonNull(buffer);
-        checkBounds(x, y);
-        if (y > (buffer.length - 1)) {
-            return -1;
+        if (!checkBounds(x, y)) {
+            if (fair)
+                return 0;
+            throw new IndexOutOfBoundsException(String.format("X or Y indices are out of bounds. (ACTUAL: x=%d, y=%d, MAX: x=%d, y=%d)", x, y, width.get() - 1, height.get() - 1));
         }
+        if (y > (buffer.length - 1))
+            return -1;
         int bufferX = calculateXPos(x);
         if (bufferX > (buffer[y].length - 1)) {
             return -1;
@@ -244,9 +302,12 @@ public class PixelBuffer {
      * @throws IndexOutOfBoundsException
      *         when x or y coordinates are out of bounds
      */
-    private void checkBounds(int x, int y) {
-        if (x >= width.get() || y >= height.get())
-            throw new IndexOutOfBoundsException(String.format("X or Y indices are out of bounds. (ACTUAL: x=%d, y=%d, MAX: x=%d, y=%d)", x, y, width.get() - 1, height.get() - 1));
+    private boolean checkBounds(int x, int y) {
+        if (x >= width.get() || y >= height.get()) {
+            //throw new IndexOutOfBoundsException(String.format("X or Y indices are out of bounds. (ACTUAL: x=%d, y=%d, MAX: x=%d, y=%d)", x, y, width.get() - 1, height.get() - 1));
+            return false;
+        }
+        return true;
     }
 
     /**

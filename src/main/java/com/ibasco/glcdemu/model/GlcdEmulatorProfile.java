@@ -1,13 +1,9 @@
 package com.ibasco.glcdemu.model;
 
 import com.ibasco.glcdemu.annotations.Auditable;
-import com.ibasco.glcdemu.annotations.Exclude;
 import com.ibasco.glcdemu.enums.PixelShape;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.scene.paint.Color;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -21,23 +17,23 @@ public class GlcdEmulatorProfile extends GlcdConfig {
 
     private StringProperty description = new SimpleStringProperty("Default Profile");
 
-    private ObjectProperty<Color> lcdBacklightColor = new SimpleObjectProperty<>(Color.web("#242fed", 1.0));
+    private ObjectProperty<Color> lcdBacklightColor = new SimpleObjectProperty<>(Color.web("#212121", 1.0));
 
-    private ObjectProperty<Color> lcdActivePixelColor = new SimpleObjectProperty<>(Color.web("#FFFFFF", 1.0));
+    private ObjectProperty<Color> lcdActivePixelColor = new SimpleObjectProperty<>(Color.web("#fafafa", 1.0));
 
-    private ObjectProperty<Color> lcdInactivePixelColor = new SimpleObjectProperty<>(Color.web("#3730f6", 0.8));
+    private ObjectProperty<Color> lcdInactivePixelColor = new SimpleObjectProperty<>(Color.web("#fafafa", 0.0598f));
 
     private ObjectProperty<Integer> displaySizeWidth = new SimpleObjectProperty<>(128);
 
     private ObjectProperty<Integer> displaySizeHeight = new SimpleObjectProperty<>(64);
 
-    private DoubleProperty lcdPixelSize = new SimpleDoubleProperty(5.0);
+    private DoubleProperty lcdPixelSize = new SimpleDoubleProperty(5.0d);
 
-    private FloatProperty lcdContrast = new SimpleFloatProperty(0.5f);
+    private FloatProperty lcdContrast = new SimpleFloatProperty(5.987805f);
 
-    private DoubleProperty lcdSpacing = new SimpleDoubleProperty(5.0d);
+    private DoubleProperty lcdSpacing = new SimpleDoubleProperty(1.4292f);
 
-    private DoubleProperty lcdMargin = new SimpleDoubleProperty(20.0d);
+    private DoubleProperty lcdMargin = new SimpleDoubleProperty(9.63414f);
 
     private ObjectProperty<PixelShape> lcdPixelShape = new SimpleObjectProperty<>(PixelShape.RECTANGLE);
 
@@ -49,7 +45,6 @@ public class GlcdEmulatorProfile extends GlcdConfig {
         setName(name);
     }
 
-    @SuppressWarnings("CopyConstructorMissesField")
     public GlcdEmulatorProfile(GlcdEmulatorProfile source) {
         this(source.getName());
         setId(-1);

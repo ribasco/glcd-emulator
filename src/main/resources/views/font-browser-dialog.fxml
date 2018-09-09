@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.ibasco.glcdemu.controls.GlcdScreen?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<VBox fx:id="root" prefHeight="546.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <StackPane fx:id="spRoot" VBox.vgrow="ALWAYS">
+            <children>
+                <AnchorPane fx:id="apFontBrowser">
+                    <children>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0"
+                                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <center>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0"
+                                            BorderPane.alignment="CENTER">
+                                    <children>
+                                        <JFXTabPane prefHeight="373.0" prefWidth="582.0" AnchorPane.bottomAnchor="0.0"
+                                                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                                    AnchorPane.topAnchor="0.0">
+                                            <tabs>
+                                                <Tab text="Preview">
+                                                    <content>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
+                                                                    prefWidth="200.0">
+                                                            <children>
+                                                                <VBox id="vbox-screen" alignment="CENTER"
+                                                                      AnchorPane.bottomAnchor="0.0"
+                                                                      AnchorPane.leftAnchor="0.0"
+                                                                      AnchorPane.rightAnchor="0.0"
+                                                                      AnchorPane.topAnchor="0.0">
+                                                                    <children>
+                                                                        <HBox alignment="CENTER" prefHeight="100.0"
+                                                                              prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                                            <children>
+                                                                                <GlcdScreen fx:id="fontDisplay"
+                                                                                            HBox.hgrow="ALWAYS"/>
+                                                                            </children>
+                                                                            <VBox.margin>
+                                                                                <Insets bottom="5.0"/>
+                                                                            </VBox.margin>
+                                                                        </HBox>
+                                                                        <JFXTextField id="font-browser-tf"
+                                                                                      fx:id="tfPreviewText"
+                                                                                      prefWidth="749.0"
+                                                                                      promptText="Enter text"
+                                                                                      VBox.vgrow="NEVER">
+                                                                            <font>
+                                                                                <Font size="18.0"/>
+                                                                            </font>
+                                                                            <padding>
+                                                                                <Insets bottom="10.0" left="10.0"
+                                                                                        right="10.0" top="10.0"/>
+                                                                            </padding>
+                                                                            <VBox.margin>
+                                                                                <Insets bottom="10.0" left="10.0"
+                                                                                        right="10.0" top="10.0"/>
+                                                                            </VBox.margin>
+                                                                        </JFXTextField>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </AnchorPane>
+                                                    </content>
+                                                </Tab>
+                                                <Tab text="Details">
+                                                    <content>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
+                                                                    prefWidth="200.0">
+                                                            <children>
+                                                                <StackPane fx:id="spFontDetails" layoutX="72.0"
+                                                                           layoutY="21.0" prefHeight="189.0"
+                                                                           prefWidth="570.0"
+                                                                           AnchorPane.bottomAnchor="0.0"
+                                                                           AnchorPane.leftAnchor="0.0"
+                                                                           AnchorPane.rightAnchor="0.0"
+                                                                           AnchorPane.topAnchor="0.0"/>
+                                                            </children>
+                                                        </AnchorPane>
+                                                    </content>
+                                                </Tab>
+                                            </tabs>
+                                        </JFXTabPane>
+                                    </children>
+                                </AnchorPane>
+                            </center>
+                            <top>
+                                <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                    <items>
+                                        <JFXHamburger fx:id="hamLeftDrawer" prefHeight="28.0" prefWidth="28.0"
+                                                      styleClass="jfx-hamburger-icon"/>
+                                        <Pane prefHeight="0.0" prefWidth="5.0" HBox.hgrow="ALWAYS"/>
+                                        <JFXButton fx:id="btnReloadCache" text="Reload Font Cache"/>
+                                    </items>
+                                </ToolBar>
+                            </top>
+                        </BorderPane>
+                    </children>
+                </AnchorPane>
+                <StackPane fx:id="spFontCacheProgress" opacity="0.77" style="-fx-background-color: #000000;"
+                           visible="false">
+                    <children>
+                        <Label fx:id="lblLoadFonts" alignment="BOTTOM_CENTER" prefHeight="369.0" prefWidth="476.0"
+                               text="Caching fonts..." textAlignment="CENTER" visible="false" wrapText="true">
+                            <font>
+                                <Font size="25.0"/>
+                            </font>
+                        </Label>
+                        <JFXSpinner fx:id="pbLoadFonts" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="208.0"
+                                    prefWidth="207.0" progress="0.28" visible="false"/>
+                    </children>
+                </StackPane>
+            </children>
+        </StackPane>
+    </children>
+</VBox>

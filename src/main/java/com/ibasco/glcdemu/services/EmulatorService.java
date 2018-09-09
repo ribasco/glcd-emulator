@@ -21,25 +21,31 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * A background service that listens on the network for emulator instructions and processes it accordingly.
+ *
+ * @author Rafael Ibasco
+ */
 public class EmulatorService extends Service<Void> {
 
     private static final Logger log = LoggerFactory.getLogger(EmulatorService.class);
 
+    //<editor-fold desc="Service Properties">
     private ObjectProperty<GlcdEmulator> emulator = new SimpleObjectProperty<>();
 
     private StringProperty listenIp = new SimpleStringProperty();
 
     private IntegerProperty listenPort = new SimpleIntegerProperty();
 
-    private ReadOnlyBooleanWrapper listening = new ReadOnlyBooleanWrapper();
-
-    private ReadOnlyBooleanWrapper connected = new ReadOnlyBooleanWrapper();
+    private ReadOnlyBooleanWrapper clientConnected = new ReadOnlyBooleanWrapper();
+    //</editor-fold>
 
     private class JavaNioListenTask extends Task<Void> {
 
         private Selector selector;
         private ServerSocketChannel socketChannel;
         private GlcdEmulator emulator;
+        private InetSocketAddress listenAddress;
 
         public JavaNioListenTask() {
             this.emulator = EmulatorService.this.emulator.get();
@@ -49,17 +55,21 @@ public class EmulatorService extends Service<Void> {
             SocketChannel client = serverSocket.accept();
             client.configureBlocking(false);
             client.register(selector, SelectionKey.OP_READ);
-            setConnected(true);
+            setClientConnected(true);
             log.debug("Accepted new client: {}", client.getLocalAddress());
         }
 
         private void initSocketServer() throws IOException {
+            if (listenAddress == null) {
+                listenAddress = new InetSocketAddress(listenIp.get(), listenPort.get());
+            }
             socketChannel = ServerSocketChannel.open();
             selector = Selector.open();
             socketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
             socketChannel.configureBlocking(false);
             socketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            socketChannel.bind(new InetSocketAddress(listenIp.get(), listenPort.get()));
+            socketChannel.bind(listenAddress);
+            log.debug("Emulator service is now listening on '{}:{}'", listenAddress.getAddress().getHostAddress(), listenAddress.getPort());
         }
 
         @Override
@@ -70,9 +80,7 @@ public class EmulatorService extends Service<Void> {
                 if (emulator == null)
                     throw new NullPointerException("Emulator cannot be null");
 
-                emulator.reset();
                 initSocketServer();
-                setListening(true);
 
                 //Listen for events
                 while (!isCancelled()) {
@@ -98,7 +106,7 @@ public class EmulatorService extends Service<Void> {
                                     if (bytesRead == -1) {
                                         client.close();
                                         log.debug("Client closed connection");
-                                        setConnected(false);
+                                        setClientConnected(false);
                                         emulator.reset();
                                         continue;
                                     }
@@ -116,8 +124,11 @@ public class EmulatorService extends Service<Void> {
                                         }
                                     }
                                 } catch (IOException e) {
+                                    log.warn(e.getMessage());
                                     key.cancel();
-                                    throw e;
+                                    key.channel().close();
+                                    setClientConnected(false);
+                                    emulator.reset();
                                 }
                             }
                         } finally {
@@ -127,37 +138,28 @@ public class EmulatorService extends Service<Void> {
                 } //while
             } finally {
                 log.debug("Exiting listen service");
+                selector.close();
                 socketChannel.close();
-                setListening(false);
+                emulator.reset();
             }
             return null;
         }
     }
 
-    public boolean isConnected() {
-        return connected.get();
+    //<editor-fold desc="Service Getter/Setter Properties">
+    public boolean isClientConnected() {
+        return clientConnected.get();
     }
 
-    public ReadOnlyBooleanProperty connectedProperty() {
-        return connected.getReadOnlyProperty();
+    public ReadOnlyBooleanProperty clientConnectedProperty() {
+        return clientConnected.getReadOnlyProperty();
     }
 
-    private void setConnected(boolean value) {
-        Platform.runLater(() -> connected.set(value));
+    private void setClientConnected(boolean value) {
+        Platform.runLater(() -> clientConnected.set(value));
     }
 
-    public boolean isListening() {
-        return listening.get();
-    }
-
-    private void setListening(boolean value) {
-        Platform.runLater(() -> listening.set(value));
-    }
-
-    public ReadOnlyBooleanProperty listeningProperty() {
-        return listening.getReadOnlyProperty();
-    }
-
+    //TODO: Move to concrete task
     public String getListenIp() {
         return listenIp.get();
     }
@@ -193,25 +195,7 @@ public class EmulatorService extends Service<Void> {
     public void setEmulator(GlcdEmulator emulator) {
         this.emulator.set(emulator);
     }
-
-    @Override
-    protected void running() {
-        log.debug("Service is running");
-        listening.set(true);
-    }
-
-    @Override
-    protected void cancelled() {
-        log.debug("Service is cancelled");
-        listening.set(false);
-        //emulator.get().reset();
-    }
-
-    @Override
-    protected void failed() {
-        log.debug("Service has failed", getException());
-        listening.set(false);
-    }
+    //</editor-fold>
 
     @Override
     protected Task<Void> createTask() {

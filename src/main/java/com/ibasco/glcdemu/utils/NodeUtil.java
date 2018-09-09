@@ -11,7 +11,13 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Helper class for misc {@link Node} operations
+ *
+ * @author Rafael Ibasco
+ */
 public class NodeUtil {
 
     private static final Logger log = LoggerFactory.getLogger(NodeUtil.class);
@@ -24,7 +30,7 @@ public class NodeUtil {
      * @param imageFile
      *         The destination {@link File}
      */
-    public static void saveNodeImageToFile(Node node, File imageFile, double width, double height) {
+    public static void saveNodeImageToFile(final Node node, File imageFile, final double width, final double height) throws IOException {
         if (imageFile == null) {
             log.warn("Image file is null");
             return;
@@ -37,20 +43,32 @@ public class NodeUtil {
         try {
             CountDownLatch latch = new CountDownLatch(1);
             File finalImageFile = imageFile;
-            Platform.runLater(() -> {
+            AtomicReference<IOException> err = new AtomicReference<>();
+
+            Runnable r = () -> {
                 try {
                     WritableImage wim = new WritableImage((int) width, (int) height);
                     node.snapshot(null, wim);
                     ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", finalImageFile);
                 } catch (IOException e) {
-                    log.error("Error encoutnered during screen capture", e);
+                    log.error("Error encountered during screen capture", e);
+                    err.set(e);
                 } finally {
                     latch.countDown();
                 }
-            });
-            latch.await();
+            };
+
+            if (!Platform.isFxApplicationThread()) {
+                Platform.runLater(r);
+                latch.await(); //block until the snapshot operation is completed
+            } else {
+                r.run();
+            }
+
+            if (err.get() != null)
+                throw err.get();
         } catch (InterruptedException e) {
-            log.warn("Interrupted", e);
+            log.warn("Save node interrupted", e);
         }
     }
 }
