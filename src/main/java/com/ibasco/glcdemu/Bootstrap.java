@@ -33,8 +33,6 @@ public class Bootstrap extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
-    private static Bootstrap instance;
-
     private static final String APP_TITLE = "GLCD Emulator";
 
     private GlcdConfigApp appConfig;
@@ -45,15 +43,12 @@ public class Bootstrap extends Application {
 
     private static final int MAX_REPEATED_ERRORS = 2;
 
-    public static Bootstrap getInstance() {
-        return instance;
-    }
-
     private static AtomicInteger errorCount = new AtomicInteger(1);
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Stages.setPrimaryStage(primaryStage);
+        Context.getInstance().setHostServices(this.getHostServices());
 
         this.appConfig = Context.getInstance().getAppConfig();
         Thread.currentThread().setUncaughtExceptionHandler((t, e) -> {
@@ -74,14 +69,14 @@ public class Bootstrap extends Application {
                 }
             });
         });
-        Bootstrap.instance = this;
         launchEmulator();
     }
 
     private void launchEmulator() throws IOException {
         initStageProperties();
         initStageBindings();
-        Parent root = ResourceUtil.loadFxmlResource(Views.EMULATOR, Controllers.getEmulatorController());
+        Parent root = ResourceUtil.loadFxmlResource(Views.EMULATOR, null);
+        Controllers.setEmulatorController(ResourceUtil.getLastController());
         if (root == null)
             throw new IOException("Could not load primary view");
         Stage stage = Context.getPrimaryStage();
@@ -101,7 +96,7 @@ public class Bootstrap extends Application {
     }
 
     private void initStageProperties() {
-        Stage stage = Context.getPrimaryStage();
+        Stage stage = Stages.getPrimaryStage();
 
         //Initialize Stage Properties
         stage.setTitle(APP_TITLE);

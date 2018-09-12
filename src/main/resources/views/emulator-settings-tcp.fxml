@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Pane prefHeight="126.0" prefWidth="466.0" VBox.vgrow="ALWAYS">
+            <children>
+                <JFXTextField fx:id="tfListenIp" layoutX="14.0" layoutY="43.0" maxHeight="-Infinity"
+                              maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0"
+                              prefWidth="161.0" promptText="Listen IP">
+                    <font>
+                        <Font name="Courier New" size="12.0"/>
+                    </font>
+                </JFXTextField>
+                <Label layoutX="14.0" layoutY="14.0" text="Listen IP/Port:"/>
+                <Spinner fx:id="spnListenPort" layoutX="186.0" layoutY="43.0" prefHeight="25.0" prefWidth="89.0"/>
+                <JFXButton fx:id="btnTcpListenTest" layoutX="285.0" layoutY="43.0" prefHeight="25.0" prefWidth="60.0"
+                           text="Test"/>
+                <JFXButton fx:id="btnTcpGetIP" layoutX="360.0" layoutY="43.0" prefHeight="25.0" prefWidth="73.0"
+                           text="Get IP"/>
+            </children>
+        </Pane>
+    </children>
+</VBox>

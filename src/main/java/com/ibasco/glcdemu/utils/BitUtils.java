@@ -21,6 +21,10 @@ public class BitUtils {
         return (data >> pos) & 0x1;
     }
 
+    public static int readBit(int data, int pos) {
+        return -1;
+    }
+
     /**
      * Sets/Unsets bit data based on the bit-position provided.
      *

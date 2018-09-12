@@ -1,25 +1,21 @@
 package com.ibasco.glcdemu.services;
 
+import com.ibasco.glcdemu.Context;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
-import com.ibasco.pidisplay.core.u8g2.U8g2ByteEvent;
+import com.ibasco.glcdemu.enums.ConnectionType;
+import com.ibasco.glcdemu.net.ListenerOptions;
+import com.ibasco.glcdemu.net.RemoteListenerTask;
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * A background service that listens on the network for emulator instructions and processes it accordingly.
@@ -33,120 +29,43 @@ public class EmulatorService extends Service<Void> {
     //<editor-fold desc="Service Properties">
     private ObjectProperty<GlcdEmulator> emulator = new SimpleObjectProperty<>();
 
-    private StringProperty listenIp = new SimpleStringProperty();
-
-    private IntegerProperty listenPort = new SimpleIntegerProperty();
-
     private ReadOnlyBooleanWrapper clientConnected = new ReadOnlyBooleanWrapper();
+
+    private ObjectProperty<ConnectionType> connectionType = new SimpleObjectProperty<>();
+
+    private ObjectProperty<ListenerOptions> connectionOptions = new SimpleObjectProperty<>();
     //</editor-fold>
 
-    private class JavaNioListenTask extends Task<Void> {
 
-        private Selector selector;
-        private ServerSocketChannel socketChannel;
-        private GlcdEmulator emulator;
-        private InetSocketAddress listenAddress;
-
-        public JavaNioListenTask() {
-            this.emulator = EmulatorService.this.emulator.get();
-        }
-
-        private void acceptClient(Selector selector, ServerSocketChannel serverSocket) throws IOException {
-            SocketChannel client = serverSocket.accept();
-            client.configureBlocking(false);
-            client.register(selector, SelectionKey.OP_READ);
-            setClientConnected(true);
-            log.debug("Accepted new client: {}", client.getLocalAddress());
-        }
-
-        private void initSocketServer() throws IOException {
-            if (listenAddress == null) {
-                listenAddress = new InetSocketAddress(listenIp.get(), listenPort.get());
-            }
-            socketChannel = ServerSocketChannel.open();
-            selector = Selector.open();
-            socketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-            socketChannel.configureBlocking(false);
-            socketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            socketChannel.bind(listenAddress);
-            log.debug("Emulator service is now listening on '{}:{}'", listenAddress.getAddress().getHostAddress(), listenAddress.getPort());
-        }
-
-        @Override
-        protected Void call() throws Exception {
-            try {
-                ByteBuffer recv = ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN);
-
-                if (emulator == null)
-                    throw new NullPointerException("Emulator cannot be null");
-
-                initSocketServer();
-
-                //Listen for events
-                while (!isCancelled()) {
-                    selector.select();
-                    Set<SelectionKey> selectedKeys = selector.selectedKeys();
-                    Iterator<SelectionKey> iter = selectedKeys.iterator();
-
-                    while (iter.hasNext()) {
-                        try {
-                            SelectionKey key = iter.next();
-                            if (key.isAcceptable()) {
-                                acceptClient(selector, socketChannel);
-                            }
-
-                            if (key.isReadable()) {
-                                try {
-                                    SocketChannel client = (SocketChannel) key.channel();
-
-                                    recv.clear();
-                                    int bytesRead = client.read(recv);
-                                    recv.flip();
-
-                                    if (bytesRead == -1) {
-                                        client.close();
-                                        log.debug("Client closed connection");
-                                        setClientConnected(false);
-                                        emulator.reset();
-                                        continue;
-                                    }
-
-                                    while (recv.hasRemaining()) {
-                                        U8g2ByteEvent event = new U8g2ByteEvent(recv.get(), recv.get());
-                                        switch (event.getMessage()) {
-                                            case U8X8_MSG_START:
-                                                break;
-                                            case U8X8_MSG_END:
-                                                break;
-                                            case U8X8_MSG_BYTE_SEND:
-                                                emulator.processByte(event.getValue());
-                                                break;
-                                        }
-                                    }
-                                } catch (IOException e) {
-                                    log.warn(e.getMessage());
-                                    key.cancel();
-                                    key.channel().close();
-                                    setClientConnected(false);
-                                    emulator.reset();
-                                }
-                            }
-                        } finally {
-                            iter.remove();
-                        }
-                    }
-                } //while
-            } finally {
-                log.debug("Exiting listen service");
-                selector.close();
-                socketChannel.close();
-                emulator.reset();
-            }
-            return null;
-        }
+    public EmulatorService() {
+        setExecutor(Context.getTaskExecutor());
     }
 
     //<editor-fold desc="Service Getter/Setter Properties">
+    public ListenerOptions getConnectionOptions() {
+        return connectionOptions.get();
+    }
+
+    public ObjectProperty<ListenerOptions> connectionOptionsProperty() {
+        return connectionOptions;
+    }
+
+    public void setConnectionOptions(ListenerOptions connectionOptions) {
+        this.connectionOptions.set(connectionOptions);
+    }
+
+    public ConnectionType getConnectionType() {
+        return connectionType.get();
+    }
+
+    public ObjectProperty<ConnectionType> connectionTypeProperty() {
+        return connectionType;
+    }
+
+    public void setConnectionType(ConnectionType connectionType) {
+        this.connectionType.set(connectionType);
+    }
+
     public boolean isClientConnected() {
         return clientConnected.get();
     }
@@ -157,31 +76,6 @@ public class EmulatorService extends Service<Void> {
 
     private void setClientConnected(boolean value) {
         Platform.runLater(() -> clientConnected.set(value));
-    }
-
-    //TODO: Move to concrete task
-    public String getListenIp() {
-        return listenIp.get();
-    }
-
-    public StringProperty listenIpProperty() {
-        return listenIp;
-    }
-
-    public void setListenIp(String listenIp) {
-        this.listenIp.set(listenIp);
-    }
-
-    public int getListenPort() {
-        return listenPort.get();
-    }
-
-    public IntegerProperty listenPortProperty() {
-        return listenPort;
-    }
-
-    public void setListenPort(int listenPort) {
-        this.listenPort.set(listenPort);
     }
 
     public GlcdEmulator getEmulator() {
@@ -197,8 +91,32 @@ public class EmulatorService extends Service<Void> {
     }
     //</editor-fold>
 
+    /**
+     * Factory method to create listener tasks based on the connection type
+     *
+     * @param connectionType
+     *         The {@link ConnectionType} of this emulator
+     *
+     * @return A {@link RemoteListenerTask}
+     */
+    private RemoteListenerTask createListenerTask(ConnectionType connectionType) {
+        try {
+            Class<? extends RemoteListenerTask> listenerClass = connectionType.getListenerClass();
+            return listenerClass.getConstructor(GlcdEmulator.class).newInstance(emulator.get());
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException("Error occured while instatiating listener class", e);
+        }
+    }
+
     @Override
     protected Task<Void> createTask() {
-        return new JavaNioListenTask();
+        if (connectionType.get() == null)
+            throw new IllegalStateException("No listener task has been specified");
+        if (connectionOptions.get() == null)
+            throw new IllegalStateException("No connection options specified");
+        RemoteListenerTask task = createListenerTask(connectionType.get());
+        task.listenerOptionsProperty().bind(connectionOptions);
+        clientConnected.bindBidirectional(task.connectedProperty());
+        return task;
     }
 }

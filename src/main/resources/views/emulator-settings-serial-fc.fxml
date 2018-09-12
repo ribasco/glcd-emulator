@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="113.0"
+      prefWidth="321.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <AnchorPane prefHeight="267.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+            <children>
+                <GridPane layoutX="19.5" layoutY="22.0" prefWidth="466.0" AnchorPane.bottomAnchor="0.0"
+                          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="282.0" minWidth="10.0"
+                                           prefWidth="214.0"/>
+                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="371.0" minWidth="10.0"
+                                           prefWidth="250.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="78.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="78.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="78.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <JFXCheckBox fx:id="cbFlowControlRts" text="RTS"/>
+                        <JFXCheckBox fx:id="cbFlowControlCts" text="CTS" GridPane.columnIndex="1"/>
+                        <JFXCheckBox fx:id="cbFlowControlDtr" text="DTR" GridPane.rowIndex="1"/>
+                        <JFXCheckBox fx:id="cbFlowControlDsr" text="DSR" GridPane.columnIndex="1"
+                                     GridPane.rowIndex="1"/>
+                        <JFXCheckBox fx:id="cbFlowControlXIn" text="XONXOFF IN" GridPane.rowIndex="2"/>
+                        <JFXCheckBox fx:id="cbFlowControlXOut" text="XONXOFF OUT" GridPane.columnIndex="1"
+                                     GridPane.rowIndex="2"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                </GridPane>
+            </children>
+        </AnchorPane>
+    </children>
+</VBox>

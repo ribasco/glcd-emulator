@@ -1,6 +1,8 @@
 package com.ibasco.glcdemu.model;
 
 import com.ibasco.glcdemu.annotations.Auditable;
+import com.ibasco.glcdemu.emulator.GlcdEmulator;
+import com.ibasco.glcdemu.emulator.st7920.ST7920Emulator;
 import com.ibasco.glcdemu.enums.PixelShape;
 import javafx.beans.property.*;
 import javafx.scene.paint.Color;
@@ -35,6 +37,8 @@ public class GlcdEmulatorProfile extends GlcdConfig {
 
     private DoubleProperty lcdMargin = new SimpleDoubleProperty(9.63414f);
 
+    private ObjectProperty<Class<? extends GlcdEmulator>> controller = new SimpleObjectProperty<>(ST7920Emulator.class);
+
     private ObjectProperty<PixelShape> lcdPixelShape = new SimpleObjectProperty<>(PixelShape.RECTANGLE);
 
     public GlcdEmulatorProfile() {
@@ -61,6 +65,19 @@ public class GlcdEmulatorProfile extends GlcdConfig {
         setLcdSpacing(source.lcdSpacing.get());
         setLcdMargin(source.lcdMargin.get());
         setLcdPixelShape(source.lcdPixelShape.get());
+        setController(source.getController());
+    }
+
+    public Class<? extends GlcdEmulator> getController() {
+        return controller.get();
+    }
+
+    public ObjectProperty<Class<? extends GlcdEmulator>> controllerProperty() {
+        return controller;
+    }
+
+    public void setController(Class<? extends GlcdEmulator> controller) {
+        this.controller.set(controller);
     }
 
     public PixelShape getLcdPixelShape() {

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Pane prefHeight="126.0" prefWidth="466.0">
+            <children>
+                <JFXComboBox fx:id="cbSerialSpeed" accessibleHelp="Baud Rate" accessibleText="Baud Rate" editable="true"
+                             layoutX="175.0" layoutY="16.0" prefHeight="25.0" prefWidth="99.0" promptText="Speed"/>
+                <JFXTextField fx:id="tfSerialDataBits" accessibleHelp="Data Bits" accessibleText="Data Bits"
+                              layoutX="285.0" layoutY="15.0" prefHeight="26.0" prefWidth="73.0" promptText="Data Bits"/>
+                <JFXComboBox fx:id="cbSerialParity" accessibleHelp="Parity" accessibleText="Parity" layoutX="14.0"
+                             layoutY="55.0" prefHeight="25.0" prefWidth="115.0" promptText="Parity"/>
+                <JFXButton fx:id="btnSetFlowControl" layoutX="407.0" layoutY="57.0" prefHeight="25.0" prefWidth="46.0"
+                           text="Set"/>
+                <JFXTextField fx:id="tfFlowControl" accessibleHelp="Flow Control" accessibleText="Flow Control"
+                              editable="false" layoutX="139.0" layoutY="55.0" prefHeight="26.0" prefWidth="258.0"
+                              promptText="Flow Control"/>
+                <JFXComboBox fx:id="cbSerialStopBits" accessibleHelp="Stop Bits" accessibleText="Stop Bits"
+                             editable="true" layoutX="370.0" layoutY="15.0" prefHeight="25.0" prefWidth="82.0"
+                             promptText="Stop Bits"/>
+                <JFXComboBox fx:id="cbSerialPorts" layoutX="14.0" layoutY="15.0" prefHeight="25.0" prefWidth="115.0"
+                             promptText="Serial Port"/>
+                <JFXButton fx:id="btnSerialPortRefresh" contentDisplay="GRAPHIC_ONLY" layoutX="137.0" layoutY="16.0"
+                           prefHeight="25.0" prefWidth="27.0">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="REFRESH"/>
+                    </graphic>
+                </JFXButton>
+            </children>
+        </Pane>
+    </children>
+</VBox>

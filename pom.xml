@@ -17,6 +17,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.github.classgraph</groupId>
+                <artifactId>classgraph</artifactId>
+                <version>4.1.6</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
             <dependency>
                 <groupId>com.ibasco.pidisplay</groupId>
@@ -87,6 +92,10 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.zenjava</groupId>
             <artifactId>javafx-maven-plugin</artifactId>

@@ -1,9 +1,11 @@
 package com.ibasco.glcdemu.emulator.st7920;
 
+import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.emulator.GlcdEmulatorBase;
 import com.ibasco.glcdemu.emulator.st7920.instructions.DdramSet;
 import com.ibasco.pidisplay.drivers.glcd.Glcd;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
 import org.slf4j.Logger;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,7 +17,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  *
  * @author Rafael Ibasco
  */
-@SuppressWarnings("Duplicates")
+@Emulator(controller = GlcdControllerType.ST7920, description = "ST7920 Emulator")
 public class ST7920Emulator extends GlcdEmulatorBase {
     private static final Logger log = getLogger(ST7920Emulator.class);
 

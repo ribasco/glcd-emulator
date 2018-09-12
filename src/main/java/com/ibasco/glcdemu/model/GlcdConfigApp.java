@@ -1,6 +1,7 @@
 package com.ibasco.glcdemu.model;
 
 import com.ibasco.glcdemu.constants.Common;
+import com.ibasco.glcdemu.enums.*;
 import com.ibasco.glcdemu.utils.NetUtils;
 import javafx.beans.property.*;
 
@@ -55,12 +56,110 @@ public class GlcdConfigApp extends GlcdConfig {
     private BooleanProperty runEmulatorAtStartup = new SimpleBooleanProperty(false);
 
     private StringProperty themeId = new SimpleStringProperty(Common.THEME_DEFAULT_DARK);
+
+    private ObjectProperty<ConnectionType> connectionType = new SimpleObjectProperty<>(ConnectionType.TCP);
+
+    private ObjectProperty<SerialBaudRate> serialBaudRate = new SimpleObjectProperty<>(SerialBaudRate.RATE_9600);
+
+    private IntegerProperty serialDataBits = new SimpleIntegerProperty(8);
+
+    private ObjectProperty<SerialStopBits> serialStopBits = new SimpleObjectProperty<>(SerialStopBits.ONE_STOP_BIT);
+
+    private ObjectProperty<SerialParity> serialParity = new SimpleObjectProperty<>(SerialParity.NONE);
+
+    private IntegerProperty serialFlowControl = new SimpleIntegerProperty(SerialFlowControl.NONE.toValue());
+
+    private StringProperty serialPortName = new SimpleStringProperty();
     //</editor-fold>
 
     public GlcdConfigApp() {
     }
 
     //<editor-fold desc="Getter/Setters">
+    public String getSerialPortName() {
+        return serialPortName.get();
+    }
+
+    public StringProperty serialPortNameProperty() {
+        return serialPortName;
+    }
+
+    public void setSerialPortName(String serialPortName) {
+        this.serialPortName.set(serialPortName);
+    }
+
+    public int getSerialFlowControl() {
+        return serialFlowControl.get();
+    }
+
+    public IntegerProperty serialFlowControlProperty() {
+        return serialFlowControl;
+    }
+
+    public void setSerialFlowControl(int serialFlowControl) {
+        this.serialFlowControl.set(serialFlowControl);
+    }
+
+    public SerialBaudRate getSerialBaudRate() {
+        return serialBaudRate.get();
+    }
+
+    public ObjectProperty<SerialBaudRate> serialBaudRateProperty() {
+        return serialBaudRate;
+    }
+
+    public void setSerialBaudRate(SerialBaudRate serialBaudRate) {
+        this.serialBaudRate.set(serialBaudRate);
+    }
+
+    public int getSerialDataBits() {
+        return serialDataBits.get();
+    }
+
+    public IntegerProperty serialDataBitsProperty() {
+        return serialDataBits;
+    }
+
+    public void setSerialDataBits(int serialDataBits) {
+        this.serialDataBits.set(serialDataBits);
+    }
+
+    public SerialStopBits getSerialStopBits() {
+        return serialStopBits.get();
+    }
+
+    public ObjectProperty<SerialStopBits> serialStopBitsProperty() {
+        return serialStopBits;
+    }
+
+    public void setSerialStopBits(SerialStopBits serialStopBits) {
+        this.serialStopBits.set(serialStopBits);
+    }
+
+    public SerialParity getSerialParity() {
+        return serialParity.get();
+    }
+
+    public ObjectProperty<SerialParity> serialParityProperty() {
+        return serialParity;
+    }
+
+    public void setSerialParity(SerialParity serialParity) {
+        this.serialParity.set(serialParity);
+    }
+
+    public ConnectionType getConnectionType() {
+        return connectionType.get();
+    }
+
+    public ObjectProperty<ConnectionType> connectionTypeProperty() {
+        return connectionType;
+    }
+
+    public void setConnectionType(ConnectionType connectionType) {
+        this.connectionType.set(connectionType);
+    }
+
     public boolean isRunEmulatorAtStartup() {
         return runEmulatorAtStartup.get();
     }

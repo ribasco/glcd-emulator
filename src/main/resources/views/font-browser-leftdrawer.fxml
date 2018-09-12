@@ -2,16 +2,17 @@
 
 <?import com.jfoenix.controls.JFXListView?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.layout.*?>
+<VBox alignment="CENTER" style="-fx-background-color: #5A5A5A;" xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <BorderPane VBox.vgrow="ALWAYS">
+        <BorderPane style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
             <VBox.margin>
                 <Insets right="3.0"/>
             </VBox.margin>
             <center>
-                <JFXListView fx:id="lvFonts"/>
+                <JFXListView fx:id="lvFonts" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="258.0"
+                             BorderPane.alignment="CENTER"/>
             </center>
         </BorderPane>
     </children>

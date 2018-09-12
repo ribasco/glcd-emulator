@@ -11,19 +11,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GlcdFontLeftDrawerController extends GlcdController implements Initializable {
+public class GlcdFontTopDrawerController extends GlcdController implements Initializable {
 
-    private static final Logger log = LoggerFactory.getLogger(GlcdFontLeftDrawerController.class);
+    private static final Logger log = LoggerFactory.getLogger(GlcdFontTopDrawerController.class);
 
     @FXML
     private JFXListView<FontCacheEntry> lvFonts;
@@ -32,14 +35,25 @@ public class GlcdFontLeftDrawerController extends GlcdController implements Init
 
     private final FontCacheDetails details;
 
-    public GlcdFontLeftDrawerController(FontCacheService service, FontCacheDetails details) {
+    public GlcdFontTopDrawerController(FontCacheService service, FontCacheDetails details) {
         this.fontCacheService = service;
         this.details = details;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        lvFonts.setCellFactory(param -> new ListCell<FontCacheEntry>() {
+        lvFonts.setOrientation(Orientation.HORIZONTAL);
+        lvFonts.setCellFactory(this::listCellFactory);
+        final ObjectBinding<ObservableList<FontCacheEntry>> cacheListBinding = Bindings.createObjectBinding(() -> {
+            return ObjectUtils.defaultIfNull(fontCacheService.getValue(), FXCollections.observableArrayList());
+        }, fontCacheService.valueProperty());
+
+        lvFonts.itemsProperty().bind(cacheListBinding);
+        details.activeEntryProperty().bind(lvFonts.getSelectionModel().selectedItemProperty());
+    }
+
+    private ListCell<FontCacheEntry> listCellFactory(ListView<FontCacheEntry> fontCacheEntryListView) {
+        return new ListCell<FontCacheEntry>() {
             @Override
             public void updateItem(FontCacheEntry entry, boolean empty) {
                 super.updateItem(entry, empty);
@@ -52,15 +66,6 @@ public class GlcdFontLeftDrawerController extends GlcdController implements Init
                     setGraphic(new ImageView(image));
                 }
             }
-        });
-
-        ObjectBinding<ObservableList<FontCacheEntry>> cacheListBinding = Bindings.createObjectBinding(() -> {
-            if (fontCacheService.getValue() == null)
-                return FXCollections.observableArrayList();
-            return fontCacheService.getValue();
-        }, fontCacheService.valueProperty());
-        lvFonts.itemsProperty().bind(cacheListBinding);
-
-        details.activeEntryProperty().bind(lvFonts.getSelectionModel().selectedItemProperty());
+        };
     }
 }

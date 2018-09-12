@@ -2,10 +2,8 @@
 
 <?import com.ibasco.glcdemu.controls.GlcdScreen?>
 <?import com.jfoenix.controls.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.ToolBar?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <VBox fx:id="root" prefHeight="546.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/8.0.171"
@@ -69,7 +67,7 @@
                                                         </AnchorPane>
                                                     </content>
                                                 </Tab>
-                                                <Tab text="Details">
+                                                <Tab disable="true" text="Details">
                                                     <content>
                                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
                                                                     prefWidth="200.0">
@@ -80,7 +78,41 @@
                                                                            AnchorPane.bottomAnchor="0.0"
                                                                            AnchorPane.leftAnchor="0.0"
                                                                            AnchorPane.rightAnchor="0.0"
-                                                                           AnchorPane.topAnchor="0.0"/>
+                                                                           AnchorPane.topAnchor="0.0">
+                                                                    <children>
+                                                                        <Accordion>
+                                                                            <panes>
+                                                                                <TitledPane animated="false"
+                                                                                            text="Info">
+                                                                                    <content>
+                                                                                        <AnchorPane minHeight="0.0"
+                                                                                                    minWidth="0.0"
+                                                                                                    prefHeight="180.0"
+                                                                                                    prefWidth="200.0"/>
+                                                                                    </content>
+                                                                                </TitledPane>
+                                                                                <TitledPane animated="false"
+                                                                                            text="Charsets">
+                                                                                    <content>
+                                                                                        <AnchorPane minHeight="0.0"
+                                                                                                    minWidth="0.0"
+                                                                                                    prefHeight="180.0"
+                                                                                                    prefWidth="200.0"/>
+                                                                                    </content>
+                                                                                </TitledPane>
+                                                                                <TitledPane animated="false"
+                                                                                            text="untitled 3">
+                                                                                    <content>
+                                                                                        <AnchorPane minHeight="0.0"
+                                                                                                    minWidth="0.0"
+                                                                                                    prefHeight="180.0"
+                                                                                                    prefWidth="200.0"/>
+                                                                                    </content>
+                                                                                </TitledPane>
+                                                                            </panes>
+                                                                        </Accordion>
+                                                                    </children>
+                                                                </StackPane>
                                                             </children>
                                                         </AnchorPane>
                                                     </content>
@@ -98,12 +130,25 @@
                                         <Pane prefHeight="0.0" prefWidth="5.0" HBox.hgrow="ALWAYS"/>
                                         <JFXButton fx:id="btnReloadCache" text="Reload Font Cache"/>
                                     </items>
+                                    <BorderPane.margin>
+                                        <Insets/>
+                                    </BorderPane.margin>
+                                    <padding>
+                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                    </padding>
                                 </ToolBar>
                             </top>
+                            <bottom>
+                                <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                    <items>
+                                        <Pane prefHeight="30.0" prefWidth="95.0"/>
+                                    </items>
+                                </ToolBar>
+                            </bottom>
                         </BorderPane>
                     </children>
                 </AnchorPane>
-                <StackPane fx:id="spFontCacheProgress" opacity="0.77" style="-fx-background-color: #000000;"
+                <StackPane fx:id="spFontCacheProgress" opacity="0.86" style="-fx-background-color: #000000;"
                            visible="false">
                     <children>
                         <Label fx:id="lblLoadFonts" alignment="BOTTOM_CENTER" prefHeight="369.0" prefWidth="476.0"
@@ -118,5 +163,6 @@
                 </StackPane>
             </children>
         </StackPane>
+        <JFXToolbar/>
     </children>
 </VBox>

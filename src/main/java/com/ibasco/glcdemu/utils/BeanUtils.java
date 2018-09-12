@@ -16,7 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class BeanUtils {
 
@@ -63,15 +62,16 @@ public class BeanUtils {
                 if ((oldValue == null || newValue == null) && oldValue != newValue)  {
                     diffProps.add(desc);
                     continue;
+                } else if (oldValue == null) {
+                    continue;
                 }
 
                 if (desc.getPropertyType().equals(Color.class)) {
-                    String oldColor = UIUtil.toHexString((Color) oldValue);
-                    String newColor = UIUtil.toHexString((Color) newValue);
+                    String oldColor = NodeUtil.toHexString((Color) oldValue);
+                    String newColor = NodeUtil.toHexString((Color) newValue);
                     if (!oldColor.equalsIgnoreCase(newColor))
                         diffProps.add(desc);
                 } else   {
-                    assert oldValue != null;
                     if (!oldValue.equals(newValue))
                         diffProps.add(desc);
                 }

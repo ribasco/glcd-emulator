@@ -1,19 +1,18 @@
 package com.ibasco.glcdemu.controllers;
 
-import com.ibasco.glcdemu.Context;
 import com.ibasco.glcdemu.GlcdController;
 import com.ibasco.glcdemu.constants.Views;
 import com.ibasco.glcdemu.controls.GlcdScreen;
 import com.ibasco.glcdemu.enums.PixelShape;
 import com.ibasco.glcdemu.model.FontCacheDetails;
-import com.ibasco.glcdemu.model.FontCacheEntry;
 import com.ibasco.glcdemu.services.FontCacheService;
+import com.ibasco.glcdemu.utils.DialogUtil;
 import com.ibasco.glcdemu.utils.FontRenderer;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.glcdemu.utils.ResourceUtil;
 import com.ibasco.pidisplay.drivers.glcd.enums.GlcdFont;
 import com.jfoenix.controls.*;
-import com.jfoenix.transitions.hamburger.HamburgerBackArrowBasicTransition;
+import com.jfoenix.transitions.hamburger.HamburgerSlideCloseTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -38,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 
@@ -68,9 +66,6 @@ public class GlcdFontBrowserController extends GlcdController implements Initial
     private StackPane spFontDetails;
 
     @FXML
-    private JFXListView<FontCacheEntry> lvFonts;
-
-    @FXML
     private JFXHamburger hamLeftDrawer;
 
     @FXML
@@ -85,13 +80,13 @@ public class GlcdFontBrowserController extends GlcdController implements Initial
 
     private FontCacheService fontCacheService;
 
-    private DecimalFormat df = new DecimalFormat("#.##");
-
     private FontCacheDetails details;
 
     private JFXDrawersStack drawersStack;
 
     private JFXDrawer leftDrawer;
+
+    private HamburgerSlideCloseTransition transition;
 
     public GlcdFontBrowserController(FontCacheService service, FontCacheDetails details) {
         this.fontCacheService = service;
@@ -100,27 +95,36 @@ public class GlcdFontBrowserController extends GlcdController implements Initial
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        log.debug("Initializing main font browser");
+        initFontDisplay();
         initDrawer();
+        initPreloaderBindings();
+        initPreviewTextBindings();
 
         btnReloadCache.setOnAction(event -> {
-            fontCacheService.rebuild();
+            if (DialogUtil.promptConfirmation("Are you sure you want to rebuild the font cache?", "Rebuilding the whole cache may take a while")) {
+                showTopDrawer(false);
+                Platform.runLater(() -> fontCacheService.rebuild());
+            }
         });
 
         //Lazy-initialization
         root.sceneProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 drawersStack = (JFXDrawersStack) newValue.getRoot();
-                Context.getInstance().getThemeManager().applyTheme(newValue);
+                //Context.getInstance().getThemeManager().applyTheme(newValue);
             }
         });
 
-        initFontDisplay();
-        initPreloaderBindings();
-        initPreviewTextBindings();
-
         //Start retrieving cached entries
-        fontCacheService.start();
+        if (fontCacheService.getState().equals(Worker.State.READY))
+            fontCacheService.start();
+
+        //Show the left drawer once the cache is made available
+        fontCacheService.setOnSucceeded(event -> {
+            Platform.runLater(() -> {
+                showTopDrawer(true);
+            });
+        });
     }
 
     //<editor-fold desc="Initialize Properties and Bindings">
@@ -144,26 +148,22 @@ public class GlcdFontBrowserController extends GlcdController implements Initial
 
     private void initDrawer() {
         try {
-            GlcdFontLeftDrawerController leftDrawerController = new GlcdFontLeftDrawerController(fontCacheService, details);
-            VBox leftDrawerPane = ResourceUtil.loadFxmlResource(Views.FONT_BROWSER_LEFTDRAWER, leftDrawerController);
+            GlcdFontTopDrawerController leftDrawerController = new GlcdFontTopDrawerController(fontCacheService, details);
+            VBox leftDrawerPane = ResourceUtil.loadFxmlResource(Views.FONT_BROWSER_TOPDRAWER, leftDrawerController);
             leftDrawer = new JFXDrawer();
             leftDrawer.setSidePane(leftDrawerPane);
-            leftDrawer.setDefaultDrawerSize(260);
+            leftDrawer.setDirection(JFXDrawer.DrawerDirection.TOP);
+            leftDrawer.setDefaultDrawerSize(150);
             leftDrawer.setResizeContent(true);
             leftDrawer.setOverLayVisible(false);
-            leftDrawer.setResizableOnDrag(true);
-            leftDrawer.setId("LEFT");
+            leftDrawer.setResizableOnDrag(false);
+            leftDrawer.setId("TOP");
 
-            HamburgerBackArrowBasicTransition transition = new HamburgerBackArrowBasicTransition(hamLeftDrawer);
-            transition.setRate(-1);
-            hamLeftDrawer.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-                transition.setRate(transition.getRate() * -1);
-                transition.play();
-                Platform.runLater(() -> drawersStack.toggle(leftDrawer));
-            });
+            transition = new HamburgerSlideCloseTransition(hamLeftDrawer);
+            hamLeftDrawer.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> toggleTopDrawer());
             log.debug("Successfully initialized left drawer", leftDrawerPane);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("There was a problem loading the view for '" + Views.FONT_BROWSER_TOPDRAWER + "'", e);
         }
     }
 
@@ -190,7 +190,7 @@ public class GlcdFontBrowserController extends GlcdController implements Initial
         pbLoadFonts.visibleProperty().bind(showProgressBinding);
         spFontCacheProgress.visibleProperty().bind(showProgressBinding);
 
-        lblLoadFonts.textProperty().bind(Bindings.createStringBinding(() -> String.format("Caching fonts...%s%% (%d/%d)", df.format(fontCacheService.getProgress() * 100.0), (int) fontCacheService.getWorkDone(), (int) fontCacheService.getTotalWork()), fontCacheService.progressProperty()));
+        lblLoadFonts.textProperty().bind(Bindings.createStringBinding(() -> String.format("Caching fonts... (%d/%d)", (int) fontCacheService.getWorkDone(), (int) fontCacheService.getTotalWork()), fontCacheService.progressProperty()));
         apFontBrowser.effectProperty().bind(Bindings.createObjectBinding((Callable<Effect>) () -> {
             GaussianBlur blur = new GaussianBlur(25.75);
             if (Worker.State.RUNNING.equals(fontCacheService.getState())) {
@@ -200,6 +200,16 @@ public class GlcdFontBrowserController extends GlcdController implements Initial
         }, showProgressBinding));
     }
     //</editor-fold>
+
+    private void toggleTopDrawer() {
+        showTopDrawer(!leftDrawer.isOpened());
+    }
+
+    private void showTopDrawer(boolean show) {
+        transition.setRate(show ? 1 : -1);
+        transition.play();
+        drawersStack.toggle(leftDrawer, show);
+    }
 
     private void renderText(GlcdFont font, String text) {
         if (fontCacheService.isRunning()) {

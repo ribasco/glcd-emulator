@@ -4,7 +4,9 @@
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-base: rgba(60, 63, 65, 255);
-    -fx-text-fill: #c7c7c7;
+    /*-fx-text-fill: #c7c7c7;*/
+    -base-text-color: #c7c7c7;
+    -base-prompt-text-color: #919191;
 }
 
 .table-view {
@@ -167,7 +169,7 @@
 .jfx-text-field {
     -jfx-focus-color: #99a2a4;
     -jfx-unfocus-color: #7b7b7b;
-    -fx-text-fill: #c7c7c7;
+    -fx-text-fill: -base-text-color;
     -fx-padding: 5px 0 0.333333em 5px;
 }
 
@@ -185,7 +187,7 @@
 .jfx-text-field,
 .jfx-text-field:focused {
     -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT;
-    -fx-prompt-text-fill: #4D4D4D;
+    -fx-prompt-text-fill: #979797;
 }
 
 /*Raised button example */
@@ -244,10 +246,129 @@
 }
 
 .jfx-hamburger-icon StackPane {
-    -fx-background-color: #282828;
+    -fx-background-color: #74797B;
     -fx-background-radius: 2px;
 }
 
+.list-view {
+    -fx-padding: 0px;
+    -fx-background-color: #3B3E40;
+}
+
+.list-cell {
+    -fx-padding: 0px;
+    -fx-background-color: transparent, -fx-background;
+    -fx-background-insets: 0px, 0px;
+}
+
+.list-cell:selected {
+    -fx-border-color: white; /*#74797B;*/
+    -fx-background-color: transparent;
+}
+
+.list-cell:empty {
+    -fx-padding: 0px;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+/*.list-view .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+}
+.list-view .scroll-bar:vertical {
+    -fx-scale-x: 2;
+}*/
+
 #font-browser-tf {
     -fx-background-color: #74797b;
+}
+
+.jfx-combo-box {
+    -jfx-focus-color: #4059A9;
+    -jfx-unfocus-color: #4d4d4d;
+    -fx-prompt-text-fill: #919191;
+}
+
+.jfx-combo-box .text-field {
+    -fx-text-fill: #c7c7c7;
+}
+
+.jfx-combo-box > .input-line {
+    -fx-background-color: -jfx-unfocus-color;
+    -fx-pref-height: 1px;
+    -fx-translate-y: 1px;
+}
+
+.jfx-combo-box > .input-focused-line {
+    -fx-background-color: -jfx-focus-color;
+    -fx-pref-height: 2px;
+}
+
+.jfx-combo-box,
+.jfx-combo-box:focused,
+.jfx-combo-box:editable,
+.jfx-combo-box:editable:focused {
+    -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+    -fx-background-radius: 3px;
+    -fx-background-insets: 0px;
+}
+
+.jfx-combo-box .combo-box-button-container {
+    -fx-background-color: TRANSPARENT;
+}
+
+.jfx-combo-box > .arrow-button,
+.jfx-combo-box:editable > .arrow-button,
+.jfx-combo-box:editable:focused > .arrow-button {
+    -fx-background-color: TRANSPARENT;
+}
+
+.jfx-combo-box:error {
+    -jfx-focus-color: #D34336;
+    -jfx-unfocus-color: #D34336;
+}
+
+.jfx-combo-box .error-label {
+    -fx-text-fill: #D34336;
+}
+
+.jfx-combo-box .error-icon {
+    -fx-fill: #D34336;
+}
+
+/* Dialog Layout */
+.jfx-dialog-layout {
+    -fx-text-fill: rgba(0, 0, 0, 0.87);
+    -fx-background-color: #4F5356;
+}
+
+.jfx-dialog-layout > .jfx-layout-heading {
+    -fx-alignment: center-left;
+    -fx-font-weight: BOLD;
+    -fx-padding: 24 24 20 24;
+}
+
+.jfx-dialog-layout > .jfx-layout-actions {
+    -fx-alignment: center-right;
+    -fx-hgap: 8;
+    -fx-padding: 8 8 8 8;
+}
+
+.jfx-dialog-layout > .jfx-layout-actions .jfx-button {
+    -fx-pref-height: 36;
+    -fx-max-height: 36;
+    -fx-min-width: 64;
+    -fx-padding: 8;
+}
+
+.jfx-dialog-layout > .jfx-layout-body {
+    -fx-alignment: center-left;
+    -fx-padding: 0 24 24 24;
+    -fx-pref-width: 400;
+}
+
+.jfx-dialog-layout > .jfx-layout-body .label {
+    -fx-text-fill: #757575;
+    -fx-font-size: 16.0;
+    -fx-wrap-text: true;
 }

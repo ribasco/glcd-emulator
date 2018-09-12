@@ -4,6 +4,9 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,5 +73,24 @@ public class NodeUtil {
         } catch (InterruptedException e) {
             log.warn("Save node interrupted", e);
         }
+    }
+
+    public static String toHexString(Color color) throws NullPointerException {
+        return String.format("#%02x%02x%02x",
+                (int) (255 * color.getRed()),
+                (int) (255 * color.getGreen()),
+                (int) (255 * color.getBlue()));
+    }
+
+    public static double computeStringWidth(String text, Font font) {
+        final Text tmp = new Text(text);
+        tmp.setFont(font);
+        return tmp.getLayoutBounds().getWidth();
+    }
+
+    public static double computeStringHeight(String text, Font font) {
+        final Text tmp = new Text(text);
+        tmp.setFont(font);
+        return tmp.getLayoutBounds().getHeight();
     }
 }

@@ -1,27 +1,29 @@
 package com.ibasco.glcdemu;
 
-abstract public class GlcdController {
-    //protected final Stage stage;
+import javafx.fxml.Initializable;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
+abstract public class GlcdController implements Initializable {
+
+    private boolean initialized = false;
 
     public GlcdController() {
-        //this.stage = stage;
     }
 
-    /**
-     * This is called once the stage has been made available for the {@link GlcdController}
-     */
-    public void onInit() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        if (initialized)
+            return;
+        initialized = true;
+        initializeOnce();
     }
 
-    public boolean onClose() {
-        return true;
+    protected void initializeOnce() {
     }
 
     public Context getContext() {
         return Context.getInstance();
     }
-
-    /*public Stage getStage() {
-        return stage;
-    }*/
 }

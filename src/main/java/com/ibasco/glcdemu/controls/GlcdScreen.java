@@ -1,8 +1,8 @@
 package com.ibasco.glcdemu.controls;
 
 import com.ibasco.glcdemu.enums.PixelShape;
+import com.ibasco.glcdemu.utils.NodeUtil;
 import com.ibasco.glcdemu.utils.PixelBuffer;
-import com.ibasco.glcdemu.utils.UIUtil;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -129,7 +129,7 @@ public class GlcdScreen extends Canvas {
                 gc.setFont(fpsFont);
                 gc.setFill(backlightColor.get().invert());
                 String text = "FPS: " + String.valueOf(fps);
-                double height = UIUtil.computeStringHeight(text, fpsFont);
+                double height = NodeUtil.computeStringHeight(text, fpsFont);
                 gc.fillText(text, margin.get() + pixelSize.get(), height + margin.get());
                 fpsCounter.incrementAndGet();
             }
@@ -514,8 +514,8 @@ public class GlcdScreen extends Canvas {
             gc.setEffect(displayDropShadow);
             gc.setFill(watermarkColor.get());
             gc.setFont(watermarkFont.get());
-            double strWidth = UIUtil.computeStringWidth(watermarkText.get(), watermarkFont.get());
-            double strHeight = UIUtil.computeStringHeight(watermarkText.get(), watermarkFont.get());
+            double strWidth = NodeUtil.computeStringWidth(watermarkText.get(), watermarkFont.get());
+            double strHeight = NodeUtil.computeStringHeight(watermarkText.get(), watermarkFont.get());
             gc.fillText(watermarkText.get(), getWidth() - (strWidth + margin), (getHeight() - strHeight) + (margin / 2.0d));
             gc.setFill(null);
             gc.setEffect(null);

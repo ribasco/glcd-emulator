@@ -21,6 +21,10 @@ public class Controllers {
         return emulatorController;
     }
 
+    static void setEmulatorController(GlcdEmulatorController controller) {
+        emulatorController = controller;
+    }
+
     public static GlcdEditProfileController getEditProfileController() {
         if (editProfileController == null) {
             editProfileController = new GlcdEditProfileController();

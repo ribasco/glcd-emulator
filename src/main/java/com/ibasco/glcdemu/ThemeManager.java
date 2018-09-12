@@ -2,6 +2,7 @@ package com.ibasco.glcdemu;
 
 import com.ibasco.glcdemu.exceptions.ThemeNotFoundException;
 import com.ibasco.glcdemu.utils.ResourceUtil;
+import com.sun.javafx.stage.StageHelper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Scene;
@@ -96,6 +97,14 @@ public class ThemeManager {
         scene.getStylesheets().clear();
         scene.getStylesheets().add(themeMap.get(themeId));
         log.debug("Applied theme id: {} to scene: {}", themeId, scene);
+    }
+
+    public void applyToAll() {
+        for (Stage stage : StageHelper.getStages()) {
+            if (stage.getScene() != null) {
+                applyTheme(stage.getScene());
+            }
+        }
     }
 
     public String getActiveTheme() {
