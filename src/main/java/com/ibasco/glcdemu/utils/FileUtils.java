@@ -2,8 +2,10 @@ package com.ibasco.glcdemu.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * File system utility methods
@@ -19,10 +21,16 @@ public class FileUtils {
     public static void ensureDirectoryExistence(String dirPath) {
         if (StringUtils.isBlank(dirPath))
             return;
-        File fPath = new File(dirPath);
-        if (!fPath.exists()) {
-            if (!fPath.mkdir() && !fPath.isDirectory())
-                throw new RuntimeException(new IOException("Could not create directory"));
+        Path pDirPath = Paths.get(dirPath);
+        if (!Files.exists(pDirPath)) {
+            try {
+                Path pNewDir = Files.createDirectory(pDirPath);
+                if (!Files.isDirectory(pNewDir)) {
+                    throw new IOException("Not a valid directory '" + pNewDir.toString() + "'");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to create directory : " + pDirPath.toString());
+            }
         }
     }
 }
