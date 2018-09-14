@@ -99,7 +99,7 @@
                </graphic>
             </JFXButton>
             <JFXButton fx:id="btnFitScreenToWindow" mnemonicParsing="false" prefHeight="29.0" prefWidth="121.0"
-                       text="Fit to Window" textAlignment="CENTER" wrapText="true">
+                       text="Fit to Window" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                <graphic>
                    <MaterialDesignIconView glyphName="WINDOW_MAXIMIZE" size="20"/>
                </graphic>
