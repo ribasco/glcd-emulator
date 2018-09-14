@@ -10,6 +10,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
@@ -35,7 +36,6 @@ public class EmulatorService extends Service<Void> {
 
     private ObjectProperty<ListenerOptions> connectionOptions = new SimpleObjectProperty<>();
     //</editor-fold>
-
 
     public EmulatorService() {
         setExecutor(Context.getTaskExecutor());
@@ -108,6 +108,12 @@ public class EmulatorService extends Service<Void> {
         }
     }
 
+    private ChangeListener<String> taskMessageListener;
+
+    public void setTaskMessageListener(ChangeListener<String> listener) {
+        this.taskMessageListener = listener;
+    }
+
     @Override
     protected Task<Void> createTask() {
         if (connectionType.get() == null)
@@ -117,6 +123,9 @@ public class EmulatorService extends Service<Void> {
         RemoteListenerTask task = createListenerTask(connectionType.get());
         task.listenerOptionsProperty().bind(connectionOptions);
         clientConnected.bindBidirectional(task.connectedProperty());
+        if (taskMessageListener != null) {
+            task.messageProperty().addListener(taskMessageListener);
+        }
         return task;
     }
 }

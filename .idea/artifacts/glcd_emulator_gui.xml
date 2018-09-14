@@ -16,7 +16,7 @@
     </properties>
     <root id="root">
       <element id="archive" name="glcd-emulator.jar">
-        <element id="module-output" name="glcd-emulator" />
+        <element id="module-output" name="glcd-emulator-gui" />
       </element>
     </root>
   </artifact>
