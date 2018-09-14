@@ -13,11 +13,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class EmulatorScannerService extends Service<ObservableList<Class<?>>> {
+public class ScannerService extends Service<ObservableList<Class<?>>> {
 
-    private static final Logger log = LoggerFactory.getLogger(EmulatorScannerService.class);
+    private static final Logger log = LoggerFactory.getLogger(ScannerService.class);
 
-    public EmulatorScannerService() {
+    public ScannerService() {
         setExecutor(Context.getTaskExecutor());
     }
 
@@ -27,7 +27,6 @@ public class EmulatorScannerService extends Service<ObservableList<Class<?>>> {
             @Override
             protected ObservableList<Class<?>> call() throws Exception {
                 List<Class<?>> emulatorScanResult;
-
                 try (ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages("com.ibasco").scan()) {
                     ClassInfoList classInfo = scanResult.getClassesImplementing("com.ibasco.glcdemu.emulator.GlcdEmulator").filter(f -> !f.isAbstract());
                     //emulatorScanResult = classInfo.getNames();
@@ -36,7 +35,6 @@ public class EmulatorScannerService extends Service<ObservableList<Class<?>>> {
                     for (Class<?> classResult : emulatorScanResult) {
                         log.debug("\tClass: {}", classResult);
                     }
-
                 }
                 return FXCollections.observableArrayList(emulatorScanResult);
             }
