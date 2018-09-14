@@ -17,7 +17,11 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.TimeUnit;
 
+/**
+ * Serial Service. This method is really slow (e.g. only 5 fps on 115200 baudrate), use this if you have no other option.
+ */
 public class SerialRemoteListenerTask extends RemoteListenerTask {
     private static final Logger log = LoggerFactory.getLogger(SerialRemoteListenerTask.class);
 
@@ -91,22 +95,21 @@ public class SerialRemoteListenerTask extends RemoteListenerTask {
         log.debug("Serial Service Failed. Last Byte Count: {}", byteCount);
     }
 
+    private FpsCounter fpsCounter = new FpsCounter(1, TimeUnit.SECONDS);
+
     private int byteCount = 0;
 
-    /**
-     * Buffering scenario
-     * - 4-5 frames per second are received from Serial, it takes an average of (350ms) to send one complete frame via serial
-     * - 1 frame is equals 2544 bytes for 128 x 64 resolution
-     * - Collect 30 frames, multiply it by N seconds (ex 10) to get the total frames we need to collect in the buffer
-     */
     @Override
     protected void process() throws Exception {
         log.debug("Started remote serial task");
 
         if (!serialPort.isOpen()) {
-            if (!serialPort.openPort()) {
-                updateMessage("Could not open serial device");
-                throw new IOException("Could not connect to serial device");
+            if (!serialPort.isOpen()) {
+                updateMessage("Opening serial port");
+                if (!serialPort.openPort()) {
+                    updateMessage("Could not open serial device");
+                    throw new IOException("Could not connect to serial device");
+                }
             }
         }
 
@@ -125,8 +128,8 @@ public class SerialRemoteListenerTask extends RemoteListenerTask {
 
             boolean collect = false;
 
-            FpsCounter fpsCounter = new FpsCounter();
-            fpsCounter.setCountListener(e -> log.debug("FPS: {}", e));
+
+            fpsCounter.setListener(e -> log.debug("FPS: {}", e));
 
             while (!isCancelled()) {
                 while (bis.available() > 0) {
@@ -135,13 +138,8 @@ public class SerialRemoteListenerTask extends RemoteListenerTask {
                     if (msg == MSG_START) {
                         //check if buffer needs to be processed
                         if (buffer.position() > 0) {
-                            buffer.flip();
-                            while (buffer.hasRemaining()) {
-                                fpsCounter.pulse();
-                                processMessage((byte) U8g2Message.U8X8_MSG_BYTE_SEND.getCode(), buffer.get());
-                            }
-                            buffer.clear();
-                            fpsCounter.count();
+                            log.debug("Buffer size: {}", buffer.position());
+                            processBuffer(buffer);
                         }
                         collect = true;
                     } else {
@@ -153,5 +151,19 @@ public class SerialRemoteListenerTask extends RemoteListenerTask {
                 }
             }
         }
+    }
+
+    private void processBuffer(ByteBuffer buffer) {
+        try {
+            buffer.flip();
+            while (buffer.hasRemaining()) {
+                fpsCounter.pulse();
+                processMessage((byte) U8g2Message.U8X8_MSG_BYTE_SEND.getCode(), buffer.get());
+                fpsCounter.count();
+            }
+        } finally {
+            buffer.clear();
+        }
+
     }
 }
