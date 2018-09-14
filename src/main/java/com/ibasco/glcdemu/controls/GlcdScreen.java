@@ -1,6 +1,7 @@
 package com.ibasco.glcdemu.controls;
 
 import com.ibasco.glcdemu.enums.PixelShape;
+import com.ibasco.glcdemu.utils.FpsCounter;
 import com.ibasco.glcdemu.utils.NodeUtil;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import javafx.animation.AnimationTimer;
@@ -21,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings({"unused", "UnnecessaryLocalVariable", "WeakerAccess"})
 public class GlcdScreen extends Canvas {
@@ -83,21 +84,27 @@ public class GlcdScreen extends Canvas {
 
     private Renderer renderer;
 
+    private FpsCounter fpsCounter = new FpsCounter();
+
     private final class Renderer extends AnimationTimer {
 
         private GraphicsContext gc = getGraphicsContext2D();
 
-        private AtomicInteger fpsCounter = new AtomicInteger(0);
+        private long lastUpdateMillis = 0;
 
-        private long prevMillis = 0;
+        private long updateInterval = 55; //55
+
+        private TimeUnit timeUnit = TimeUnit.MILLISECONDS;
 
         private static final int interval = 1000000000;
 
         private Font fpsFont = new Font("Verdana", 18);
 
-        private int fps = 0;
-
         private BooleanProperty running = new SimpleBooleanProperty(false);
+
+        public void setUpdateInterval(long interval) {
+            this.updateInterval = timeUnit.toNanos(interval);
+        }
 
         @Override
         public void start() {
@@ -112,26 +119,23 @@ public class GlcdScreen extends Canvas {
 
         @Override
         public void handle(long now) {
+            fpsCounter.pulse(now);
+
             if (!running.get())
                 running.set(true);
 
-            if (displayWidth.get() <= 0 || displayHeight.get() <= 0)
-                return;
-
-            draw();
-
-            if ((now - prevMillis) > interval) {
-                prevMillis = now;
-                fps = fpsCounter.getAndSet(0);
+            if ((now - lastUpdateMillis) >= timeUnit.toNanos(updateInterval)) {
+                draw();
+                fpsCounter.count();
+                lastUpdateMillis = now;
             }
 
             if (isShowFPS()) {
                 gc.setFont(fpsFont);
                 gc.setFill(backlightColor.get().invert());
-                String text = "FPS: " + String.valueOf(fps);
+                String text = "FPS: " + String.valueOf(fpsCounter.getLastCount());
                 double height = NodeUtil.computeStringHeight(text, fpsFont);
                 gc.fillText(text, margin.get() + pixelSize.get(), height + margin.get());
-                fpsCounter.incrementAndGet();
             }
         }
 
