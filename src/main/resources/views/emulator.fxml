@@ -392,11 +392,15 @@
                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
                                                          prefWidth="200.0">
                                                  <children>
-                                                     <JFXTextArea editable="false" layoutX="96.0" layoutY="3.0"
-                                                                  AnchorPane.bottomAnchor="0.0"
+                                                     <JFXTextArea fx:id="taLog" editable="false" layoutX="96.0"
+                                                                  layoutY="3.0" AnchorPane.bottomAnchor="0.0"
                                                                   AnchorPane.leftAnchor="0.0"
                                                                   AnchorPane.rightAnchor="0.0"
-                                                                  AnchorPane.topAnchor="0.0"/>
+                                                                  AnchorPane.topAnchor="0.0">
+                                                         <font>
+                                                             <Font name="Monospaced Regular" size="14.0"/>
+                                                         </font>
+                                                     </JFXTextArea>
                                                  </children>
                                              </AnchorPane>
                                          </content>

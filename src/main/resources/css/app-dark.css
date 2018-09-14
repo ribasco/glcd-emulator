@@ -372,3 +372,7 @@
     -fx-font-size: 16.0;
     -fx-wrap-text: true;
 }
+
+.jfx-text-area {
+    -fx-text-fill: #cacaca;
+}
