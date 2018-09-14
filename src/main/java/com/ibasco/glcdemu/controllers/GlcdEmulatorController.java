@@ -399,6 +399,8 @@ public class GlcdEmulatorController extends GlcdController {
     private EventHandler<WindowEvent> windowCloseFilter = new EventHandler<WindowEvent>() {
         @Override
         public void handle(WindowEvent event) {
+            if (event.isConsumed())
+                return;
             log.debug("Close Event Filter from: Controller (Source: {}, Target: {})", event.getSource(), event.getTarget());
             profileCheckModified(!appConfig.isConfirmOnExit(), !appConfig.isRememberSettingsOnExit());
             if (appConfig.isRememberSettingsOnExit()) {
