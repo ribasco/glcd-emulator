@@ -482,6 +482,12 @@ public class GlcdEmulatorController extends GlcdController {
         }
     };
 
+    private void setupDisplayScreen() {
+        attachAutoFitWindowBindings(glcdScreen.widthProperty());
+        attachAutoFitWindowBindings(glcdScreen.heightProperty());
+        glcdScreen.setShowFPS(true);
+    }
+
     @Override
     public void initializeOnce() {
         screenshotTransition = new FadeTransition(Duration.millis(500), glcdScreen);
@@ -498,10 +504,9 @@ public class GlcdEmulatorController extends GlcdController {
         });
 
         appConfig.defaultProfileIdProperty().addListener((observable, oldValue, newValue) -> log.info("Default profile changed from {} to {}", oldValue, newValue));
-        attachAutoFitWindowBindings(glcdScreen.widthProperty());
-        attachAutoFitWindowBindings(glcdScreen.heightProperty());
 
         setupNodeProperties(); //must be called first
+        setupDisplayScreen();
         setupDefaultProfile();
         updateProfileBindings(getContext().getProfileManager().getActiveProfile());
         setupConnectionTypeBindings();
@@ -1168,7 +1173,6 @@ public class GlcdEmulatorController extends GlcdController {
 
         serialPortService.serialPortsProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.size() > 0) {
-                log.debug("GOT SERIAL PORTS!");
                 for (SerialPort port : cbSerialPorts.getItems()) {
                     if (port.getSystemPortName().equalsIgnoreCase(appConfig.getSerialPortName())) {
                         cbSerialPorts.getSelectionModel().select(port);
@@ -1178,7 +1182,24 @@ public class GlcdEmulatorController extends GlcdController {
             }
         });
 
+
+        if (cbSerialPorts.getItems().size() == 1) {
+            cbSerialPorts.getSelectionModel().selectFirst();
+        } else {
+            selectSerialPortByName(appConfig.getSerialPortName());
+        }
+
         //cbSerialPorts.getSelectionModel().select(serialPortService.findSerialPortByName(appConfig.getSerialPortName()));
+    }
+
+    private void selectSerialPortByName(String name) {
+        if (StringUtils.isBlank(name))
+            return;
+        for (SerialPort port : cbSerialPorts.getItems()) {
+            if (name.equalsIgnoreCase(port.getSystemPortName())) {
+                cbSerialPorts.getSelectionModel().select(port);
+            }
+        }
     }
 
     private void refreshSerialPorts(ActionEvent event) {
@@ -1211,8 +1232,8 @@ public class GlcdEmulatorController extends GlcdController {
         appBindGroup.registerUnidirectional(hbGlcd.prefWidthProperty(), Bindings.subtract(scpGlcd.widthProperty(), 3));
         appBindGroup.registerUnidirectional(hbGlcd.prefHeightProperty(), Bindings.subtract(scpGlcd.heightProperty(), 3));
 
-        appBindGroup.registerUnidirectional(bpGlcd.topProperty(), createShowNodeBinding(hbPins, appConfig.showPinActivityPaneProperty()));
-        appBindGroup.registerUnidirectional(bpGlcd.bottomProperty(), createShowNodeBinding(tpSettings, appConfig.showSettingsPaneProperty()));
+        appBindGroup.registerUnidirectional(bpGlcd.topProperty(), createNodeVisibilityBinding(hbPins, appConfig.showPinActivityPaneProperty()));
+        appBindGroup.registerUnidirectional(bpGlcd.bottomProperty(), createNodeVisibilityBinding(tpSettings, appConfig.showSettingsPaneProperty()));
         appBindGroup.registerUnidirectional(tvProfiles.itemsProperty(), getContext().getProfileManager().filteredProfilesProperty());
         appBindGroup.registerUnidirectional(getContext().getProfileManager().filterProperty(), createFilterObjectBinding());
 
@@ -1314,7 +1335,7 @@ public class GlcdEmulatorController extends GlcdController {
         profileBindGroup.bind();
     }
 
-    private ObjectBinding<Node> createShowNodeBinding(Node showNode, ObservableValue<Boolean> criteriaProperty) {
+    private ObjectBinding<Node> createNodeVisibilityBinding(Node showNode, ObservableValue<Boolean> criteriaProperty) {
         return Bindings.createObjectBinding(() -> {
             try {
                 return criteriaProperty.getValue() ? showNode : null;
