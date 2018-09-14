@@ -28,7 +28,7 @@ public class ThemeManager {
     private StringProperty activeTheme = new SimpleStringProperty("menuThemeDefault") {
         @Override
         protected void invalidated() {
-            applyTheme(get());
+            //applyTheme(get());
         }
     };
 
