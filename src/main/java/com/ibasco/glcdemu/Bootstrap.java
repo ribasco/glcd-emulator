@@ -80,7 +80,9 @@ public class Bootstrap extends Application {
         if (root == null)
             throw new IOException("Could not load primary view");
         Stage stage = Context.getPrimaryStage();
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        Context.getInstance().getThemeManager().applyTheme(scene);
+        stage.setScene(scene);
         stage.show();
         stage.toFront();
     }
