@@ -72,6 +72,7 @@ public class TcpRemoteListenerTask extends RemoteListenerTask {
         try {
             ByteBuffer recv = ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN);
 
+            reset();
             initSocketServer();
 
             //Listen for events
@@ -126,5 +127,11 @@ public class TcpRemoteListenerTask extends RemoteListenerTask {
             selector.close();
             socketChannel.close();
         }
+    }
+
+    @Override
+    protected void closeResources() throws Exception {
+        selector.close();
+        socketChannel.close();
     }
 }
