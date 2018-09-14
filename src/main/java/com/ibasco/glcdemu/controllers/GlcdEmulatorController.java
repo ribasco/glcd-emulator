@@ -14,8 +14,8 @@ import com.ibasco.glcdemu.model.GlcdEmulatorProfile;
 import com.ibasco.glcdemu.net.ListenerOptions;
 import com.ibasco.glcdemu.net.serial.SerialListenerOptions;
 import com.ibasco.glcdemu.net.tcp.TcpListenerOptions;
-import com.ibasco.glcdemu.services.EmulatorScannerService;
 import com.ibasco.glcdemu.services.EmulatorService;
+import com.ibasco.glcdemu.services.ScannerService;
 import com.ibasco.glcdemu.services.SerialPortService;
 import com.ibasco.glcdemu.utils.*;
 import com.jfoenix.controls.*;
@@ -350,6 +350,9 @@ public class GlcdEmulatorController extends GlcdController {
 
     @FXML
     private JFXTextField tfFlowControl;
+
+    @FXML
+    private JFXTextArea taLog;
     //</editor-fold>
 
     private JFXDialog emulatorBrowseDialog;
@@ -374,7 +377,7 @@ public class GlcdEmulatorController extends GlcdController {
 
     private ObjectProperty<PixelBuffer> displayBuffer = new SimpleObjectProperty<>();
 
-    private EmulatorScannerService scannerService = new EmulatorScannerService();
+    private ScannerService scannerService = new ScannerService();
 
     private SerialPortService serialPortService = new SerialPortService();
 
@@ -750,6 +753,7 @@ public class GlcdEmulatorController extends GlcdController {
 
         emulatorService = new EmulatorService();
 
+        emulatorService.setTaskMessageListener(this::handleTaskMessages);
         GlcdEmulator emulator = createEmulatorFromClass();
         emulator.bufferProperty().bind(displayBuffer);
 
@@ -855,6 +859,11 @@ public class GlcdEmulatorController extends GlcdController {
             tbListen.setSelected(false);
             throw new RuntimeException("Could not start emulator service", e);
         }
+    }
+
+    private void handleTaskMessages(ObservableValue<? extends String> observableValue, String oldMsg, String newMsg) {
+        taLog.appendText(newMsg + "\n");
+        taLog.setScrollTop(Double.MAX_VALUE);
     }
 
     /**
@@ -968,8 +977,8 @@ public class GlcdEmulatorController extends GlcdController {
         btnDonate.setOnAction(event -> Platform.runLater(() -> Context.getInstance().getHostServices().showDocument("http://www.ibasco.com")));
         btnOpenScreenshotPath.setOnAction(createOpenDirPathEventHandler("Select screenshot directory", tfScreenshotPath.textProperty()));
         btnOpenProfileDirPath.setOnAction(createOpenDirPathEventHandler("Select profile directory", tfProfileDirPath.textProperty()));
-        btnFitScreenToWindow.setOnAction(createNoArgEventHandlerWrapper(this::fitWindowToScreen));
-        menuFitScreenToWindow.setOnAction(createNoArgEventHandlerWrapper(this::fitWindowToScreen));
+        btnFitScreenToWindow.setOnAction(noArgEventHandler(this::fitWindowToScreen));
+        menuFitScreenToWindow.setOnAction(noArgEventHandler(this::fitWindowToScreen));
         slPixelSize.setOnScroll(this::updateSliderOnScroll);
         slPixelSpacing.setOnScroll(this::updateSliderOnScroll);
         slContrast.setOnScroll(this::updateSliderOnScroll);
@@ -1602,7 +1611,7 @@ public class GlcdEmulatorController extends GlcdController {
         });
     }
 
-    private EventHandler<ActionEvent> createNoArgEventHandlerWrapper(CommandNoArg commandNoArg) {
+    private EventHandler<ActionEvent> noArgEventHandler(CommandNoArg commandNoArg) {
         return event -> commandNoArg.execute();
     }
 
