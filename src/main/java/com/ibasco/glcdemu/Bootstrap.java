@@ -37,7 +37,7 @@ public class Bootstrap extends Application {
 
     private GlcdConfigApp appConfig;
 
-    private static final double MIN_STAGE_WIDTH_SETTINGS = 848.0;
+    private static final double MIN_STAGE_WIDTH_SETTINGS = 1135.0;
 
     private static final double MIN_STAGE_WIDTH_DEFAULT = 100.0;
 
