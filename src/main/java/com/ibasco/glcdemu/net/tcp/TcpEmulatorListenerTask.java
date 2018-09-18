@@ -2,9 +2,8 @@ package com.ibasco.glcdemu.net.tcp;
 
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
 import com.ibasco.glcdemu.exceptions.InvalidOptionException;
-import com.ibasco.glcdemu.net.ListenerOption;
+import com.ibasco.glcdemu.net.EmulatorListenerTask;
 import com.ibasco.glcdemu.net.ListenerOptions;
-import com.ibasco.glcdemu.net.RemoteListenerTask;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,20 +21,20 @@ import java.util.Iterator;
 import java.util.Set;
 
 @SuppressWarnings("Duplicates")
-public class TcpRemoteListenerTask extends RemoteListenerTask {
+public class TcpEmulatorListenerTask extends EmulatorListenerTask {
 
-    private static final Logger log = LoggerFactory.getLogger(TcpRemoteListenerTask.class);
+    private static final Logger log = LoggerFactory.getLogger(TcpEmulatorListenerTask.class);
 
     private Selector selector;
     private ServerSocketChannel socketChannel;
     private InetSocketAddress listenAddress;
 
-    public TcpRemoteListenerTask(GlcdEmulator emulator) {
+    public TcpEmulatorListenerTask(GlcdEmulator emulator) {
         super(emulator);
     }
 
     @Override
-    protected void processOptions(ListenerOptions options) throws Exception {
+    protected void configure(ListenerOptions options) throws Exception {
         String ipAddress = options.get(TcpListenerOptions.IP_ADDRESS);
         Integer port = options.get(TcpListenerOptions.PORT_NUMBER);
         if (StringUtils.isBlank(ipAddress) || port == null) {
@@ -60,11 +59,6 @@ public class TcpRemoteListenerTask extends RemoteListenerTask {
         socketChannel.register(selector, SelectionKey.OP_ACCEPT);
         socketChannel.bind(listenAddress);
         log.debug("Emulator service is now listening on '{}:{}'", listenAddress.getAddress().getHostAddress(), listenAddress.getPort());
-    }
-
-    @Override
-    public <T> void setOption(ListenerOption<T> option, T value) {
-        super.setOption(option, value);
     }
 
     @Override
@@ -94,7 +88,6 @@ public class TcpRemoteListenerTask extends RemoteListenerTask {
 
                                 recv.clear();
                                 int bytesRead = client.read(recv);
-                                recv.flip();
 
                                 if (bytesRead == -1) {
                                     client.close();
@@ -104,10 +97,9 @@ public class TcpRemoteListenerTask extends RemoteListenerTask {
                                     continue;
                                 }
 
+                                recv.flip();
                                 while (recv.hasRemaining()) {
-                                    byte msg = recv.get();
-                                    byte value = recv.get();
-                                    processMessage(msg, value);
+                                    processByte(recv.get());
                                 }
                             } catch (IOException e) {
                                 log.warn(e.getMessage());
@@ -130,7 +122,7 @@ public class TcpRemoteListenerTask extends RemoteListenerTask {
     }
 
     @Override
-    protected void closeResources() throws Exception {
+    protected void cleanup() throws Exception {
         selector.close();
         socketChannel.close();
     }

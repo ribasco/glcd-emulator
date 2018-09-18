@@ -23,4 +23,16 @@ public class ListenerOptions {
     public Set<ListenerOption> getOptions() {
         return options.keySet();
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<ListenerOption, Object> option : options.entrySet()) {
+            sb.append(option.getKey().name());
+            sb.append(" = ");
+            sb.append(option.getValue());
+            sb.append(", ");
+        }
+        return sb.toString();
+    }
 }

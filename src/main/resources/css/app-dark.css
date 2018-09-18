@@ -376,3 +376,24 @@
 .jfx-text-area {
     -fx-text-fill: #cacaca;
 }
+
+.status-bar {
+    -fx-border-color: transparent;
+    -fx-background-color: #303335;
+}
+
+.status-indicator {
+    -fx-fill: pink;
+}
+
+.status-indicator:on {
+    -fx-fill: #00D600;
+}
+
+.status-indicator:off {
+    -fx-fill: #BD0E06;
+}
+
+.status-indicator:disabled {
+    -fx-fill: gray;
+}

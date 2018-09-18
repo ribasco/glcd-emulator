@@ -34,6 +34,14 @@ public class DialogUtil {
         return answer.isPresent() && answer.get().equals(ButtonType.YES);
     }
 
+    public static void showError(String title, String header, Window owner) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+        alert.initOwner(Stages.getPrimaryStage());
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.showAndWait();
+    }
+
     public static Alert createExceptionDialog(String title, String header, Throwable ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK, REPORT_BUTTON);
         alert.initOwner(Stages.getPrimaryStage());

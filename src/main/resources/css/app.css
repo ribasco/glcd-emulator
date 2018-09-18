@@ -75,25 +75,8 @@
     -fx-background-color: #FFFF8D;;
 }
 
-/*
-.jfx-tab-pane .headers-region .tab:closable {
-    -fx-border-color: rgba(255,255,255, .87);
-    -fx-border-width: 0 2 0 0;
-    -fx-border-style: dotted;
-    -fx-border-insets: 8 0 8 0;
-    -fx-padding: 0 8 0 8;
+.jfx-button {
+    -jfx-button-type: RAISED;
+    -fx-background-color: #EAEAEA;
+    /*-fx-text-fill: white;*/
 }
-
-.jfx-tab-pane .headers-region .tab .tab-container .tab-label {
-    -fx-text-fill: rgba(255,255,255, .87);
-    -fx-font-weight: BOLD;
-    -fx-padding: 6 10 6 10;
-    -fx-font-size: 16;
-}
-.jfx-tab-pane .headers-region .tab:closable .tab-container .tab-label{
-    -fx-padding: 0 8 0 6;
-}
-
-.jfx-tab-pane .headers-region .tab:selected .tab-container .tab-label {
-    -fx-text-fill: WHITE;
-}*/

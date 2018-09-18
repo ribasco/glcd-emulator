@@ -3,13 +3,10 @@ package com.ibasco.glcdemu.services;
 import com.ibasco.glcdemu.Context;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
 import com.ibasco.glcdemu.enums.ConnectionType;
+import com.ibasco.glcdemu.net.EmulatorListenerTask;
 import com.ibasco.glcdemu.net.ListenerOptions;
-import com.ibasco.glcdemu.net.RemoteListenerTask;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -35,13 +32,25 @@ public class EmulatorService extends Service<Void> {
     private ObjectProperty<ConnectionType> connectionType = new SimpleObjectProperty<>();
 
     private ObjectProperty<ListenerOptions> connectionOptions = new SimpleObjectProperty<>();
+
+    private ReadOnlyObjectWrapper<EmulatorListenerTask> emulatorTask = new ReadOnlyObjectWrapper<>();
     //</editor-fold>
+
+    private ChangeListener<String> messageListener;
 
     public EmulatorService() {
         setExecutor(Context.getTaskExecutor());
     }
 
     //<editor-fold desc="Service Getter/Setter Properties">
+    public EmulatorListenerTask getEmulatorTask() {
+        return emulatorTask.get();
+    }
+
+    public ReadOnlyObjectProperty<EmulatorListenerTask> emulatorTaskProperty() {
+        return emulatorTask.getReadOnlyProperty();
+    }
+
     public ListenerOptions getConnectionOptions() {
         return connectionOptions.get();
     }
@@ -97,21 +106,39 @@ public class EmulatorService extends Service<Void> {
      * @param connectionType
      *         The {@link ConnectionType} of this emulator
      *
-     * @return A {@link RemoteListenerTask}
+     * @return A {@link EmulatorListenerTask}
      */
-    private RemoteListenerTask createListenerTask(ConnectionType connectionType) {
+    private EmulatorListenerTask createListenerTask(ConnectionType connectionType) {
         try {
-            Class<? extends RemoteListenerTask> listenerClass = connectionType.getListenerClass();
+            Class<? extends EmulatorListenerTask> listenerClass = connectionType.getListenerClass();
             return listenerClass.getConstructor(GlcdEmulator.class).newInstance(emulator.get());
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException("Error occured while instatiating listener class", e);
         }
     }
 
-    private ChangeListener<String> taskMessageListener;
+    public void setMessageListener(ChangeListener<String> listener) {
+        this.messageListener = listener;
+    }
 
-    public void setTaskMessageListener(ChangeListener<String> listener) {
-        this.taskMessageListener = listener;
+    public ReadOnlyIntegerProperty fpsCountProperty() {
+        checkInstance();
+        return emulatorTask.get().fpsCountProperty();
+    }
+
+    public ReadOnlyIntegerProperty bpsCountPproperty() {
+        checkInstance();
+        return emulatorTask.get().bpsCountProperty();
+    }
+
+    public ReadOnlyIntegerProperty frameSizeProperty() {
+        checkInstance();
+        return emulatorTask.get().frameSizeProperty();
+    }
+
+    private void checkInstance() {
+        if (emulatorTask == null)
+            throw new IllegalStateException("No emulator task has been defined. Is the service started?");
     }
 
     @Override
@@ -120,11 +147,12 @@ public class EmulatorService extends Service<Void> {
             throw new IllegalStateException("No listener task has been specified");
         if (connectionOptions.get() == null)
             throw new IllegalStateException("No connection options specified");
-        RemoteListenerTask task = createListenerTask(connectionType.get());
+        EmulatorListenerTask task = createListenerTask(connectionType.get());
+        emulatorTask.set(task);
         task.listenerOptionsProperty().bind(connectionOptions);
         clientConnected.bindBidirectional(task.connectedProperty());
-        if (taskMessageListener != null) {
-            task.messageProperty().addListener(taskMessageListener);
+        if (messageListener != null) {
+            task.messageProperty().addListener(messageListener);
         }
         return task;
     }

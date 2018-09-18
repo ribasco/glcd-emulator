@@ -6,11 +6,11 @@
 <?import com.jfoenix.controls.*?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import org.controlsfx.control.StatusBar?>
 <VBox fx:id="vbRoot" minHeight="726.0" minWidth="1119.0" prefHeight="726.0" prefWidth="1119.0"
       xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.ibasco.glcdemu.controllers.GlcdEmulatorController">
@@ -413,23 +413,6 @@
              </StackPane>
          </children>
       </AnchorPane>
-       <HBox fx:id="hbStatusBar" alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="950.0">
-           <VBox.margin>
-               <Insets left="10.0" right="10.0" />
-           </VBox.margin>
-           <Label fx:id="lblStatusHeader" text="Status:">
-              <font>
-                  <Font name="System Bold" size="12.0" />
-              </font>
-           </Label>
-           <Label fx:id="lblStatus"/>
-           <Pane prefHeight="30.0" prefWidth="300.0" HBox.hgrow="ALWAYS" />
-           <Label fx:id="lblDisplaySizeHeader" text="Display Size: ">
-              <font>
-                  <Font name="System Bold" size="12.0" />
-              </font>
-           </Label>
-           <Label fx:id="lblDisplaySize" />
-       </HBox>
+       <StatusBar fx:id="statusBar" text="" VBox.vgrow="NEVER"/>
    </children>
 </VBox>

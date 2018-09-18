@@ -1,10 +1,14 @@
 package com.ibasco.glcdemu.utils;
 
+import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public class FpsCounter {
+public class Counter {
 
     private AtomicInteger counter = new AtomicInteger(0);
 
@@ -16,19 +20,23 @@ public class FpsCounter {
 
     private TimeUnit timeUnit;
 
-    private int lastCount;
+    private ReadOnlyIntegerWrapper lastCount = new ReadOnlyIntegerWrapper(0);
 
-    public FpsCounter() {
+    public Counter() {
         this(1, TimeUnit.SECONDS);
     }
 
-    public FpsCounter(long interval, TimeUnit timeUnit) {
+    public Counter(long interval, TimeUnit timeUnit) {
         this.interval = timeUnit.toNanos(interval);
         this.timeUnit = timeUnit;
     }
 
     public int getLastCount() {
-        return lastCount;
+        return lastCount.get();
+    }
+
+    public ReadOnlyIntegerProperty lastCountProperty() {
+        return lastCount.getReadOnlyProperty();
     }
 
     public long getInterval() {
@@ -56,7 +64,11 @@ public class FpsCounter {
     }
 
     public void pulse() {
-        pulse(TimeUnit.SECONDS.toNanos(1));
+        pulse(TimeUnit.MILLISECONDS.toNanos(System.currentTimeMillis()));
+    }
+
+    public void reset() {
+        Platform.runLater(() -> lastCount.set(0));
     }
 
     /**
@@ -67,9 +79,10 @@ public class FpsCounter {
      */
     public synchronized void pulse(long now) {
         if ((now - previous) >= interval) {
-            lastCount = counter.getAndSet(0);
+            int count = counter.getAndSet(0);
+            Platform.runLater(() -> lastCount.set(count));
             if (countListener != null) {
-                countListener.accept(lastCount);
+                countListener.accept(getLastCount());
             }
             previous = now;
         }

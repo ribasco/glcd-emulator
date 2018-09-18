@@ -1,7 +1,7 @@
 package com.ibasco.glcdemu.controls;
 
 import com.ibasco.glcdemu.enums.PixelShape;
-import com.ibasco.glcdemu.utils.FpsCounter;
+import com.ibasco.glcdemu.utils.Counter;
 import com.ibasco.glcdemu.utils.NodeUtil;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import javafx.animation.AnimationTimer;
@@ -84,13 +84,13 @@ public class GlcdScreen extends Canvas {
 
     private Renderer renderer;
 
-    private FpsCounter fpsCounter = new FpsCounter();
+    private Counter fpsCounter = new Counter();
 
     private final class Renderer extends AnimationTimer {
 
         private GraphicsContext gc = getGraphicsContext2D();
 
-        private long lastUpdateMillis = 0;
+        private long lastUpdate = 0;
 
         private long updateInterval = 55; //55
 
@@ -124,10 +124,10 @@ public class GlcdScreen extends Canvas {
             if (!running.get())
                 running.set(true);
 
-            if ((now - lastUpdateMillis) >= timeUnit.toNanos(updateInterval)) {
+            if ((now - lastUpdate) >= updateInterval) {
                 draw();
                 fpsCounter.count();
-                lastUpdateMillis = now;
+                lastUpdate = now;
             }
 
             if (isShowFPS()) {
@@ -175,6 +175,7 @@ public class GlcdScreen extends Canvas {
         effectProperty().bind(Bindings.createObjectBinding((Callable<Effect>) () -> isDropShadowVisible() ? displayDropShadow : null, dropShadowVisible));
 
         renderer = new Renderer();
+        renderer.setUpdateInterval(1);
 
         if (autoStart)
             renderer.start();
@@ -183,13 +184,6 @@ public class GlcdScreen extends Canvas {
 
         //Bind the display width and height as soon as the pixel buffer is made available
         bufferProperty().addListener((observable, oldBuffer, newBuffer) -> {
-           /*if (oldBuffer != null && newBuffer == null) {
-                displayWidth.unbind();
-                displayHeight.unbind();
-                widthProperty().unbind();
-                heightProperty().unbind();
-            }*/
-
             if (newBuffer != null) {
                 displayWidth.bind(newBuffer.widthProperty());
                 displayHeight.bind(newBuffer.heightProperty());
@@ -212,6 +206,10 @@ public class GlcdScreen extends Canvas {
     }
 
     //<editor-fold desc="Property Getter/Setters">
+    public ReadOnlyIntegerProperty fpsCountProperty() {
+        return fpsCounter.lastCountProperty();
+    }
+
     public boolean isGradientBacklight() {
         return gradientBacklight.get();
     }
@@ -442,13 +440,14 @@ public class GlcdScreen extends Canvas {
     }
     //</editor-fold>
 
-    public WritableImage screenshot(WritableImage image) {
+    //<editor-fold desc="Custom methods">
+    public void screenshot(WritableImage image) {
         boolean prev = dropShadowVisible.get();
         try {
             showWatermark.set(true);
             setDropShadowVisible(false);
             draw(); //re-draw to make sure that the screen dimensions are up to date
-            return super.snapshot(null, image);
+            super.snapshot(null, image);
         } finally {
             setDropShadowVisible(prev);
         }
@@ -461,6 +460,7 @@ public class GlcdScreen extends Canvas {
         if (!renderer.isRunning())
             draw();
     }
+    //</editor-fold>
 
     /**
      * Reads the internal graphics buffer and draws it to the dot-matrix display screen

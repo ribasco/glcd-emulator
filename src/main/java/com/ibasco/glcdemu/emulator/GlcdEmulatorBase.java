@@ -33,10 +33,10 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
         this.buffer.set(buffer);
     }
 
-    @Override
+    /*@Override
     public void reset() {
         if (buffer.get() != null) {
             buffer.get().clear();
         }
-    }
+    }*/
 }

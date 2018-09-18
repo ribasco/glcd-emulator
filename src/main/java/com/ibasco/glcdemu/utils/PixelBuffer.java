@@ -101,14 +101,9 @@ public class PixelBuffer {
      *         A byte of data (8-bit) to be written
      */
     public void write(byte data) {
-
     }
 
     public void write(short data) {
-
-    }
-
-    public void reset() {
 
     }
 

@@ -3,6 +3,8 @@ package com.ibasco.glcdemu.emulator.st7920;
 import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.emulator.GlcdEmulatorBase;
 import com.ibasco.glcdemu.emulator.st7920.instructions.DdramSet;
+import com.ibasco.glcdemu.exceptions.EmulatorProcessException;
+import com.ibasco.pidisplay.core.util.ByteUtils;
 import com.ibasco.pidisplay.drivers.glcd.Glcd;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
@@ -59,7 +61,7 @@ public class ST7920Emulator extends GlcdEmulatorBase {
                 } else if (registerSelect == RS_DATA) {
                     processData(val);
                 } else {
-                    log.warn("Unrecognized register select value = {}", registerSelect);
+                    throw new EmulatorProcessException(this, "Unrecognized register select value: " + ByteUtils.toHexString(false, (byte) registerSelect));
                 }
             }
             //make sure to limit the counter range between 0 and 1 only (0 = high byte, 1 = low byte)
@@ -185,7 +187,6 @@ public class ST7920Emulator extends GlcdEmulatorBase {
      */
     @Override
     public void reset() {
-        super.reset();
         dataCtr.set(0);
         registerSelect = 0;
         registerCounter = 0;

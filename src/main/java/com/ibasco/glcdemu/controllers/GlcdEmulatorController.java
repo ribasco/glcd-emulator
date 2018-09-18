@@ -7,6 +7,7 @@ import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.constants.Common;
 import com.ibasco.glcdemu.constants.Views;
 import com.ibasco.glcdemu.controls.GlcdScreen;
+import com.ibasco.glcdemu.controls.StatusIndicator;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
 import com.ibasco.glcdemu.enums.*;
 import com.ibasco.glcdemu.model.GlcdConfigApp;
@@ -36,6 +37,8 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -46,6 +49,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -56,6 +60,7 @@ import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.StatusBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +71,6 @@ import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -219,20 +223,20 @@ public class GlcdEmulatorController extends GlcdController {
     @FXML
     private Spinner<Integer> spnListenPort;
 
-    @FXML
+    /*@FXML
     private HBox hbStatusBar;
 
     @FXML
     private Label lblStatusHeader;
 
     @FXML
-    private Label lblStatus;
+    private Label lblStatus;*/
 
-    @FXML
+    /*@FXML
     private Label lblDisplaySizeHeader;
 
     @FXML
-    private Label lblDisplaySize;
+    private Label lblDisplaySize;*/
 
     @FXML
     private TableView<GlcdEmulatorProfile> tvProfiles;
@@ -353,6 +357,9 @@ public class GlcdEmulatorController extends GlcdController {
 
     @FXML
     private JFXTextArea taLog;
+
+    @FXML
+    private StatusBar statusBar;
     //</editor-fold>
 
     private JFXDialog emulatorBrowseDialog;
@@ -487,7 +494,7 @@ public class GlcdEmulatorController extends GlcdController {
     private void setupDisplayScreen() {
         attachAutoFitWindowBindings(glcdScreen.widthProperty());
         attachAutoFitWindowBindings(glcdScreen.heightProperty());
-        glcdScreen.setShowFPS(true);
+        //glcdScreen.setShowFPS(true);
     }
 
     @Override
@@ -513,6 +520,7 @@ public class GlcdEmulatorController extends GlcdController {
         updateProfileBindings(getContext().getProfileManager().getActiveProfile());
         setupConnectionTypeBindings();
         setupEmulatorService();
+        setupStatusBar();
         updateAppBindings(appConfig);
         applyTheme(appConfig.getThemeId());
 
@@ -521,6 +529,78 @@ public class GlcdEmulatorController extends GlcdController {
         if (appConfig.isRunEmulatorAtStartup()) {
             startEmulatorService();
         }
+    }
+
+    private void setupStatusBar() {
+        GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
+
+        Label displaySize = new Label();
+        displaySize.setTextAlignment(TextAlignment.CENTER);
+        displaySize.textProperty().bind(Bindings.format("Width: %d, Height: %d", profile.displaySizeWidthProperty(), profile.displaySizeHeightProperty()));
+
+        Label screenFpsLabel = new Label("Render FPS: 0");
+        screenFpsLabel.textProperty().bind(Bindings.format("Screen FPS: %d", glcdScreen.fpsCountProperty()));
+
+        StatusIndicator emulatorStatusIndicator = new StatusIndicator();
+        emulatorStatusIndicator.activatedProperty().bind(emulatorService.runningProperty());
+        StatusIndicator clientConnectionStatus = new StatusIndicator();
+        clientConnectionStatus.activatedProperty().bind(emulatorService.clientConnectedProperty());
+
+        statusBar.setPadding(new Insets(5, 5, 5, 5));
+        statusBar.getLeftItems().clear();
+        statusBar.getRightItems().clear();
+        statusBar.getRightItems().add(displaySize);
+        statusBar.getRightItems().add(new Separator(Orientation.VERTICAL));
+        statusBar.getRightItems().add(screenFpsLabel);
+
+        Label emulatorFps = new Label("FPS: 0");
+        Label emulatorBps = new Label("0 B/s");
+        Label emulatorFrameSize = new Label("Frame Size: 0");
+        Label connectionType = new Label("Connection: N/A");
+        connectionType.textProperty().bind(Bindings.format("Connection: %s", appConfig.connectionTypeProperty()));
+        Label connectionDetails = new Label("");
+
+        StringBinding connectionDetailsBinding = Bindings.createStringBinding(() -> {
+            if (emulatorService.isRunning()) {
+                String details = "";
+                switch (emulatorService.getConnectionType()) {
+                    case TCP:
+                        details = String.format("IP: %s, Port: %d", appConfig.getListenIp(), appConfig.getListenPort());
+                        break;
+                    case SERIAL:
+                        details = String.format("Port: %s, Baud Rate: %d", appConfig.getSerialPortName(), appConfig.getSerialBaudRate().toValue());
+                        break;
+                }
+                return details;
+            }
+            return StringUtils.EMPTY;
+        }, emulatorService.runningProperty());
+        connectionDetails.textProperty().bind(connectionDetailsBinding);
+
+        //Only bind when an emulator task is available
+        emulatorService.emulatorTaskProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                emulatorFps.textProperty().bind(Bindings.format("FPS: %d", newValue.fpsCountProperty()));
+                emulatorBps.textProperty().bind(Bindings.format("%.2f KB/s", newValue.bpsCountProperty().divide(1024.0f)));
+                emulatorFrameSize.textProperty().bind(Bindings.format("Frame Size: %d B", newValue.frameSizeProperty()));
+            }
+        });
+
+        statusBar.getLeftItems().add(emulatorStatusIndicator);
+        statusBar.getLeftItems().add(new Label("Emulator"));
+        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
+        statusBar.getLeftItems().add(clientConnectionStatus);
+        statusBar.getLeftItems().add(new Label("Client"));
+        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
+        statusBar.getLeftItems().add(emulatorFps);
+        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
+        statusBar.getLeftItems().add(emulatorBps);
+        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
+        statusBar.getLeftItems().add(emulatorFrameSize);
+        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
+        statusBar.getLeftItems().add(connectionType);
+        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
+        statusBar.getLeftItems().add(connectionDetails);
     }
 
     private void disableConnectionTypeOptions(boolean disable) {
@@ -540,7 +620,6 @@ public class GlcdEmulatorController extends GlcdController {
         } finally {
             glcdScreen.start();
         }
-
     }
 
     private void attachAutoFitWindowBindings(ObservableValue<Number> numberProperty) {
@@ -759,13 +838,11 @@ public class GlcdEmulatorController extends GlcdController {
             return;
 
         emulatorService = new EmulatorService();
-
-        emulatorService.setTaskMessageListener(this::handleTaskMessages);
+        emulatorService.setMessageListener(this::handleTaskMessages);
         GlcdEmulator emulator = createEmulatorFromClass();
         emulator.bufferProperty().bind(displayBuffer);
 
         emulatorService.setEmulator(emulator);
-        //emulatorService.setConnectionOptions(createListenerOptions());
         emulatorService.runningProperty().addListener((observable, oldValue, newValue) -> {
             tbListen.setSelected(newValue);
             sizePane.setDisable(newValue);
@@ -837,14 +914,6 @@ public class GlcdEmulatorController extends GlcdController {
                 }
             }
         });
-
-        StringBinding statusBinding = Bindings.createStringBinding(new Callable<String>() {
-            @Override
-            public String call() {
-                return " Emulator: " + (emulatorService.isRunning() ? "On" : "Off") + ", Client: " + (emulatorService.isClientConnected() ? "Connected" : "Disconnected") + ", IP/Port: " + String.format("%s:%d", appConfig.getListenIp(), appConfig.getListenPort()) + ":" + appConfig.getListenPort();
-            }
-        }, emulatorService.runningProperty(), emulatorService.clientConnectedProperty());
-        lblStatus.textProperty().bind(statusBinding);
     }
 
     /**
@@ -1063,6 +1132,18 @@ public class GlcdEmulatorController extends GlcdController {
         setupIntegerSpinner(spnListenPort, 0, 65535, 1);
         Bindings.bindBidirectional(spnListenPort.getValueFactory().valueProperty(), appConfig.listenPortProperty());
         Bindings.bindBidirectional(tfListenIp.textProperty(), appConfig.listenIpProperty());
+        btnTcpListenTest.setOnAction(event -> {
+            int port = spnListenPort.getValue();
+            log.debug("Checking port availability for {}", port);
+            if (NetUtils.portAvailable(port))
+                DialogUtil.showInfo("Port is available", "Port is " + port + " available");
+            else
+                DialogUtil.showInfo("Port not available", "Port " + port + " is NOT available");
+        });
+        btnTcpGetIP.setOnAction(event -> {
+            log.debug("Obtaining host IP address");
+            tfListenIp.setText(NetUtils.getLocalAddress("127.0.0.1"));
+        });
     }
 
     private Parent createFlowControlView() {
@@ -1302,14 +1383,6 @@ public class GlcdEmulatorController extends GlcdController {
             }
             return emulatorClass.getAnnotation(Emulator.class).controller().name();
         }, profile.controllerProperty()));
-
-        StringBinding displaySizeStatus = Bindings.createStringBinding(() -> {
-            int width = profile.getDisplaySizeWidth();
-            int height = profile.getDisplaySizeHeight();
-            return String.valueOf(width) + " x " + String.valueOf(height);
-        }, profile.displaySizeWidthProperty(), profile.displaySizeHeightProperty());
-
-        profileBindGroup.registerUnidirectional(lblDisplaySize.textProperty(), displaySizeStatus);
 
         //Bidirectional Bindings
         profileBindGroup.registerBidirectional(glcdScreen.activePixelColorProperty(), profile.lcdActivePixelColorProperty());
@@ -1624,7 +1697,7 @@ public class GlcdEmulatorController extends GlcdController {
             double toolbarHeight = vbRoot.getChildren().contains(tbMain) ? tbMain.getHeight() : 0;
             double settingsPaneHeight = bpGlcd.getBottom() != null ? tpSettings.getHeight() : 0;
             Stage stage = Context.getPrimaryStage();
-            double height = glcdScreen.getHeight() + hbStatusBar.getHeight() + toolbarHeight + mbMain.getHeight() + (stage.getHeight() - stage.getScene().getHeight()) + settingsPaneHeight + padding;
+            double height = glcdScreen.getHeight() + statusBar.getHeight() + toolbarHeight + mbMain.getHeight() + (stage.getHeight() - stage.getScene().getHeight()) + settingsPaneHeight + padding;
             double width = glcdScreen.getWidth() + padding;
             if (bpGlcd.getTop() != null && bpGlcd.getTop().equals(hbPins)) {
                 height += hbPins.getHeight();

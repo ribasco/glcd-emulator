@@ -19,7 +19,8 @@
                     </font>
                 </JFXTextField>
                 <Label layoutX="14.0" layoutY="14.0" text="Listen IP/Port:"/>
-                <Spinner fx:id="spnListenPort" layoutX="186.0" layoutY="43.0" prefHeight="25.0" prefWidth="89.0"/>
+                <Spinner fx:id="spnListenPort" editable="true" layoutX="186.0" layoutY="43.0" prefHeight="25.0"
+                         prefWidth="89.0"/>
                 <JFXButton fx:id="btnTcpListenTest" layoutX="285.0" layoutY="43.0" prefHeight="25.0" prefWidth="60.0"
                            text="Test"/>
                 <JFXButton fx:id="btnTcpGetIP" layoutX="360.0" layoutY="43.0" prefHeight="25.0" prefWidth="73.0"
