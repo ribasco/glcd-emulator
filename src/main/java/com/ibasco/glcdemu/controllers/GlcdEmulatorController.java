@@ -536,7 +536,10 @@ public class GlcdEmulatorController extends GlcdController {
 
         Label displaySize = new Label();
         displaySize.setTextAlignment(TextAlignment.CENTER);
-        displaySize.textProperty().bind(Bindings.format("Width: %d, Height: %d", profile.displaySizeWidthProperty(), profile.displaySizeHeightProperty()));
+        displaySize.textProperty().bind(Bindings.format("%d x %d", profile.displaySizeWidthProperty(), profile.displaySizeHeightProperty()));
+
+        Label pixelSize = new Label();
+        pixelSize.textProperty().bind(Bindings.format("%.2f", profile.lcdPixelSizeProperty()));
 
         Label screenFpsLabel = new Label("Render FPS: 0");
         screenFpsLabel.textProperty().bind(Bindings.format("Screen FPS: %d", glcdScreen.fpsCountProperty()));
@@ -552,6 +555,8 @@ public class GlcdEmulatorController extends GlcdController {
         statusBar.getRightItems().add(displaySize);
         statusBar.getRightItems().add(new Separator(Orientation.VERTICAL));
         statusBar.getRightItems().add(screenFpsLabel);
+        statusBar.getRightItems().add(new Separator(Orientation.VERTICAL));
+        statusBar.getRightItems().add(pixelSize);
 
         Label emulatorFps = new Label("FPS: 0");
         Label emulatorBps = new Label("0 B/s");
