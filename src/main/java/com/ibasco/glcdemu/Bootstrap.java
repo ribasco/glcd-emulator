@@ -33,7 +33,7 @@ public class Bootstrap extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
-    private static final String APP_TITLE = "GLCD Emulator";
+    private static final String APP_TITLE = "GLCD Emulator - Alpha";
 
     private GlcdConfigApp appConfig;
 

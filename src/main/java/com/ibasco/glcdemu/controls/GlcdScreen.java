@@ -43,7 +43,13 @@ public class GlcdScreen extends Canvas {
 
     private ObjectProperty<Color> backlightColor = new SimpleObjectProperty<>(Color.web("#a5f242", 1.0));
 
-    private FloatProperty contrast = new SimpleFloatProperty(0.5f);
+    private FloatProperty contrast = new SimpleFloatProperty(0.5f) {
+        @Override
+        protected void invalidated() {
+            float value = get() / 100f;
+            inactivePixelColor.set(updateOpacity(inactivePixelColor.get(), value));
+        }
+    };
 
     private DoubleProperty spacing = new SimpleDoubleProperty(0.0f);
 
@@ -61,8 +67,6 @@ public class GlcdScreen extends Canvas {
 
     private ObjectProperty<PixelBuffer> buffer = new SimpleObjectProperty<>();
 
-    private BooleanProperty dropShadowVisible = new SimpleBooleanProperty(true);
-
     private StringProperty watermarkText = new SimpleStringProperty();
 
     private ObjectProperty<Font> watermarkFont = new SimpleObjectProperty<>(new Font("Verdana", 14.0));
@@ -74,6 +78,8 @@ public class GlcdScreen extends Canvas {
     private BooleanProperty autoStart = new SimpleBooleanProperty(false);
 
     private BooleanProperty gradientBacklight = new SimpleBooleanProperty(true);
+
+    private BooleanProperty dropShadowVisible = new SimpleBooleanProperty(true);
     //</editor-fold>
 
     private DropShadow displayDropShadow;
@@ -157,13 +163,20 @@ public class GlcdScreen extends Canvas {
         this(false);
     }
 
+    private Effect getDisplayDropShadow() {
+        if (displayDropShadow == null) {
+            displayDropShadow = new DropShadow();
+            displayDropShadow.setBlurType(BlurType.GAUSSIAN);
+            displayDropShadow.setColor(Color.BLACK);
+            displayDropShadow.setOffsetX(5.0);
+            displayDropShadow.setOffsetY(5.0);
+            displayDropShadow.setRadius(35.0);
+        }
+        return displayDropShadow;
+    }
+
     public GlcdScreen(boolean autoStart) {
         setStyle("-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
-
-        contrast.addListener((observable, oldValue, newValue) -> {
-            float value = (float) newValue / 100f;
-            inactivePixelColor.set(updateOpacity(inactivePixelColor.get(), value));
-        });
 
         displayDropShadow = new DropShadow();
         displayDropShadow.setBlurType(BlurType.GAUSSIAN);
@@ -196,6 +209,8 @@ public class GlcdScreen extends Canvas {
         });
     }
     //</editor-fold>
+
+    //<editor-fold desc="Start/Stop methods">
     public void start() {
         if (!renderer.isRunning())
             renderer.start();
@@ -204,6 +219,7 @@ public class GlcdScreen extends Canvas {
     public void stop() {
         renderer.stop();
     }
+    //</editor-fold>
 
     //<editor-fold desc="Property Getter/Setters">
     public ReadOnlyIntegerProperty fpsCountProperty() {
@@ -222,7 +238,7 @@ public class GlcdScreen extends Canvas {
         this.gradientBacklight.set(gradientBacklight);
     }
 
-    private boolean isRunning() {
+    public boolean isRunning() {
         return this.renderer.running.get();
     }
 
@@ -494,20 +510,20 @@ public class GlcdScreen extends Canvas {
         //Set inactive pixel color
         gc.setFill(computeInactivePixelColor());
 
+        PixelBuffer buffer = this.buffer.get();
+
         //note x and y represents the actual pixel coordinates of the canvas
         //while pixelX and pixelY represents the coordinates of the GLCD
         double x = spacing + margin, y = spacing + margin;
         for (int pixelY = 0; pixelY < lcdHeight; pixelY++) {
-
             //process one column at a time
             for (int pixelX = 0; pixelX < lcdWidth; pixelX++) {
-                int pixelState = buffer.get().read(pixelX, pixelY);
+                int pixelState = buffer.read(pixelX, pixelY);
                 if (pixelState == -1)
                     pixelState = 0;
                 drawPixel(x, y, pixelState);
                 x += pixelSize + spacing;
             }
-
             //reset x including the space and margin properties
             x = spacing + margin;
             y += pixelSize + spacing;

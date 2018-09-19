@@ -326,7 +326,7 @@ public class GlcdEmulatorController extends GlcdController {
     private JFXButton btnSelectEmulator;
 
     @FXML
-    private JFXListView<Class<?>> lvEmulators;
+    private JFXListView<Class<? extends GlcdEmulator>> lvEmulators;
 
     @FXML
     private JFXButton btnSerialPortRefresh;
@@ -389,42 +389,6 @@ public class GlcdEmulatorController extends GlcdController {
     private SerialPortService serialPortService = new SerialPortService();
 
     private EmulatorService emulatorService;
-
-    @FunctionalInterface
-    private interface CommandNoArg {
-        void execute();
-    }
-
-    private EventHandler<KeyEvent> profileTableKeyEventHandler = event -> {
-        if (event.getCode() == KeyCode.ENTER) {
-            profileLoadSelected();
-        } else if (event.getCode() == KeyCode.DELETE) {
-            profileDeleteAction(null);
-        }
-    };
-
-    private EventHandler<WindowEvent> windowCloseFilter = new EventHandler<WindowEvent>() {
-        @Override
-        public void handle(WindowEvent event) {
-            if (event.isConsumed())
-                return;
-            log.debug("Close Event Filter from: Controller (Source: {}, Target: {})", event.getSource(), event.getTarget());
-            profileCheckModified(!appConfig.isConfirmOnExit(), !appConfig.isRememberSettingsOnExit());
-            if (appConfig.isRememberSettingsOnExit()) {
-                saveAppSettings();
-            }
-
-            if (emulatorService.isRunning()) {
-                if (emulatorService.isClientConnected()) {
-                    if (!DialogUtil.promptConfirmation("A client is currently connected", "Emulator service is still running and a client is currently connected, are you sure you want to quit?")) {
-                        event.consume();
-                        return;
-                    }
-                }
-                stopEmulatorService();
-            }
-        }
-    };
 
     private StringConverter<SerialPort> serialPortStringConverter = new StringConverter<SerialPort>() {
         @Override
@@ -491,6 +455,42 @@ public class GlcdEmulatorController extends GlcdController {
         }
     };
 
+    @FunctionalInterface
+    private interface CommandNoArg {
+        void execute();
+    }
+
+    private EventHandler<KeyEvent> profileTableKeyEventHandler = event -> {
+        if (event.getCode() == KeyCode.ENTER) {
+            profileLoadSelected();
+        } else if (event.getCode() == KeyCode.DELETE) {
+            profileDeleteAction(null);
+        }
+    };
+
+    private EventHandler<WindowEvent> windowCloseFilter = new EventHandler<WindowEvent>() {
+        @Override
+        public void handle(WindowEvent event) {
+            if (event.isConsumed())
+                return;
+            log.debug("Close Event Filter from: Controller (Source: {}, Target: {})", event.getSource(), event.getTarget());
+            profileCheckModified(!appConfig.isConfirmOnExit(), !appConfig.isRememberSettingsOnExit());
+            if (appConfig.isRememberSettingsOnExit()) {
+                saveAppSettings();
+            }
+
+            if (emulatorService.isRunning()) {
+                if (emulatorService.isClientConnected()) {
+                    if (!DialogUtil.promptConfirmation("A client is currently connected", "Emulator service is still running and a client is currently connected, are you sure you want to quit?")) {
+                        event.consume();
+                        return;
+                    }
+                }
+                stopEmulatorService();
+            }
+        }
+    };
+
     private void setupDisplayScreen() {
         attachAutoFitWindowBindings(glcdScreen.widthProperty());
         attachAutoFitWindowBindings(glcdScreen.heightProperty());
@@ -550,13 +550,18 @@ public class GlcdEmulatorController extends GlcdController {
         clientConnectionStatus.activatedProperty().bind(emulatorService.clientConnectedProperty());
 
         statusBar.setPadding(new Insets(5, 5, 5, 5));
-        statusBar.getLeftItems().clear();
-        statusBar.getRightItems().clear();
-        statusBar.getRightItems().add(displaySize);
-        statusBar.getRightItems().add(new Separator(Orientation.VERTICAL));
-        statusBar.getRightItems().add(screenFpsLabel);
-        statusBar.getRightItems().add(new Separator(Orientation.VERTICAL));
-        statusBar.getRightItems().add(pixelSize);
+
+        ObservableList<Node> leftItems = statusBar.getLeftItems();
+        ObservableList<Node> rightItems = statusBar.getRightItems();
+
+        leftItems.clear();
+        rightItems.clear();
+
+        rightItems.add(displaySize);
+        rightItems.add(new Separator(Orientation.VERTICAL));
+        rightItems.add(screenFpsLabel);
+        rightItems.add(new Separator(Orientation.VERTICAL));
+        rightItems.add(pixelSize);
 
         Label emulatorFps = new Label("FPS: 0");
         Label emulatorBps = new Label("0 B/s");
@@ -591,21 +596,21 @@ public class GlcdEmulatorController extends GlcdController {
             }
         });
 
-        statusBar.getLeftItems().add(emulatorStatusIndicator);
-        statusBar.getLeftItems().add(new Label("Emulator"));
-        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
-        statusBar.getLeftItems().add(clientConnectionStatus);
-        statusBar.getLeftItems().add(new Label("Client"));
-        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
-        statusBar.getLeftItems().add(emulatorFps);
-        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
-        statusBar.getLeftItems().add(emulatorBps);
-        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
-        statusBar.getLeftItems().add(emulatorFrameSize);
-        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
-        statusBar.getLeftItems().add(connectionType);
-        statusBar.getLeftItems().add(new Separator(Orientation.VERTICAL));
-        statusBar.getLeftItems().add(connectionDetails);
+        leftItems.add(emulatorStatusIndicator);
+        leftItems.add(new Label("Emulator"));
+        leftItems.add(new Separator(Orientation.VERTICAL));
+        leftItems.add(clientConnectionStatus);
+        leftItems.add(new Label("Client"));
+        leftItems.add(new Separator(Orientation.VERTICAL));
+        leftItems.add(emulatorFps);
+        leftItems.add(new Separator(Orientation.VERTICAL));
+        leftItems.add(emulatorBps);
+        leftItems.add(new Separator(Orientation.VERTICAL));
+        leftItems.add(emulatorFrameSize);
+        leftItems.add(new Separator(Orientation.VERTICAL));
+        leftItems.add(connectionType);
+        leftItems.add(new Separator(Orientation.VERTICAL));
+        leftItems.add(connectionDetails);
     }
 
     private void disableConnectionTypeOptions(boolean disable) {
@@ -800,7 +805,12 @@ public class GlcdEmulatorController extends GlcdController {
             activeProfile.decrementPixel(step);
     }
 
-    private GlcdEmulator createEmulatorFromClass() {
+    /**
+     * Creates a new instance of a {@link GlcdEmulator}  based on the assigned controller of the active profile.
+     *
+     * @return A concrete implementation of {@link GlcdEmulator}
+     */
+    private GlcdEmulator createEmulatorFromProfile() {
         Class<? extends GlcdEmulator> emulatorClass = null;
         try {
             GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
@@ -842,19 +852,28 @@ public class GlcdEmulatorController extends GlcdController {
         if (emulatorService != null)
             return;
 
+        GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
+
+
         emulatorService = new EmulatorService();
         emulatorService.setMessageListener(this::handleTaskMessages);
-        GlcdEmulator emulator = createEmulatorFromClass();
-        emulator.bufferProperty().bind(displayBuffer);
 
+
+        GlcdEmulator emulator = createEmulatorFromProfile();
+        emulator.bufferProperty().bind(displayBuffer);
         emulatorService.setEmulator(emulator);
+
+        btnFreezeDisplay.disableProperty().bind(emulatorService.runningProperty().not());
+        sizePane.disableProperty().bind(emulatorService.runningProperty());
+        apProfiles.disableProperty().bind(emulatorService.runningProperty());
+        btnReset.disableProperty().bind(emulatorService.runningProperty());
+        tfSelectedEmulator.disableProperty().bind(emulatorService.runningProperty());
+        btnSelectEmulator.disableProperty().bind(emulatorService.runningProperty());
+        btnClearDisplay.disableProperty().bind(emulatorService.runningProperty());
+
         emulatorService.runningProperty().addListener((observable, oldValue, newValue) -> {
             tbListen.setSelected(newValue);
-            sizePane.setDisable(newValue);
-            apProfiles.setDisable(newValue);
-            btnReset.setDisable(newValue);
             disableConnectionTypeOptions(newValue);
-
             if (tfListenIp != null && spnListenPort != null) {
                 tfListenIp.setDisable(newValue);
                 spnListenPort.setDisable(newValue);
@@ -976,36 +995,58 @@ public class GlcdEmulatorController extends GlcdController {
                 content.setPrefHeight(250);
                 JFXButton btnSelect = new JFXButton("Select");
                 JFXButton btnCancel = new JFXButton("Cancel");
-                content.setActions(btnSelect, btnCancel);
+                JFXButton btnRefresh = new JFXButton("Refresh");
+                btnRefresh.disableProperty().bind(scannerService.runningProperty());
+                content.setActions(btnSelect, btnCancel, btnRefresh);
                 emulatorBrowseDialog = new JFXDialog(stackPaneRoot, content, JFXDialog.DialogTransition.RIGHT);
                 emulatorBrowseDialog.setOnDialogClosed(e -> log.debug("Emulator select Dialog Closed"));
+                btnRefresh.setOnAction(e -> {
+                    lvEmulators.getItems().clear();
+                    scannerService.setForceRefresh(true);
+                    scannerService.restart();
+                });
                 btnCancel.setOnAction(e -> emulatorBrowseDialog.close());
                 btnSelect.setOnAction(ev -> {
-                    @SuppressWarnings("unchecked") Class<? extends GlcdEmulator> selectedClass = (Class<? extends GlcdEmulator>) lvEmulators.getSelectionModel().getSelectedItem();
+                    Class<? extends GlcdEmulator> selectedClass = lvEmulators.getSelectionModel().getSelectedItem();
                     log.debug("Selected: {}", selectedClass);
                     getContext().getProfileManager().getActiveProfile().setController(selectedClass);
                     emulatorBrowseDialog.close();
                 });
-                lvEmulators.setCellFactory(new Callback<ListView<Class<?>>, ListCell<Class<?>>>() {
+
+                lvEmulators.setCellFactory(new Callback<ListView<Class<? extends GlcdEmulator>>, ListCell<Class<? extends GlcdEmulator>>>() {
                     @Override
-                    public ListCell<Class<?>> call(ListView<Class<?>> param) {
-                        return new ListCell<Class<?>>() {
+                    public ListCell<Class<? extends GlcdEmulator>> call(ListView<Class<? extends GlcdEmulator>> param) {
+                        return new ListCell<Class<? extends GlcdEmulator>>() {
                             @Override
-                            protected void updateItem(Class<?> item, boolean empty) {
+                            protected void updateItem(Class<? extends GlcdEmulator> item, boolean empty) {
                                 super.updateItem(item, empty);
-                                if (empty) {
-                                    setText(null);
-                                } else {
-                                    setText(item.getAnnotation(Emulator.class).controller() + " - " + item.getAnnotation(Emulator.class).description());
-                                }
+                                Platform.runLater(() -> {
+                                    if (empty) {
+                                        setText(null);
+                                    } else {
+                                        setText(item.getAnnotation(Emulator.class).controller() + " - " + item.getAnnotation(Emulator.class).description());
+                                    }
+                                });
                             }
                         };
                     }
                 });
+
                 scannerService.setOnSucceeded(event -> {
-                    if (scannerService.getValue() != null)
+                    if (scannerService.getValue() != null) {
                         lvEmulators.setItems(scannerService.getValue());
+                        GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
+                        if (lvEmulators.getItems().isEmpty())
+                            return;
+                        if (lvEmulators.getItems().size() == 1)
+                            lvEmulators.getSelectionModel().selectFirst();
+                        else {
+                            lvEmulators.getSelectionModel().select(profile.getController());
+                        }
+
+                    }
                 });
+
                 emulatorBrowseDialog.setOnDialogOpened(event1 -> scannerService.restart());
             }
             return emulatorBrowseDialog;
@@ -1018,6 +1059,23 @@ public class GlcdEmulatorController extends GlcdController {
      * Configure node properties once. Active profile is not yet set at this point
      */
     private void setupNodeProperties() {
+        btnFreezeDisplay.setOnAction(event -> {
+            if (glcdScreen.isRunning()) {
+                glcdScreen.stop();
+            } else {
+                glcdScreen.start();
+            }
+        });
+
+        btnFreezeDisplay.textProperty().bind(Bindings.createStringBinding(() -> {
+            if (glcdScreen.isRunning()) {
+                btnFreezeDisplay.setStyle(null);
+                return "Freeze";
+            }
+            btnFreezeDisplay.setStyle("-fx-background-color: #6b879c; -fx-text-fill: black");
+            return "Un-Freeze";
+        }, glcdScreen.runningProperty()));
+
         btnClearDisplay.setOnAction(event -> {
             if (displayBuffer.get() != null)
                 displayBuffer.get().clear();

@@ -121,9 +121,9 @@ public class GlcdFontBrowserController extends GlcdController implements Initial
 
         //Show the left drawer once the cache is made available
         fontCacheService.setOnSucceeded(event -> {
-            Platform.runLater(() -> {
+            /*Platform.runLater(() -> {
                 showTopDrawer(true);
-            });
+            });*/
         });
     }
 

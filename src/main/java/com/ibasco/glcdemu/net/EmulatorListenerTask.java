@@ -206,6 +206,7 @@ abstract public class EmulatorListenerTask extends Task<Void> {
             if (emulator.get() == null)
                 throw new NullPointerException("Emulator cannot be null");
             updateMessage("Configuring emulator task");
+            reset();
             configure(this.listenerOptions.get());
             updateMessage("Starting emulator task");
             process();

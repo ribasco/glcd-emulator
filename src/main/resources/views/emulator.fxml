@@ -63,7 +63,7 @@
                 <MenuItem fx:id="menuOpenFontBrowser" mnemonicParsing="false" text="Font Browser" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <CheckMenuItem fx:id="menuSettings" mnemonicParsing="false" text="Settings" />
-                  <CheckMenuItem fx:id="menuPinActivity" mnemonicParsing="false" text="Activity"/>
+                  <CheckMenuItem fx:id="menuPinActivity" disable="true" mnemonicParsing="false" text="Activity"/>
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <Menu mnemonicParsing="false" text="Themes">
                      <items>
@@ -84,28 +84,30 @@
                         <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Report an Issue" />
+                <MenuItem fx:id="menuReportIssue" mnemonicParsing="false" text="Report Issue"/>
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" text="About" />
+                <MenuItem fx:id="menuAbout" mnemonicParsing="false" text="About"/>
             </items>
           </Menu>
         </menus>
       </MenuBar>
        <ToolBar fx:id="tbMain" prefHeight="26.0" prefWidth="1119.0" styleClass="toolbar" VBox.vgrow="ALWAYS">
         <items>
-            <JFXButton fx:id="btnSaveSettings" mnemonicParsing="false" prefHeight="29.0" prefWidth="117.0" text="Save"
-                       textAlignment="CENTER" wrapText="true">
+            <JFXButton fx:id="btnSaveSettings" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="30.0"
+                       prefWidth="45.0" text="Save" textAlignment="CENTER" wrapText="true">
                <graphic>
                   <MaterialDesignIconView glyphName="CONTENT_SAVE" size="20" />
                </graphic>
             </JFXButton>
-            <JFXButton fx:id="btnFitScreenToWindow" mnemonicParsing="false" prefHeight="29.0" prefWidth="121.0"
-                       text="Fit to Window" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+            <JFXButton fx:id="btnFitScreenToWindow" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                       prefHeight="30.0" prefWidth="45.0" text="Fit to Window" textAlignment="CENTER" textOverrun="CLIP"
+                       wrapText="true">
                <graphic>
                    <MaterialDesignIconView glyphName="WINDOW_MAXIMIZE" size="20"/>
                </graphic>
             </JFXButton>
-            <JFXButton fx:id="btnShowFontBrowser" prefHeight="29.0" text="Font Browser">
+            <JFXButton fx:id="btnShowFontBrowser" contentDisplay="GRAPHIC_ONLY" prefHeight="31.0" prefWidth="45.0"
+                       text="Font Browser">
                <graphic>
                    <FontAwesomeIconView glyphName="FONT" size="20"/>
                </graphic>
@@ -115,19 +117,19 @@
                    <FontAwesomeIconView glyphName="PAYPAL" size="16"/>
                </graphic>
             </JFXButton>
-            <Pane prefHeight="29.0" prefWidth="1.0" HBox.hgrow="ALWAYS"/>
+            <Pane minWidth="-Infinity" prefHeight="31.0" prefWidth="267.0" HBox.hgrow="ALWAYS"/>
             <JFXToggleButton fx:id="tbListen" accessibleHelp="Toggle to start listening for remote connections"
-                             mnemonicParsing="false" prefHeight="29.0" prefWidth="131.0" styleClass="service-toggle"
+                             mnemonicParsing="false" prefHeight="29.0" prefWidth="156.0" styleClass="service-toggle"
                              text="Start" toggleColor="#24cd15" toggleLineColor="#88b969" unToggleColor="#544242"
                              unToggleLineColor="#a18f8f"/>
-            <JFXToggleButton fx:id="btnShowSettings" mnemonicParsing="false" prefHeight="29.0" prefWidth="133.0"
+            <JFXToggleButton fx:id="btnShowSettings" mnemonicParsing="false" prefHeight="29.0" prefWidth="156.0"
                              text="Settings" textAlignment="CENTER">
                <graphic>
                   <MaterialDesignIconView glyphName="SETTINGS" size="20" />
                </graphic>
             </JFXToggleButton>
-            <JFXToggleButton fx:id="btnShowPinActivity" mnemonicParsing="false" prefHeight="29.0" prefWidth="117.0"
-                             text="Activity" textAlignment="CENTER">
+            <JFXToggleButton fx:id="btnShowPinActivity" disable="true" mnemonicParsing="false" prefHeight="29.0"
+                             prefWidth="156.0" text="Activity" textAlignment="CENTER">
                 <graphic>
                     <FontAwesomeIconView glyphName="MAP_PIN" size="20"/>
                 </graphic>
@@ -269,8 +271,7 @@
                                                          </font>
                                                      </Label>
                                                      <JFXButton fx:id="btnDrawAnimTest" layoutX="843.0" layoutY="91.0"
-                                                                prefHeight="25.0" prefWidth="131.0"
-                                                                text="Draw Animation Test"/>
+                                                                prefHeight="25.0" prefWidth="131.0" text="Draw Test"/>
                                                      <JFXButton fx:id="btnClearDisplay" layoutX="988.0" layoutY="90.0"
                                                                 prefHeight="25.0" prefWidth="117.0"
                                                                 text="Clear Display"/>

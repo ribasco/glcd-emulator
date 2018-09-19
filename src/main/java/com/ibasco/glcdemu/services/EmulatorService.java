@@ -100,6 +100,10 @@ public class EmulatorService extends Service<Void> {
     }
     //</editor-fold>
 
+    public void setMessageListener(ChangeListener<String> listener) {
+        this.messageListener = listener;
+    }
+
     /**
      * Factory method to create listener tasks based on the connection type
      *
@@ -115,30 +119,6 @@ public class EmulatorService extends Service<Void> {
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException("Error occured while instatiating listener class", e);
         }
-    }
-
-    public void setMessageListener(ChangeListener<String> listener) {
-        this.messageListener = listener;
-    }
-
-    public ReadOnlyIntegerProperty fpsCountProperty() {
-        checkInstance();
-        return emulatorTask.get().fpsCountProperty();
-    }
-
-    public ReadOnlyIntegerProperty bpsCountPproperty() {
-        checkInstance();
-        return emulatorTask.get().bpsCountProperty();
-    }
-
-    public ReadOnlyIntegerProperty frameSizeProperty() {
-        checkInstance();
-        return emulatorTask.get().frameSizeProperty();
-    }
-
-    private void checkInstance() {
-        if (emulatorTask == null)
-            throw new IllegalStateException("No emulator task has been defined. Is the service started?");
     }
 
     @Override

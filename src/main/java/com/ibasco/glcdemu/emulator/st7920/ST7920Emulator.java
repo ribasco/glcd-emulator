@@ -4,6 +4,7 @@ import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.emulator.GlcdEmulatorBase;
 import com.ibasco.glcdemu.emulator.st7920.instructions.DdramSet;
 import com.ibasco.glcdemu.exceptions.EmulatorProcessException;
+import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.pidisplay.core.util.ByteUtils;
 import com.ibasco.pidisplay.drivers.glcd.Glcd;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
@@ -15,11 +16,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * ST7920 GLCD Emulator
+ * ST7920 GLCD Emulator. Please note that this is only partial emulation, only the
  *
  * @author Rafael Ibasco
  */
-@Emulator(controller = GlcdControllerType.ST7920, description = "ST7920 Emulator")
+@Emulator(controller = GlcdControllerType.ST7920, description = "Emulator for ST7920 controller")
 public class ST7920Emulator extends GlcdEmulatorBase {
     private static final Logger log = getLogger(ST7920Emulator.class);
 
@@ -88,7 +89,7 @@ public class ST7920Emulator extends GlcdEmulatorBase {
         //Note: For one address, two succeeding bytes are received (16 bits)
 
         //first byte (high nibble)
-        if (dataCtr.getAndUpdate(this::boolIncrement) == 0) { //dataCtr == 0
+        if (dataCtr.getAndUpdate(this::toggle) == 0) { //dataCtr == 0
             _data = (short) ((data & 0xff) << 8);
         }
         //second byte (low nibble)
@@ -117,6 +118,8 @@ public class ST7920Emulator extends GlcdEmulatorBase {
         int mask = width - 1;
         int offset = getBuffer().getHeight() / 2; //this would be our overflow offset
 
+        PixelBuffer buffer = getBuffer();
+
         for (int pos = 15; pos >= 0; pos--) {
             int x = (15 - pos) + (xAddress * 16); //calculate x-pixel coordinate
             int y = yAddress; //y-pixel coordinate (as is)
@@ -126,14 +129,14 @@ public class ST7920Emulator extends GlcdEmulatorBase {
             if (x >= width) {
                 x &= mask; //apply mask to limit range between 0 and (width -1)
                 y += offset; //increment y with the overflow offset
-                if (y > (getBuffer().getHeight() - 1)) {
+                if (y > (buffer.getHeight() - 1)) {
                     log.warn("Y-coordinate greater than the maximum display height (actual: {}, max: {})", y, getBuffer().getHeight() - 1);
                     continue;
                 }
             }
 
             //Write to pixel buffer
-            getBuffer().write(x, y, value);
+            buffer.write(x, y, value);
         }
     }
 
@@ -198,7 +201,7 @@ public class ST7920Emulator extends GlcdEmulatorBase {
         yAddress = 0;
     }
 
-    private int boolIncrement(int prev) {
+    private int toggle(int prev) {
         return ++prev & 0x1;
     }
 }
