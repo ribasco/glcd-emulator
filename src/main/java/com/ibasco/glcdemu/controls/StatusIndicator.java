@@ -7,24 +7,35 @@ import javafx.scene.shape.Circle;
 
 public class StatusIndicator extends Circle {
 
-    private static PseudoClass ON_PC = PseudoClass.getPseudoClass("on");
+    private static final PseudoClass ON = PseudoClass.getPseudoClass("on");
 
-    private static PseudoClass OFF_PC = PseudoClass.getPseudoClass("off");
+    private static final PseudoClass OFF = PseudoClass.getPseudoClass("off");
 
-    private BooleanProperty activated = new SimpleBooleanProperty(false);
+    private BooleanProperty activated = new SimpleBooleanProperty(false) {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(ON, get());
+            pseudoClassStateChanged(OFF, !get());
+        }
+
+        @Override
+        public Object getBean() {
+            return StatusIndicator.this;
+        }
+    };
 
     public StatusIndicator() {
-        activated.addListener(observable -> {
+        /*activated.addListener(observable -> {
             if (isActivated()) {
-                pseudoClassStateChanged(ON_PC, true);
-                pseudoClassStateChanged(OFF_PC, false);
+                pseudoClassStateChanged(ON, true);
+                pseudoClassStateChanged(OFF, false);
             } else {
-                pseudoClassStateChanged(OFF_PC, true);
-                pseudoClassStateChanged(ON_PC, false);
+                pseudoClassStateChanged(OFF, true);
+                pseudoClassStateChanged(ON, false);
             }
-        });
+        });*/
         getStyleClass().add("status-indicator");
-        setRadius(5.0f);
+        setRadius(7.0f);
         off();
     }
 
