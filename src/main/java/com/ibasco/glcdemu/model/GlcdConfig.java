@@ -1,7 +1,6 @@
 package com.ibasco.glcdemu.model;
 
 import com.ibasco.glcdemu.annotations.Auditable;
-import com.ibasco.glcdemu.annotations.Exclude;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
