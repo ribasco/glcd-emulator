@@ -23,6 +23,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ST7920Emulator extends GlcdEmulatorBase {
     private static final Logger log = getLogger(ST7920Emulator.class);
 
+    //<editor-fold desc="Constants">
+    private static final int RS_INSTRUCTION = 0xF8;
+
+    private static final int RS_DATA = 0xFA;
+    //</editor-fold>
+
     //<editor-fold desc="Emulator Properties">
     private int registerSelect = 0;
 
@@ -31,10 +37,6 @@ public class ST7920Emulator extends GlcdEmulatorBase {
     private int registerCounter = 0;
 
     private short _data = 0;
-
-    private static final int RS_INSTRUCTION = 0xF8;
-
-    private static final int RS_DATA = 0xFA;
 
     private int yAddress = 0;
 
@@ -190,6 +192,8 @@ public class ST7920Emulator extends GlcdEmulatorBase {
         dataCtr.set(0);
         registerSelect = 0;
         registerCounter = 0;
+        registerData = new int[2];
+        _data = 0;
         xAddress = 0;
         yAddress = 0;
     }
