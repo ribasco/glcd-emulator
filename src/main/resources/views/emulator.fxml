@@ -6,6 +6,7 @@
 <?import com.jfoenix.controls.*?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
@@ -156,13 +157,13 @@
                              </ScrollPane>
                          </center>
                          <bottom>
-                             <JFXTabPane fx:id="tpSettings" prefHeight="217.0" prefWidth="1119.0"
+                             <JFXTabPane fx:id="tpSettings" prefHeight="225.0" prefWidth="1119.0"
                                          tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
                                  <tabs>
                                      <Tab closable="false" text="Emulator">
                                          <content>
                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
-                                                         prefWidth="200.0">
+                                                         prefWidth="1119.0">
                                                  <children>
                                                      <JFXColorPicker fx:id="cpInactivePixel" layoutX="15.0"
                                                                      layoutY="34.0" prefHeight="25.0" prefWidth="168.0"
@@ -294,9 +295,10 @@
                                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
                                                          </columnConstraints>
                                                          <rowConstraints>
-                                                             <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-                                                             <RowConstraints minHeight="10.0" prefHeight="30.0"
-                                                                             vgrow="SOMETIMES"/>
+                                                             <RowConstraints maxHeight="165.0" minHeight="10.0"
+                                                                             prefHeight="155.0" vgrow="SOMETIMES"/>
+                                                             <RowConstraints maxHeight="21.0" minHeight="9.0"
+                                                                             prefHeight="19.0" vgrow="SOMETIMES"/>
                                                          </rowConstraints>
                                                          <children>
                                                              <TableView fx:id="tvProfiles" prefHeight="152.0"
@@ -406,6 +408,9 @@
                                          </content>
                                      </Tab>
                                  </tabs>
+                                 <BorderPane.margin>
+                                     <Insets/>
+                                 </BorderPane.margin>
                              </JFXTabPane>
                          </bottom>
                      </BorderPane>
@@ -413,6 +418,6 @@
              </StackPane>
          </children>
       </AnchorPane>
-       <StatusBar fx:id="statusBar" text="" VBox.vgrow="NEVER"/>
+       <StatusBar fx:id="statusBar" prefHeight="8.0" prefWidth="1119.0" text="" VBox.vgrow="NEVER"/>
    </children>
 </VBox>

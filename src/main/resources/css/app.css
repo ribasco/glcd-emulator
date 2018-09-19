@@ -80,3 +80,15 @@
     -fx-background-color: #EAEAEA;
     /*-fx-text-fill: white;*/
 }
+
+.status-indicator, .status-indicator:disabled {
+    -fx-fill: #4c4c4c;
+}
+
+.status-indicator:on {
+    -fx-fill: #00D600;
+}
+
+.status-indicator:off {
+    -fx-fill: gray;
+}

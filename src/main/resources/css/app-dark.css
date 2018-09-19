@@ -382,8 +382,8 @@
     -fx-background-color: #303335;
 }
 
-.status-indicator {
-    -fx-fill: pink;
+.status-indicator, .status-indicator:disabled {
+    -fx-fill: #4c4c4c;
 }
 
 .status-indicator:on {
@@ -391,9 +391,5 @@
 }
 
 .status-indicator:off {
-    -fx-fill: #BD0E06;
-}
-
-.status-indicator:disabled {
-    -fx-fill: gray;
+    -fx-fill: gray; /*#BD0E06;*/
 }
