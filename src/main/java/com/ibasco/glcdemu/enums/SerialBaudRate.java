@@ -18,7 +18,11 @@ public enum SerialBaudRate implements EnumValue<Integer> {
     RATE_57600(57600),
     RATE_115200(115200),
     RATE_128000(128000),
+    RATE_250000(250000),
     RATE_256000(256000),
+    RATE_500Kb(500000),
+    RATE_1Mb(1000000),
+    RATE_2Mb(2000000),
     RATE_CUSTOM(-1);
 
     private int value;
