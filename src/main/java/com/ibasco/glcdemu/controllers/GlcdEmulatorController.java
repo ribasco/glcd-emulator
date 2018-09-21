@@ -9,6 +9,7 @@ import com.ibasco.glcdemu.constants.Views;
 import com.ibasco.glcdemu.controls.GlcdScreen;
 import com.ibasco.glcdemu.controls.StatusIndicator;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
+import com.ibasco.glcdemu.emulator.GlcdEmulatorFactory;
 import com.ibasco.glcdemu.enums.*;
 import com.ibasco.glcdemu.model.GlcdConfigApp;
 import com.ibasco.glcdemu.model.GlcdEmulatorProfile;
@@ -815,6 +816,7 @@ public class GlcdEmulatorController extends GlcdController {
         try {
             GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
             emulatorClass = profile.getController();
+            log.debug("Creating new emulator instance");
             return emulatorClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Unable to instantiate emulator controller '" + emulatorClass + "'", e);
@@ -854,12 +856,10 @@ public class GlcdEmulatorController extends GlcdController {
 
         GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
 
-
         emulatorService = new EmulatorService();
         emulatorService.setMessageListener(this::handleTaskMessages);
 
-
-        GlcdEmulator emulator = createEmulatorFromProfile();
+        GlcdEmulator emulator = GlcdEmulatorFactory.createEmulatorFromClass(profile.getController());
         emulator.bufferProperty().bind(displayBuffer);
         emulatorService.setEmulator(emulator);
 

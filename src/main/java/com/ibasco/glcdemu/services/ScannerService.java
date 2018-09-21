@@ -45,7 +45,6 @@ public class ScannerService extends Service<ObservableList<Class<? extends GlcdE
                     log.debug("Returning cached entries");
                     return cache;
                 }
-
                 log.debug("Refreshing cached item(s)");
                 try (ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages("com.ibasco").scan()) {
                     ClassInfoList classInfo = scanResult.getClassesImplementing("com.ibasco.glcdemu.emulator.GlcdEmulator").filter(f -> !f.isAbstract());
@@ -58,7 +57,6 @@ public class ScannerService extends Service<ObservableList<Class<? extends GlcdE
                 } finally {
                     Platform.runLater(() -> forceRefresh.set(false));
                 }
-
                 return cache;
             }
         };
