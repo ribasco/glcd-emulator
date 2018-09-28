@@ -1,7 +1,6 @@
 package com.ibasco.glcdemu.controllers;
 
 import com.fazecast.jSerialComm.SerialPort;
-import com.google.inject.internal.util.Strings;
 import com.ibasco.glcdemu.*;
 import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.constants.Common;
@@ -9,17 +8,20 @@ import com.ibasco.glcdemu.constants.Views;
 import com.ibasco.glcdemu.controls.GlcdScreen;
 import com.ibasco.glcdemu.controls.StatusIndicator;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
-import com.ibasco.glcdemu.emulator.GlcdEmulatorFactory;
 import com.ibasco.glcdemu.enums.*;
 import com.ibasco.glcdemu.model.GlcdConfigApp;
 import com.ibasco.glcdemu.model.GlcdEmulatorProfile;
 import com.ibasco.glcdemu.net.ListenerOptions;
 import com.ibasco.glcdemu.net.serial.SerialListenerOptions;
 import com.ibasco.glcdemu.net.tcp.TcpListenerOptions;
+import com.ibasco.glcdemu.services.DrawTestService;
 import com.ibasco.glcdemu.services.EmulatorService;
 import com.ibasco.glcdemu.services.ScannerService;
 import com.ibasco.glcdemu.services.SerialPortService;
 import com.ibasco.glcdemu.utils.*;
+import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusType;
 import com.jfoenix.controls.*;
 import com.sun.javafx.event.EventUtil;
 import com.sun.javafx.stage.StageHelper;
@@ -27,6 +29,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
@@ -34,8 +37,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -224,21 +229,6 @@ public class GlcdEmulatorController extends GlcdController {
     @FXML
     private Spinner<Integer> spnListenPort;
 
-    /*@FXML
-    private HBox hbStatusBar;
-
-    @FXML
-    private Label lblStatusHeader;
-
-    @FXML
-    private Label lblStatus;*/
-
-    /*@FXML
-    private Label lblDisplaySizeHeader;
-
-    @FXML
-    private Label lblDisplaySize;*/
-
     @FXML
     private TableView<GlcdEmulatorProfile> tvProfiles;
 
@@ -327,7 +317,7 @@ public class GlcdEmulatorController extends GlcdController {
     private JFXButton btnSelectEmulator;
 
     @FXML
-    private JFXListView<Class<? extends GlcdEmulator>> lvEmulators;
+    private JFXListView<GlcdDisplay> lvEmulators;
 
     @FXML
     private JFXButton btnSerialPortRefresh;
@@ -361,6 +351,9 @@ public class GlcdEmulatorController extends GlcdController {
 
     @FXML
     private StatusBar statusBar;
+
+    @FXML
+    public JFXComboBox<GlcdBusInterface> cbBusInterface;
     //</editor-fold>
 
     private JFXDialog emulatorBrowseDialog;
@@ -391,6 +384,11 @@ public class GlcdEmulatorController extends GlcdController {
 
     private EmulatorService emulatorService;
 
+    private DrawTestService drawTestService;
+
+    private final FilteredList<GlcdBusInterface> busInterfaceList = FXCollections.observableArrayList(GlcdBusInterface.values()).filtered(p -> true);
+
+    //<editor-fold desc="String Converters">
     private StringConverter<SerialPort> serialPortStringConverter = new StringConverter<SerialPort>() {
         @Override
         public String toString(SerialPort object) {
@@ -430,7 +428,7 @@ public class GlcdEmulatorController extends GlcdController {
     private StringConverter<SerialParity> parityStringConverter = new StringConverter<SerialParity>() {
         @Override
         public String toString(SerialParity object) {
-            return Strings.capitalize(object.name().toLowerCase()) + " - " + String.valueOf(object.toValue());
+            return StringUtils.capitalize(object.name().toLowerCase()) + " - " + String.valueOf(object.toValue());
         }
 
         @Override
@@ -455,6 +453,7 @@ public class GlcdEmulatorController extends GlcdController {
             return SerialStopBits.fromValue(Integer.parseInt(string));
         }
     };
+    //</editor-fold>
 
     @FunctionalInterface
     private interface CommandNoArg {
@@ -518,9 +517,10 @@ public class GlcdEmulatorController extends GlcdController {
         setupNodeProperties(); //must be called first
         setupDisplayScreen();
         setupDefaultProfile();
-        updateProfileBindings(getContext().getProfileManager().getActiveProfile());
         setupConnectionTypeBindings();
         setupEmulatorService();
+        setupDrawTestService();
+        setupDisabledProperties();
         setupStatusBar();
         updateAppBindings(appConfig);
         applyTheme(appConfig.getThemeId());
@@ -622,12 +622,13 @@ public class GlcdEmulatorController extends GlcdController {
         }
     }
 
-    private void activateProfile(GlcdEmulatorProfile newValue) {
+    private void activateProfile(GlcdEmulatorProfile profile) {
         glcdScreen.stop();
         try {
-            updateProfileBindings(newValue);
+            updateProfileBindings(profile);
             //Refresh the display buffer
             refreshDisplayBuffer();
+            log.debug("Profile '{}' activated", profile);
         } finally {
             glcdScreen.start();
         }
@@ -646,6 +647,14 @@ public class GlcdEmulatorController extends GlcdController {
         displayBuffer.set(new PixelBuffer(activeProfile.getDisplaySizeWidth(), activeProfile.getDisplaySizeHeight()));
 
         log.debug("Display buffer refreshed (Width: {}, Height: {})", activeProfile.getDisplaySizeWidth(), activeProfile.getDisplaySizeHeight());
+    }
+
+    private void handleDrawTestAction(ActionEvent event) {
+        if (!drawTestService.isRunning()) {
+            drawTestService.restart();
+        } else {
+            drawTestService.cancel();
+        }
     }
 
     private void buildProfileContextMenu() {
@@ -763,16 +772,6 @@ public class GlcdEmulatorController extends GlcdController {
         tvProfiles.getColumns().setAll(idCol, nameCol, descCol, displayWidthCol, displayHeightCol, pixelSizeCol, activeCol, defaultCol, fileCol);
     }
 
-    private void updateDefaultProfile(GlcdEmulatorProfile profile) {
-        if (profile != null && !appConfig.isDefault(profile)) {
-            String header = "Are you sure you want to set '" + profile.getName() + "' as the default profile?";
-            String content = "The selected profile will be applied on the next application start";
-            if (DialogUtil.promptConfirmation(header, content)) {
-                appConfig.setDefaultProfile(profile);
-            }
-        }
-    }
-
     /**
      * Check if we have a default profile stored in the File System.
      */
@@ -806,20 +805,13 @@ public class GlcdEmulatorController extends GlcdController {
             activeProfile.decrementPixel(step);
     }
 
-    /**
-     * Creates a new instance of a {@link GlcdEmulator}  based on the assigned controller of the active profile.
-     *
-     * @return A concrete implementation of {@link GlcdEmulator}
-     */
-    private GlcdEmulator createEmulatorFromProfile() {
-        Class<? extends GlcdEmulator> emulatorClass = null;
-        try {
-            GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
-            emulatorClass = profile.getController();
-            log.debug("Creating new emulator instance");
-            return emulatorClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Unable to instantiate emulator controller '" + emulatorClass + "'", e);
+    private void updateDefaultProfile(GlcdEmulatorProfile profile) {
+        if (profile != null && !appConfig.isDefault(profile)) {
+            String header = "Are you sure you want to set '" + profile.getName() + "' as the default profile?";
+            String content = "The selected profile will be applied on the next application start";
+            if (DialogUtil.promptConfirmation(header, content)) {
+                appConfig.setDefaultProfile(profile);
+            }
         }
     }
 
@@ -850,38 +842,41 @@ public class GlcdEmulatorController extends GlcdController {
         }
     }
 
+    private void setupDisabledProperties() {
+        BooleanBinding disabledBinding = emulatorService.runningProperty().or(drawTestService.runningProperty());
+
+        btnDrawAnimTest.disableProperty().bind(emulatorService.runningProperty());
+        tbListen.disableProperty().bind(drawTestService.runningProperty());
+        menuEmulatorControl.disableProperty().bind(drawTestService.runningProperty());
+
+        btnFreezeDisplay.disableProperty().bind(disabledBinding.not());
+        sizePane.disableProperty().bind(disabledBinding);
+        apProfiles.disableProperty().bind(disabledBinding);
+        btnReset.disableProperty().bind(disabledBinding);
+        tfSelectedEmulator.disableProperty().bind(disabledBinding);
+        btnSelectEmulator.disableProperty().bind(disabledBinding);
+        btnClearDisplay.disableProperty().bind(disabledBinding);
+        cbBusInterface.disableProperty().bind(disabledBinding);
+        pConnType.disableProperty().bind(disabledBinding);
+        rbConnTypeSerial.disableProperty().bind(disabledBinding);
+        rbConnTypeTcp.disableProperty().bind(disabledBinding);
+        btnShowFontBrowser.disableProperty().bind(disabledBinding);
+    }
+
     private void setupEmulatorService() {
         if (emulatorService != null)
             return;
+
+        log.debug("START: Setup emulator service");
 
         GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
 
         emulatorService = new EmulatorService();
         emulatorService.setMessageListener(this::handleTaskMessages);
 
-        GlcdEmulator emulator = GlcdEmulatorFactory.createEmulatorFromClass(profile.getController());
-        emulator.bufferProperty().bind(displayBuffer);
-        emulatorService.setEmulator(emulator);
-
-        btnFreezeDisplay.disableProperty().bind(emulatorService.runningProperty().not());
-        sizePane.disableProperty().bind(emulatorService.runningProperty());
-        apProfiles.disableProperty().bind(emulatorService.runningProperty());
-        btnReset.disableProperty().bind(emulatorService.runningProperty());
-        tfSelectedEmulator.disableProperty().bind(emulatorService.runningProperty());
-        btnSelectEmulator.disableProperty().bind(emulatorService.runningProperty());
-        btnClearDisplay.disableProperty().bind(emulatorService.runningProperty());
-
-        emulatorService.runningProperty().addListener((observable, oldValue, newValue) -> {
-            tbListen.setSelected(newValue);
-            disableConnectionTypeOptions(newValue);
-            if (tfListenIp != null && spnListenPort != null) {
-                tfListenIp.setDisable(newValue);
-                spnListenPort.setDisable(newValue);
-            }
-        });
-
-        //disable draw test if service is running
-        emulatorService.runningProperty().addListener((observable, oldValue, newValue) -> btnDrawAnimTest.setDisable(newValue));
+        emulatorService.displayProperty().bindBidirectional(profile.displayProperty());
+        emulatorService.busInterfaceProperty().bindBidirectional(profile.busInterfaceProperty());
+        emulatorService.pixelBufferProperty().bindBidirectional(displayBuffer);
 
         menuEmulatorControl.textProperty().bind(Bindings.createStringBinding(() -> {
             menuEmulatorControl.setUserData(emulatorService.isRunning());
@@ -907,37 +902,44 @@ public class GlcdEmulatorController extends GlcdController {
             }
         });
 
-        tbListen.textProperty().bind(Bindings.createStringBinding(() -> {
+        emulatorService.runningProperty().addListener((observable, oldValue, newValue) -> tbListen.setSelected(newValue));
+        tbListen.textProperty().bind(Bindings.createStringBinding(this::tbListenTextStringBinding, emulatorService.runningProperty()));
+        tbListen.addEventFilter(MouseEvent.MOUSE_PRESSED, this::tbListenFilterMousePress);
+        tbListen.setOnAction(this::tbListenActionEventHandler);
+
+        log.debug("END: Setup emulator service");
+    }
+
+    private String tbListenTextStringBinding() {
+        if (emulatorService.isRunning()) {
+            return "STOP";
+        }
+        return "START";
+    }
+
+    private void tbListenActionEventHandler(ActionEvent event) {
+        ToggleButton button = (ToggleButton) event.getSource();
+        if (button.isSelected()) {
+            if (!emulatorService.isRunning()) {
+                startEmulatorService();
+            }
+        } else {
             if (emulatorService.isRunning()) {
-                return "STOP";
+                stopEmulatorService();
             }
-            return "START";
-        }, emulatorService.runningProperty()));
+        }
+    }
 
-        tbListen.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            ToggleButton button = (ToggleButton) event.getSource();
-            if (emulatorService.isRunning() && emulatorService.isClientConnected() && button.isSelected()) {
-                if (!DialogUtil.promptConfirmation("Are you sure you want to stop the service?", "A client is currently connected to the emulator service.")) {
-                    event.consume();
-                } else {
-                    button.setSelected(false);
-                    EventUtil.fireEvent(tbListen, new ActionEvent(button, button));
-                }
-            }
-        });
-
-        tbListen.addEventHandler(ActionEvent.ACTION, event -> {
-            ToggleButton button = (ToggleButton) event.getSource();
-            if (button.isSelected()) {
-                if (!emulatorService.isRunning()) {
-                    startEmulatorService();
-                }
+    private <T extends Event> void tbListenFilterMousePress(T event) {
+        ToggleButton button = (ToggleButton) event.getSource();
+        if (emulatorService.isRunning() && emulatorService.isClientConnected() && button.isSelected()) {
+            if (!DialogUtil.promptConfirmation("Are you sure you want to stop the service?", "A client is currently connected to the emulator service.")) {
+                event.consume();
             } else {
-                if (emulatorService.isRunning()) {
-                    stopEmulatorService();
-                }
+                button.setSelected(false);
+                EventUtil.fireEvent(tbListen, new ActionEvent(button, button));
             }
-        });
+        }
     }
 
     /**
@@ -999,7 +1001,6 @@ public class GlcdEmulatorController extends GlcdController {
                 btnRefresh.disableProperty().bind(scannerService.runningProperty());
                 content.setActions(btnSelect, btnCancel, btnRefresh);
                 emulatorBrowseDialog = new JFXDialog(stackPaneRoot, content, JFXDialog.DialogTransition.RIGHT);
-                emulatorBrowseDialog.setOnDialogClosed(e -> log.debug("Emulator select Dialog Closed"));
                 btnRefresh.setOnAction(e -> {
                     lvEmulators.getItems().clear();
                     scannerService.setForceRefresh(true);
@@ -1007,24 +1008,24 @@ public class GlcdEmulatorController extends GlcdController {
                 });
                 btnCancel.setOnAction(e -> emulatorBrowseDialog.close());
                 btnSelect.setOnAction(ev -> {
-                    Class<? extends GlcdEmulator> selectedClass = lvEmulators.getSelectionModel().getSelectedItem();
-                    log.debug("Selected: {}", selectedClass);
-                    getContext().getProfileManager().getActiveProfile().setController(selectedClass);
+                    GlcdDisplay selectedDisplay = lvEmulators.getSelectionModel().getSelectedItem();
+                    log.debug("Selected display: {}", selectedDisplay);
+                    getContext().getProfileManager().getActiveProfile().setDisplay(selectedDisplay);
                     emulatorBrowseDialog.close();
                 });
 
-                lvEmulators.setCellFactory(new Callback<ListView<Class<? extends GlcdEmulator>>, ListCell<Class<? extends GlcdEmulator>>>() {
+                lvEmulators.setCellFactory(new Callback<ListView<GlcdDisplay>, ListCell<GlcdDisplay>>() {
                     @Override
-                    public ListCell<Class<? extends GlcdEmulator>> call(ListView<Class<? extends GlcdEmulator>> param) {
-                        return new ListCell<Class<? extends GlcdEmulator>>() {
+                    public ListCell<GlcdDisplay> call(ListView<GlcdDisplay> param) {
+                        return new ListCell<GlcdDisplay>() {
                             @Override
-                            protected void updateItem(Class<? extends GlcdEmulator> item, boolean empty) {
-                                super.updateItem(item, empty);
+                            protected void updateItem(GlcdDisplay display, boolean empty) {
+                                super.updateItem(display, empty);
                                 Platform.runLater(() -> {
                                     if (empty) {
                                         setText(null);
                                     } else {
-                                        setText(item.getAnnotation(Emulator.class).controller() + " - " + item.getAnnotation(Emulator.class).description());
+                                        setText(String.format("%s - %s (%dx%d)", display.getController().name(), display.getName().replaceAll("D_", ""), display.getDisplaySize().getDisplayWidth(), display.getDisplaySize().getDisplayHeight()));
                                     }
                                 });
                             }
@@ -1041,7 +1042,7 @@ public class GlcdEmulatorController extends GlcdController {
                         if (lvEmulators.getItems().size() == 1)
                             lvEmulators.getSelectionModel().selectFirst();
                         else {
-                            lvEmulators.getSelectionModel().select(profile.getController());
+                            lvEmulators.getSelectionModel().select(profile.getDisplay());
                         }
 
                     }
@@ -1055,10 +1056,27 @@ public class GlcdEmulatorController extends GlcdController {
         }
     }
 
+    private void setupDrawTestService() {
+        GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
+        drawTestService = new DrawTestService();
+        drawTestService.bufferProperty().bind(displayBuffer);
+        drawTestService.busInterfaceProperty().bind(profile.busInterfaceProperty());
+        drawTestService.displayProperty().bind(profile.displayProperty());
+        btnDrawAnimTest.textProperty().bind(Bindings.createStringBinding(() -> {
+            if (drawTestService.isRunning()) {
+                return "Stop Draw Test";
+            }
+            return "Start Draw Test";
+        }, drawTestService.runningProperty()));
+    }
+
     /**
-     * Configure node properties once. Active profile is not yet set at this point
+     * Configure node properties, static entries, event handlers, action handlers etc.
      */
     private void setupNodeProperties() {
+        btnDrawAnimTest.setOnAction(this::handleDrawTestAction);
+
+        cbBusInterface.setItems(busInterfaceList);
         btnFreezeDisplay.setOnAction(event -> {
             if (glcdScreen.isRunning()) {
                 glcdScreen.stop();
@@ -1426,8 +1444,15 @@ public class GlcdEmulatorController extends GlcdController {
         if (profile == null)
             return;
 
+        log.debug("START: Profile bindings update");
+
         //Clear binds (If exists)
         profileBindGroup.clear();
+
+        //Initialize selected bus interface item,
+        //this needs to be called first prior to calling
+        // bind otherwise the value will be null
+        updateBusInterfaceSelection();
 
         //Unidirectional Bindings
         profile.displaySizeWidthProperty().addListener((observable, oldValue, newValue) -> {
@@ -1439,13 +1464,43 @@ public class GlcdEmulatorController extends GlcdController {
             displayBuffer.get().resize(null, newValue);
         });
 
+        cbBusInterface.setConverter(new StringConverter<GlcdBusInterface>() {
+            @Override
+            public String toString(GlcdBusInterface object) {
+                return object.getDescription();
+            }
+
+            @Override
+            public GlcdBusInterface fromString(String string) {
+                return GlcdBusInterface.valueOf(string);
+            }
+        });
+
+        ObjectBinding<Predicate<? super GlcdBusInterface>> busPredicateBinding = Bindings.createObjectBinding(
+                () -> busInterface -> {
+                    if (profile.getDisplay() != null) {
+                        List<GlcdBusInterface> buses = profile.getDisplay().getBusInterfaces();
+                        return buses.contains(busInterface) && GlcdBusType.SOFTWARE.equals(busInterface.getBusType());
+                    }
+                    return false;
+                }, profile.displayProperty()
+        );
+
+        profile.displayProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null)
+                updateBusInterfaceSelection();
+        });
+
+        profileBindGroup.registerUnidirectional(busInterfaceList.predicateProperty(), busPredicateBinding);
+        profileBindGroup.registerUnidirectional(profile.busInterfaceProperty(), cbBusInterface.getSelectionModel().selectedItemProperty());
+        //TODO: Rename tfSelectedEmulator to tfSelectedDisplay
         profileBindGroup.registerUnidirectional(tfSelectedEmulator.textProperty(), Bindings.createStringBinding(() -> {
-            Class<? extends GlcdEmulator> emulatorClass = profile.getController();
-            if (emulatorClass == null) {
+            GlcdDisplay display = profile.getDisplay();
+            if (display == null) {
                 return "None";
             }
-            return emulatorClass.getAnnotation(Emulator.class).controller().name();
-        }, profile.controllerProperty()));
+            return display.getController().name() + " - " + display.getName();
+        }, profile.displayProperty()));
 
         //Bidirectional Bindings
         profileBindGroup.registerBidirectional(glcdScreen.activePixelColorProperty(), profile.lcdActivePixelColorProperty());
@@ -1471,6 +1526,30 @@ public class GlcdEmulatorController extends GlcdController {
         profileBindGroup.registerBidirectional(cbPixelShape.valueProperty(), profile.lcdPixelShapeProperty());
 
         profileBindGroup.bind();
+
+        log.debug("END: Profile bindings update");
+    }
+
+    private void updateBusInterfaceSelection() {
+        GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
+        GlcdDisplay display = profile.getDisplay();
+
+        if (display == null) {
+            log.debug("Display not available");
+            return;
+        }
+
+        GlcdBusInterface pBusInterface = profile.getBusInterface();
+        //select default bus if null or the selected bus is not currently on the list
+        if (pBusInterface == null || !busInterfaceList.contains(pBusInterface)) {
+            Class<? extends GlcdEmulator> emulator = GlcdUtil.findEmulatorClass(profile.getDisplay());
+            if (emulator != null) {
+                pBusInterface = emulator.getAnnotation(Emulator.class).defaultBus();
+                log.debug("Bus interface not specified. Using default '{}'", pBusInterface);
+            }
+        }
+        cbBusInterface.getSelectionModel().select(pBusInterface);
+        log.debug("Controller property changed...Updating selection to: {}", profile.getBusInterface());
     }
 
     private ObjectBinding<Node> createNodeVisibilityBinding(Node showNode, ObservableValue<Boolean> criteriaProperty) {
@@ -1565,8 +1644,8 @@ public class GlcdEmulatorController extends GlcdController {
     }
 
     private void openFontBrowserAction(ActionEvent event) {
-        if (emulatorService.isRunning()) {
-            DialogUtil.showInfo("Action not allowed", "You cannot use the font browser while the emulator service is running due to known stability issues. Please stop the service first and try again");
+        if (emulatorService.isRunning() || drawTestService.isRunning()) {
+            DialogUtil.showInfo("Action not allowed", "You cannot use the font browser while the emulator/test service is running due to stability issues. Please stop the service first and try again");
             return;
         }
         Stages.getFontBrowserStage().showAndWait();

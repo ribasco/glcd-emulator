@@ -123,7 +123,9 @@ public class TcpEmulatorListenerTask extends EmulatorListenerTask {
 
     @Override
     protected void cleanup() throws Exception {
-        selector.close();
-        socketChannel.close();
+        if (selector != null)
+            selector.close();
+        if (socketChannel != null)
+            socketChannel.close();
     }
 }

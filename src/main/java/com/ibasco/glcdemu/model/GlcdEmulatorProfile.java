@@ -1,9 +1,10 @@
 package com.ibasco.glcdemu.model;
 
 import com.ibasco.glcdemu.annotations.Auditable;
-import com.ibasco.glcdemu.emulator.GlcdEmulator;
-import com.ibasco.glcdemu.emulator.st7920.ST7920Emulator;
 import com.ibasco.glcdemu.enums.PixelShape;
+import com.ibasco.pidisplay.drivers.glcd.Glcd;
+import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
 import javafx.beans.property.*;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -37,7 +38,9 @@ public class GlcdEmulatorProfile extends GlcdConfig {
 
     private DoubleProperty lcdMargin = new SimpleDoubleProperty(9.63414f);
 
-    private ObjectProperty<Class<? extends GlcdEmulator>> controller = new SimpleObjectProperty<>(ST7920Emulator.class);
+    private ObjectProperty<GlcdDisplay> display = new SimpleObjectProperty<>(Glcd.ST7920.D_128x64);
+
+    private ObjectProperty<GlcdBusInterface> busInterface = new SimpleObjectProperty<>(GlcdBusInterface.PARALLEL_8080);
 
     private ObjectProperty<PixelShape> lcdPixelShape = new SimpleObjectProperty<>(PixelShape.RECTANGLE);
 
@@ -65,19 +68,32 @@ public class GlcdEmulatorProfile extends GlcdConfig {
         setLcdSpacing(source.lcdSpacing.get());
         setLcdMargin(source.lcdMargin.get());
         setLcdPixelShape(source.lcdPixelShape.get());
-        setController(source.getController());
+        setDisplay(source.getDisplay());
+        setBusInterface(source.getBusInterface());
     }
 
-    public Class<? extends GlcdEmulator> getController() {
-        return controller.get();
+    public GlcdBusInterface getBusInterface() {
+        return busInterface.get();
     }
 
-    public ObjectProperty<Class<? extends GlcdEmulator>> controllerProperty() {
-        return controller;
+    public ObjectProperty<GlcdBusInterface> busInterfaceProperty() {
+        return busInterface;
     }
 
-    public void setController(Class<? extends GlcdEmulator> controller) {
-        this.controller.set(controller);
+    public void setBusInterface(GlcdBusInterface busInterface) {
+        this.busInterface.set(busInterface);
+    }
+
+    public GlcdDisplay getDisplay() {
+        return display.get();
+    }
+
+    public ObjectProperty<GlcdDisplay> displayProperty() {
+        return display;
+    }
+
+    public void setDisplay(GlcdDisplay display) {
+        this.display.set(display);
     }
 
     public PixelShape getLcdPixelShape() {

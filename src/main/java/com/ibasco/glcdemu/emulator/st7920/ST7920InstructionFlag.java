@@ -4,7 +4,7 @@ import com.ibasco.glcdemu.emulator.GlcdInstructionFlag;
 
 import java.util.Arrays;
 
-public enum ST7920InstructionFlags implements GlcdInstructionFlag {
+public enum ST7920InstructionFlag implements GlcdInstructionFlag {
     DISPLAY_CLEAR(0x1, "Fill DDRAM with \"20H\" and set DDRAM address counter (AC) to \"00H\""),
     HOME(0x2, "Set DDRAM address counter (AC) to \"00H\", and put cursor to origin"),
     ENTRY_MODE_SET(0x4, "Set cursor position and display shift when doing write or read operation"),
@@ -18,7 +18,7 @@ public enum ST7920InstructionFlags implements GlcdInstructionFlag {
 
     private String description;
 
-    ST7920InstructionFlags(int code, String description) {
+    ST7920InstructionFlag(int code, String description) {
         this.code = code;
         this.description = description;
     }
@@ -29,7 +29,7 @@ public enum ST7920InstructionFlags implements GlcdInstructionFlag {
     }
 
     @Override
-    public ST7920InstructionFlags valueOf(int code) {
+    public ST7920InstructionFlag valueOf(int code) {
         return Arrays.stream(values()).filter(p -> p.code == code).findFirst().orElse(null);
     }
 

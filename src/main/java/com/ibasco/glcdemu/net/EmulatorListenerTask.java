@@ -117,7 +117,9 @@ abstract public class EmulatorListenerTask extends Task<Void> {
 
     @Override
     protected void updateMessage(String message) {
-        super.updateMessage(String.format("%s [%s] %s", formatter.format(LocalDateTime.now()), getName(), message));
+        String msg = String.format("%s [%s] %s", formatter.format(LocalDateTime.now()), getName(), message);
+        super.updateMessage(msg);
+        log.debug(msg);
     }
 
     /**
@@ -163,7 +165,9 @@ abstract public class EmulatorListenerTask extends Task<Void> {
     }
 
     protected void reset() {
-        getEmulator().reset();
+        if (getEmulator() != null) {
+            getEmulator().reset();
+        }
         processBytes.set(false);
         bytesCollected.set(0);
         fpsCounter.reset();
@@ -205,10 +209,15 @@ abstract public class EmulatorListenerTask extends Task<Void> {
         try {
             if (emulator.get() == null)
                 throw new NullPointerException("Emulator cannot be null");
+
+            if (emulator.get().getBusInterface() == null)
+                throw new IllegalStateException("No bus interface assigned for emulator '" + emulator.get().getClass().getSimpleName() + "'");
+
             updateMessage("Configuring emulator task");
             reset();
             configure(this.listenerOptions.get());
-            updateMessage("Starting emulator task");
+
+            updateMessage(String.format("Starting emulator task (Controller = %s, Bus = %s)", emulator.get().getClass().getSimpleName(), emulator.get().getBusInterface()));
             process();
             updateMessage("Emulator task exited");
         } finally {

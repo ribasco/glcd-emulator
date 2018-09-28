@@ -1,7 +1,7 @@
 package com.ibasco.glcdemu.emulator.st7920.instructions;
 
 import com.ibasco.glcdemu.emulator.st7920.ST7920Instruction;
-import com.ibasco.glcdemu.emulator.st7920.ST7920InstructionFlags;
+import com.ibasco.glcdemu.emulator.st7920.ST7920InstructionFlag;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -17,7 +17,7 @@ public class DdramSet extends ST7920Instruction {
     private int addressType;
 
     public DdramSet(byte value, int addressType) {
-        super(ST7920InstructionFlags.DDRAM_SET, value);
+        super(ST7920InstructionFlag.DDRAM_SET, value);
         this.addressType = addressType;
     }
 

@@ -8,7 +8,7 @@ public class ST7920InstructionFactory {
 
     public static ST7920Instruction createInstruction(int value) {
 
-        ST7920InstructionFlags flag = getInstructionFlag(value);
+        ST7920InstructionFlag flag = getInstructionFlag(value);
 
         if (flag == null)
             throw new RuntimeException("No instruction flags match for the specified value : " + Integer.toHexString(value).toUpperCase());
@@ -47,8 +47,9 @@ public class ST7920InstructionFactory {
         return instruction;
     }
 
-    private static ST7920InstructionFlags getInstructionFlag(int instruction) {
-        for (ST7920InstructionFlags flag : ST7920InstructionFlags.values()) {
+    private static ST7920InstructionFlag getInstructionFlag(int instruction) {
+        //match against a list of known instruction flags
+        for (ST7920InstructionFlag flag : ST7920InstructionFlag.values()) {
             if (flag.matches(instruction))
                 return flag;
         }

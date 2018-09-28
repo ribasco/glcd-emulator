@@ -5,9 +5,10 @@ import com.ibasco.glcdemu.emulator.GlcdEmulatorBase;
 import com.ibasco.glcdemu.emulator.st7920.instructions.DdramSet;
 import com.ibasco.glcdemu.exceptions.EmulatorProcessException;
 import com.ibasco.glcdemu.utils.PixelBuffer;
+import com.ibasco.pidisplay.core.u8g2.U8g2ByteEvent;
+import com.ibasco.pidisplay.core.u8g2.U8g2Message;
 import com.ibasco.pidisplay.core.util.ByteUtils;
-import com.ibasco.pidisplay.drivers.glcd.Glcd;
-import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
 import org.slf4j.Logger;
 
@@ -16,21 +17,35 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * ST7920 GLCD Emulator. Please note that this is only partial emulation, only the
+ * ST7920 GLCD Emulator. Current implementation only supports spi/parallel interface (8-bit). Note that 4-bit parallel
+ * mode is not supported by U8G2 so this feature is not implemented.
  *
  * @author Rafael Ibasco
  */
-@Emulator(controller = GlcdControllerType.ST7920, description = "Emulator for ST7920 controller")
+@Emulator(
+        controller = GlcdControllerType.ST7920,
+        description = "Emulator for ST7920 controller",
+        bus = {
+                GlcdBusInterface.SPI_HW_4WIRE_ST7920,
+                GlcdBusInterface.SPI_SW_4WIRE_ST7920,
+                GlcdBusInterface.PARALLEL_6800,
+                GlcdBusInterface.PARALLEL_8080
+        },
+        defaultBus = GlcdBusInterface.PARALLEL_8080
+)
 public class ST7920Emulator extends GlcdEmulatorBase {
     private static final Logger log = getLogger(ST7920Emulator.class);
 
     //<editor-fold desc="Constants">
-    private static final int RS_INSTRUCTION = 0xF8;
+    private static final int SER_RS_INSTRUCTION = 0xF8;
 
-    private static final int RS_DATA = 0xFA;
+    private static final int SER_RS_DATA = 0xFA;
     //</editor-fold>
 
     //<editor-fold desc="Emulator Properties">
+    /**
+     * 0 = Command, 1 = Data
+     */
     private int registerSelect = 0;
 
     private int[] registerData = new int[2];
@@ -48,8 +63,23 @@ public class ST7920Emulator extends GlcdEmulatorBase {
 
     @Override
     public void processByte(int data) {
+        switch (getBusInterface()) {
+            case PARALLEL_8080:
+            case PARALLEL_6800: {
+                processByteParallel(data);
+                break;
+            }
+            case SPI_HW_4WIRE_ST7920:
+            case SPI_SW_4WIRE_ST7920: {
+                processByteSerial(data);
+                break;
+            }
+        }
+    }
+
+    private void processByteSerial(int data) {
         //Select register
-        if (data == RS_INSTRUCTION || data == RS_DATA) {
+        if (data == SER_RS_INSTRUCTION || data == SER_RS_DATA) {
             registerSelect = data;
         } else {
             //Store data to register
@@ -59,9 +89,9 @@ public class ST7920Emulator extends GlcdEmulatorBase {
             if (registerCounter == 1) {
                 //combine high and low nibble byte
                 int val = registerData[0] | (registerData[1] >> 4);
-                if (registerSelect == RS_INSTRUCTION) {
+                if (registerSelect == SER_RS_INSTRUCTION) {
                     processInstruction(val);
-                } else if (registerSelect == RS_DATA) {
+                } else if (registerSelect == SER_RS_DATA) {
                     processData(val);
                 } else {
                     throw new EmulatorProcessException(this, "Unrecognized register select value: " + ByteUtils.toHexString(false, (byte) registerSelect));
@@ -72,71 +102,11 @@ public class ST7920Emulator extends GlcdEmulatorBase {
         }
     }
 
-    @Override
-    public GlcdDisplay[] getSupportedDisplays() {
-        return new GlcdDisplay[]{Glcd.ST7920.D_128x64, Glcd.ST7920.D_192x32};
-    }
-
-    /**
-     * Process incoming data and write to display buffer. Per the ST7920 datasheet, the x-address will automatically be
-     * incremented after receiving the second byte. Once the x-address reaches it's max range (0xf) the value will reset
-     * back to 0x0.
-     *
-     * @param data
-     *         An integer representing a byte of data
-     */
-    private void processData(int data) {
-        //Note: For one address, two succeeding bytes are received (16 bits)
-
-        //first byte (high nibble)
-        if (dataCtr.getAndUpdate(this::toggle) == 0) { //dataCtr == 0
-            _data = (short) ((data & 0xff) << 8);
-        }
-        //second byte (low nibble)
-        else {
-            _data |= data & 0xff;
-            try {
-                //Process 2 bytes of data at a time then iterate through each bit starting
-                // from the most significant bit. Flush to pixel buffer
-                flush(_data);
-            } finally {
-                _data = 0;
-            }
-            //increment x-address after receving the second byte
-            xAddress = ++xAddress & 0xf;
-        }
-    }
-
-    /**
-     * This will process 16-bit of data and flushes the processed data to the pixel buffer
-     *
-     * @param data
-     *         A 16-bit value to be flushed to the display buffer
-     */
-    private void flush(short data) {
-        int width = getBuffer().getWidth();
-        int mask = width - 1;
-        int offset = getBuffer().getHeight() / 2; //this would be our overflow offset
-
-        PixelBuffer buffer = getBuffer();
-
-        for (int pos = 15; pos >= 0; pos--) {
-            int x = (15 - pos) + (xAddress * 16); //calculate x-pixel coordinate
-            int y = yAddress; //y-pixel coordinate (as is)
-            boolean value = (data & (1 << pos)) != 0; //read nth bit
-
-            //re-adjust x and y coordinates if overflow occurs
-            if (x >= width) {
-                x &= mask; //apply mask to limit range between 0 and (width -1)
-                y += offset; //increment y with the overflow offset
-                if (y > (buffer.getHeight() - 1)) {
-                    log.warn("Y-coordinate greater than the maximum display height (actual: {}, max: {})", y, getBuffer().getHeight() - 1);
-                    continue;
-                }
-            }
-
-            //Write to pixel buffer
-            buffer.write(x, y, value);
+    private void processByteParallel(int data) {
+        if (registerSelect == 0) {
+            processInstruction(data);
+        } else if (registerSelect == 1) {
+            processData(data);
         }
     }
 
@@ -188,6 +158,68 @@ public class ST7920Emulator extends GlcdEmulatorBase {
     }
 
     /**
+     * Process incoming data and write to display buffer. Per the ST7920 datasheet, the x-address will automatically be
+     * incremented after receiving the second byte. Once the x-address reaches it's max range (0xf) the value will reset
+     * back to 0x0.
+     *
+     * @param data
+     *         An integer representing a byte of data
+     */
+    private void processData(int data) {
+        //Note: For one address, two succeeding bytes are received (16 bits)
+        //first byte (high nibble)
+        if (dataCtr.getAndUpdate(this::toggle) == 0) { //dataCtr == 0
+            _data = (short) ((data & 0xff) << 8);
+        }
+        //second byte (low nibble)
+        else {
+            _data |= data & 0xff;
+            try {
+                //Process 2 bytes of data at a time then iterate through each bit starting
+                // from the most significant bit. Flush to pixel buffer
+                flush(_data);
+            } finally {
+                _data = 0;
+            }
+            //increment x-address after receving the second byte
+            xAddress = ++xAddress & 0xf;
+        }
+    }
+
+    /**
+     * This will process 16-bit of data and flushes it to the pixel buffer
+     *
+     * @param data
+     *         A 16-bit value to be flushed to the display buffer
+     */
+    private void flush(short data) {
+        int width = getBuffer().getWidth();
+        int mask = width - 1;
+        int offset = getBuffer().getHeight() / 2; //this would be our overflow offset
+
+        PixelBuffer buffer = getBuffer();
+
+        for (int pos = 15; pos >= 0; pos--) {
+            int x = (15 - pos) + (xAddress * 16); //calculate x-pixel coordinate
+            int y = yAddress; //y-pixel coordinate (as is)
+            boolean value = (data & (1 << pos)) != 0; //read nth bit
+
+            //re-adjust x and y coordinates when overflow occurs
+            if (x >= width) {
+                x &= mask; //apply mask to limit range between 0 and (width -1)
+                y += offset; //increment y with the overflow offset
+                if (y > (buffer.getHeight() - 1)) {
+                    log.warn("Y-coordinate greater than the maximum display height (actual: {}, max: {})", y, getBuffer().getHeight() - 1);
+                    continue;
+                }
+            }
+
+            //Write to pixel buffer
+            buffer.write(x, y, value);
+        }
+    }
+
+    /**
      * Reset the buffer and properties
      */
     @Override
@@ -199,6 +231,21 @@ public class ST7920Emulator extends GlcdEmulatorBase {
         _data = 0;
         xAddress = 0;
         yAddress = 0;
+    }
+
+    @Override
+    public final void onByteEvent(U8g2ByteEvent event) {
+        U8g2Message msg = event.getMessage();
+        switch (msg) {
+            case U8X8_MSG_BYTE_SET_DC:
+                if (GlcdBusInterface.PARALLEL_8080.equals(getBusInterface()) ||
+                        GlcdBusInterface.PARALLEL_6800.equals(getBusInterface()))
+                    registerSelect = event.getValue();
+                break;
+            case U8X8_MSG_BYTE_SEND:
+                processByte(event.getValue());
+                break;
+        }
     }
 
     private int toggle(int prev) {

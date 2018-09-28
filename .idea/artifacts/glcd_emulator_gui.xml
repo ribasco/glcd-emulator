@@ -11,7 +11,7 @@
         <option name="keystore" value="" />
         <option name="title" value="GLCD Emulator" />
         <option name="vendor" value="Rafael Luis Ibasco" />
-        <option name="version" value="1.0" />
+        <option name="version" value="0.1-ALPHA" />
       </options>
     </properties>
     <root id="root">

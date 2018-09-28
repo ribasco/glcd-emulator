@@ -1,7 +1,11 @@
 package com.ibasco.glcdemu.services;
 
 import com.ibasco.glcdemu.Context;
+import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
+import com.ibasco.glcdemu.utils.GlcdUtil;
+import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
@@ -16,11 +20,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ScannerService extends Service<ObservableList<Class<? extends GlcdEmulator>>> {
+public class ScannerService extends Service<ObservableList<GlcdDisplay>> {
 
     private static final Logger log = LoggerFactory.getLogger(ScannerService.class);
 
-    private ObservableList<Class<? extends GlcdEmulator>> cache = FXCollections.observableArrayList();
+    private ObservableList<GlcdDisplay> cache = FXCollections.observableArrayList();
 
     private final AtomicBoolean forceRefresh = new AtomicBoolean(false);
 
@@ -37,21 +41,26 @@ public class ScannerService extends Service<ObservableList<Class<? extends GlcdE
     }
 
     @Override
-    protected Task<ObservableList<Class<? extends GlcdEmulator>>> createTask() {
-        return new Task<ObservableList<Class<? extends GlcdEmulator>>>() {
+    protected Task<ObservableList<GlcdDisplay>> createTask() {
+        return new Task<ObservableList<GlcdDisplay>>() {
             @Override
-            protected ObservableList<Class<? extends GlcdEmulator>> call() {
+            protected ObservableList<GlcdDisplay> call() {
                 if (!cache.isEmpty() && !forceRefresh.get()) {
                     log.debug("Returning cached entries");
                     return cache;
                 }
-                log.debug("Refreshing cached item(s)");
                 try (ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages("com.ibasco").scan()) {
-                    ClassInfoList classInfo = scanResult.getClassesImplementing("com.ibasco.glcdemu.emulator.GlcdEmulator").filter(f -> !f.isAbstract());
+                    ClassInfoList classInfo = scanResult.getClassesImplementing(GlcdEmulator.class.getName()).filter(f -> !f.isAbstract() && f.hasAnnotation(Emulator.class.getName()));
                     List<Class<GlcdEmulator>> result = classInfo.loadClasses(GlcdEmulator.class);
+
                     if (!result.isEmpty()) {
                         cache.clear();
-                        cache.addAll(result);
+                        for (Class<GlcdEmulator> emulatorClass : result) {
+                            GlcdControllerType type = emulatorClass.getAnnotation(Emulator.class).controller();
+                            List<GlcdDisplay> displayList = GlcdUtil.findDisplay(d -> d.getController().equals(type));
+                            if (displayList != null && !displayList.isEmpty())
+                                cache.addAll(displayList);
+                        }
                     }
                     log.debug("Refreshed {} cached item(s)", cache.size());
                 } finally {

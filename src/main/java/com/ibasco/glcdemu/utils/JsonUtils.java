@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.ibasco.glcdemu.enums.SerialBaudRate;
 import com.ibasco.glcdemu.model.FontCacheEntry;
 import com.ibasco.glcdemu.utils.json.adapters.*;
-import javafx.scene.paint.Color;
+import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
 import org.hildan.fxgson.FxGson;
 
 import java.lang.reflect.Type;
@@ -25,11 +25,12 @@ public class JsonUtils {
     static {
         builder = FxGson.createWithExtras().newBuilder();
         builder.setPrettyPrinting();
-        builder.registerTypeAdapter(Color.class, new ColorTypeAdapter());
+        //builder.registerTypeAdapter(Color.class, new ColorTypeAdapter());
         builder.registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter());
         builder.registerTypeAdapter(FontCacheEntry.class, new FontCacheEntryAdapter());
         builder.registerTypeAdapter(SerialBaudRate.class, new SerialBaudRateAdapter());
         builder.registerTypeAdapter(Class.class, new ClassTypeAdapter());
+        builder.registerTypeAdapter(GlcdDisplay.class, new GlcdDisplayAdapter());
         refreshGson();
     }
 

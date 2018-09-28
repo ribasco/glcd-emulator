@@ -1,10 +1,9 @@
 package com.ibasco.glcdemu.emulator;
 
 import com.ibasco.glcdemu.utils.PixelBuffer;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-
-import java.util.Objects;
 
 /**
  * Base class for emulators providing basic functionality
@@ -15,12 +14,29 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
 
     private ObjectProperty<PixelBuffer> buffer = new SimpleObjectProperty<>();
 
+    private ObjectProperty<GlcdBusInterface> busInterface = new SimpleObjectProperty<>();
+
     @Override
     abstract public void processByte(int data);
 
     @Override
-    public PixelBuffer getBuffer() {
-        return Objects.requireNonNull(buffer.get(), "Buffer has not yet been assigned");
+    public final PixelBuffer getBuffer() {
+        return buffer.get();
+    }
+
+    @Override
+    public final void setBuffer(PixelBuffer buffer) {
+        this.buffer.set(buffer);
+    }
+
+    @Override
+    public final void setBusInterface(GlcdBusInterface busInterface) {
+        this.busInterface.set(busInterface);
+    }
+
+    @Override
+    public final GlcdBusInterface getBusInterface() {
+        return this.busInterface.get();
     }
 
     @Override
@@ -29,14 +45,7 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
     }
 
     @Override
-    public void setBuffer(PixelBuffer buffer) {
-        this.buffer.set(buffer);
+    public ObjectProperty<GlcdBusInterface> busInterfaceProperty() {
+        return busInterface;
     }
-
-    /*@Override
-    public void reset() {
-        if (buffer.get() != null) {
-            buffer.get().clear();
-        }
-    }*/
 }

@@ -93,21 +93,19 @@
       </MenuBar>
        <ToolBar fx:id="tbMain" prefHeight="26.0" prefWidth="1119.0" styleClass="toolbar" VBox.vgrow="ALWAYS">
         <items>
-            <JFXButton fx:id="btnSaveSettings" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" prefHeight="30.0"
-                       prefWidth="45.0" text="Save" textAlignment="CENTER" wrapText="true">
+            <JFXButton fx:id="btnSaveSettings" mnemonicParsing="false" prefHeight="30.0" prefWidth="92.0" text="Save"
+                       textAlignment="CENTER" wrapText="true">
                <graphic>
                   <MaterialDesignIconView glyphName="CONTENT_SAVE" size="20" />
                </graphic>
             </JFXButton>
-            <JFXButton fx:id="btnFitScreenToWindow" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
-                       prefHeight="30.0" prefWidth="45.0" text="Fit to Window" textAlignment="CENTER" textOverrun="CLIP"
-                       wrapText="true">
+            <JFXButton fx:id="btnFitScreenToWindow" mnemonicParsing="false" prefHeight="30.0" prefWidth="123.0"
+                       text="Fit Window" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                <graphic>
                    <MaterialDesignIconView glyphName="WINDOW_MAXIMIZE" size="20"/>
                </graphic>
             </JFXButton>
-            <JFXButton fx:id="btnShowFontBrowser" contentDisplay="GRAPHIC_ONLY" prefHeight="31.0" prefWidth="45.0"
-                       text="Font Browser">
+            <JFXButton fx:id="btnShowFontBrowser" prefHeight="31.0" prefWidth="100.0" text="Fonts">
                <graphic>
                    <FontAwesomeIconView glyphName="FONT" size="20"/>
                </graphic>
@@ -117,7 +115,7 @@
                    <FontAwesomeIconView glyphName="PAYPAL" size="16"/>
                </graphic>
             </JFXButton>
-            <Pane minWidth="-Infinity" prefHeight="31.0" prefWidth="267.0" HBox.hgrow="ALWAYS"/>
+            <Pane minWidth="-Infinity" prefHeight="31.0" prefWidth="110.0" HBox.hgrow="ALWAYS"/>
             <JFXToggleButton fx:id="tbListen" accessibleHelp="Toggle to start listening for remote connections"
                              mnemonicParsing="false" prefHeight="29.0" prefWidth="156.0" styleClass="service-toggle"
                              text="Start" toggleColor="#24cd15" toggleLineColor="#88b969" unToggleColor="#544242"
@@ -258,27 +256,33 @@
                                                          </font>
                                                      </Label>
                                                      <JFXComboBox fx:id="cbPixelShape" layoutX="605.0" layoutY="129.0"
-                                                                  prefHeight="25.0" prefWidth="213.0"/>
+                                                                  prefHeight="25.0" prefWidth="213.0"
+                                                                  promptText="Pixel Shape"/>
                                                      <JFXTextField fx:id="tfSelectedEmulator" editable="false"
-                                                                   layoutX="843.0" layoutY="47.0" prefHeight="26.0"
+                                                                   layoutX="843.0" layoutY="33.0" prefHeight="26.0"
                                                                    prefWidth="196.0" text="Emulator"/>
                                                      <JFXButton fx:id="btnSelectEmulator" layoutX="1045.0"
-                                                                layoutY="48.0" prefHeight="25.0" prefWidth="60.0"
+                                                                layoutY="34.0" prefHeight="25.0" prefWidth="60.0"
                                                                 text="Select"/>
-                                                     <Label layoutX="843.0" layoutY="11.0" text="Controller:">
+                                                     <Label layoutX="843.0" layoutY="11.0"
+                                                            text="Controller/Bus Interface:">
                                                          <font>
                                                              <Font name="System Bold" size="12.0"/>
                                                          </font>
                                                      </Label>
-                                                     <JFXButton fx:id="btnDrawAnimTest" layoutX="843.0" layoutY="91.0"
-                                                                prefHeight="25.0" prefWidth="131.0" text="Draw Test"/>
-                                                     <JFXButton fx:id="btnClearDisplay" layoutX="988.0" layoutY="90.0"
+                                                     <JFXComboBox fx:id="cbBusInterface" layoutX="845.0" layoutY="74.0"
+                                                                  prefHeight="26.0" prefWidth="260.0"
+                                                                  promptText="Bus Interface"/>
+                                                     <JFXButton fx:id="btnDrawAnimTest" layoutX="843.0" layoutY="116.0"
+                                                                prefHeight="25.0" prefWidth="131.0"
+                                                                text="Start Draw Test"/>
+                                                     <JFXButton fx:id="btnClearDisplay" layoutX="987.0" layoutY="116.0"
                                                                 prefHeight="25.0" prefWidth="117.0"
                                                                 text="Clear Display"/>
-                                                     <JFXButton fx:id="btnFreezeDisplay" layoutX="843.0" layoutY="129.0"
+                                                     <JFXButton fx:id="btnFreezeDisplay" layoutX="843.0" layoutY="151.0"
                                                                 prefHeight="25.0" prefWidth="131.0"
                                                                 text="Freeze Display"/>
-                                                     <JFXButton fx:id="btnReset" layoutX="988.0" layoutY="129.0"
+                                                     <JFXButton fx:id="btnReset" layoutX="987.0" layoutY="151.0"
                                                                 prefHeight="25.0" prefWidth="117.0"
                                                                 text="Reset Settings"/>
                                                  </children>
@@ -369,13 +373,13 @@
                                                                         prefWidth="9.0"/>
                                                              <Pane fx:id="pConnType" layoutX="225.0" layoutY="49.0"
                                                                    prefHeight="126.0" prefWidth="466.0"/>
-                                                             <JFXRadioButton fx:id="rbConnTypeTcp" layoutX="339.0"
+                                                             <JFXRadioButton fx:id="rbConnTypeTcp" layoutX="352.0"
                                                                              layoutY="25.0" prefWidth="60.0" text="TCP">
                                                                  <toggleGroup>
                                                                      <ToggleGroup fx:id="connType"/>
                                                                  </toggleGroup>
                                                              </JFXRadioButton>
-                                                             <JFXRadioButton fx:id="rbConnTypeSerial" layoutX="411.0"
+                                                             <JFXRadioButton fx:id="rbConnTypeSerial" layoutX="424.0"
                                                                              layoutY="25.0" prefWidth="60.0"
                                                                              text="Serial" toggleGroup="$connType"/>
                                                              <Label layoutX="225.0" layoutY="25.0"

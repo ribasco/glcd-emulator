@@ -138,7 +138,7 @@ public class GlcdFontBrowserController extends GlcdController implements Initial
         //Render text if preview text changes
         tfPreviewText.textProperty().addListener((observable, oldValue, newValue) -> {
             if (details.getActiveEntry() == null) {
-                log.warn("No selected font, skipping render");
+                log.warn("No selected font, no text has been rendered");
                 return;
             }
             renderText(details.getActiveEntry().getFont(), newValue);
@@ -161,7 +161,6 @@ public class GlcdFontBrowserController extends GlcdController implements Initial
 
             transition = new HamburgerSlideCloseTransition(hamLeftDrawer);
             hamLeftDrawer.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> toggleTopDrawer());
-            log.debug("Successfully initialized left drawer", leftDrawerPane);
         } catch (IOException e) {
             log.error("There was a problem loading the view for '" + Views.FONT_BROWSER_TOPDRAWER + "'", e);
         }

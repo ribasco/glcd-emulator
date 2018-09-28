@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../glcd-emulator-client/glcd-emulator-client.iml" filepath="$PROJECT_DIR$/../glcd-emulator-client/glcd-emulator-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/glcd-emulator-gui.iml" filepath="$PROJECT_DIR$/.idea/glcd-emulator-gui.iml" />
     </modules>
   </component>

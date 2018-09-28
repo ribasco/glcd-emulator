@@ -7,8 +7,8 @@ import com.ibasco.glcdemu.emulator.GlcdInstruction;
  *
  * @author Rafael Ibasco
  */
-public class ST7920Instruction extends GlcdInstruction<ST7920InstructionFlags> {
-    public ST7920Instruction(ST7920InstructionFlags flag, byte value) {
+public class ST7920Instruction extends GlcdInstruction<ST7920InstructionFlag> {
+    public ST7920Instruction(ST7920InstructionFlag flag, byte value) {
         super(flag, value);
     }
 

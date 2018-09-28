@@ -1,17 +1,13 @@
 package com.ibasco.glcdemu.utils;
 
+import com.ibasco.glcdemu.GlcdDriverFactory;
 import com.ibasco.glcdemu.controls.GlcdScreen;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
-import com.ibasco.glcdemu.emulator.st7920.ST7920Emulator;
-import com.ibasco.pidisplay.core.u8g2.U8g2ByteEvent;
-import com.ibasco.pidisplay.core.u8g2.U8g2Message;
 import com.ibasco.pidisplay.core.ui.Font;
 import com.ibasco.pidisplay.drivers.glcd.Glcd;
-import com.ibasco.pidisplay.drivers.glcd.GlcdConfig;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDriver;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdCommInterface;
+import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.pidisplay.drivers.glcd.enums.GlcdFont;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdRotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,20 +56,14 @@ public class FontRenderer {
     }
 
     private FontRenderer() {
-        GlcdConfig config = new GlcdConfig();
+        /*GlcdConfig config = new GlcdConfig();
         config.setDisplay(Glcd.ST7920.D_128x64);
-        config.setCommInterface(GlcdCommInterface.SPI_HW_4WIRE_ST7920);
-        config.setRotation(GlcdRotation.ROTATION_NONE);
-        config.setEmulated(true);
+        config.setBusInterface(GlcdBusInterface.SPI_HW_4WIRE_ST7920);
+        config.setRotation(GlcdRotation.ROTATION_NONE);*/
 
-        emulator = new ST7920Emulator();
-        driver = new GlcdDriver(config) {
-            @Override
-            protected void onByteEvent(U8g2ByteEvent event) {
-                if (U8g2Message.U8X8_MSG_BYTE_SEND.equals(event.getMessage()))
-                    emulator.processByte(event.getValue());
-            }
-        };
+        //emulator = new ST7920Emulator();
+        driver = GlcdDriverFactory.createVirtual(Glcd.ST7920.D_128x64, GlcdBusInterface.SPI_HW_4WIRE_ST7920);//new GlcdDriver(config, true, emulator);
+        emulator = driver.getDriverEventHandler();
         driver.setFont(GlcdFont.FONT_7X13B_TR); //default font
     }
 

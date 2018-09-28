@@ -7,6 +7,8 @@
     /*-fx-text-fill: #c7c7c7;*/
     -base-text-color: #c7c7c7;
     -base-prompt-text-color: #919191;
+    -base-selected-color: #405c93;
+    -base-selected-text-color: white;
 }
 
 .table-view {
@@ -257,13 +259,19 @@
 
 .list-cell {
     -fx-padding: 0px;
-    -fx-background-color: transparent, -fx-background;
+    -fx-background-color: transparent; /*derive(-fx-base, -20%)*/;
     -fx-background-insets: 0px, 0px;
+    -fx-text-fill: white;
+}
+
+.list-cell:hover {
+    -fx-background-color: derive(-base-selected-color, -50%);
 }
 
 .list-cell:selected {
-    -fx-border-color: white; /*#74797B;*/
-    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-color: derive(-base-selected-color, -20%); /*#6897BB;*/
+    -fx-text-fill: -base-selected-text-color;
 }
 
 .list-cell:empty {
@@ -283,6 +291,7 @@
     -fx-background-color: #74797b;
 }
 
+/* COMBO BOX **/
 .jfx-combo-box {
     -jfx-focus-color: #4059A9;
     -jfx-unfocus-color: #4d4d4d;
@@ -300,8 +309,13 @@
 }
 
 .jfx-combo-box > .input-focused-line {
-    -fx-background-color: -jfx-focus-color;
+    -fx-background-color: #7B7B7B;
     -fx-pref-height: 2px;
+}
+
+.jfx-combo-box .list-cell:selected {
+    -fx-border-color: transparent;
+    /*-fx-background-color: transparent;*/
 }
 
 .jfx-combo-box,
