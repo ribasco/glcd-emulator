@@ -17,9 +17,6 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
     private ObjectProperty<GlcdBusInterface> busInterface = new SimpleObjectProperty<>();
 
     @Override
-    abstract public void processByte(int data);
-
-    @Override
     public final PixelBuffer getBuffer() {
         return buffer.get();
     }

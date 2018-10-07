@@ -62,22 +62,34 @@ public class ST7920Emulator extends GlcdEmulatorBase {
     //</editor-fold>
 
     @Override
-    public void processByte(int data) {
+    public final void onByteEvent(U8g2ByteEvent event) {
+        U8g2Message msg = event.getMessage();
+        switch (msg) {
+            case U8X8_MSG_BYTE_SET_DC:
+                registerSelect = event.getValue();
+                break;
+            case U8X8_MSG_BYTE_SEND:
+                processByte(event.getValue());
+                break;
+        }
+    }
+
+    private void processByte(int data) {
         switch (getBusInterface()) {
             case PARALLEL_8080:
             case PARALLEL_6800: {
-                processByteParallel(data);
+                processParallel(data);
                 break;
             }
             case SPI_HW_4WIRE_ST7920:
             case SPI_SW_4WIRE_ST7920: {
-                processByteSerial(data);
+                processSPI(data);
                 break;
             }
         }
     }
 
-    private void processByteSerial(int data) {
+    private void processSPI(int data) {
         //Select register
         if (data == SER_RS_INSTRUCTION || data == SER_RS_DATA) {
             registerSelect = data;
@@ -102,7 +114,7 @@ public class ST7920Emulator extends GlcdEmulatorBase {
         }
     }
 
-    private void processByteParallel(int data) {
+    private void processParallel(int data) {
         if (registerSelect == 0) {
             processInstruction(data);
         } else if (registerSelect == 1) {
@@ -231,21 +243,6 @@ public class ST7920Emulator extends GlcdEmulatorBase {
         _data = 0;
         xAddress = 0;
         yAddress = 0;
-    }
-
-    @Override
-    public final void onByteEvent(U8g2ByteEvent event) {
-        U8g2Message msg = event.getMessage();
-        switch (msg) {
-            case U8X8_MSG_BYTE_SET_DC:
-                if (GlcdBusInterface.PARALLEL_8080.equals(getBusInterface()) ||
-                        GlcdBusInterface.PARALLEL_6800.equals(getBusInterface()))
-                    registerSelect = event.getValue();
-                break;
-            case U8X8_MSG_BYTE_SEND:
-                processByte(event.getValue());
-                break;
-        }
     }
 
     private int toggle(int prev) {

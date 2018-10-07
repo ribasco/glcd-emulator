@@ -873,7 +873,6 @@ public class GlcdEmulatorController extends GlcdController {
 
         emulatorService = new EmulatorService();
         emulatorService.setMessageListener(this::handleTaskMessages);
-
         emulatorService.displayProperty().bindBidirectional(profile.displayProperty());
         emulatorService.busInterfaceProperty().bindBidirectional(profile.busInterfaceProperty());
         emulatorService.pixelBufferProperty().bindBidirectional(displayBuffer);

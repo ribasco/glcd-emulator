@@ -17,7 +17,7 @@ public interface GlcdEmulator extends GlcdDriverEventHandler {
      * @param data
      *         An integer representing an unsigned byte
      */
-    void processByte(int data);
+    /*void processByte(int data);*/
 
     /**
      * Returns the underlying display buffer of this emulator

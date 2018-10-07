@@ -19,11 +19,6 @@ import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
 )
 public class SSD1306Emulator extends GlcdEmulatorBase {
     @Override
-    public void processByte(int data) {
-
-    }
-
-    @Override
     public void reset() {
 
     }

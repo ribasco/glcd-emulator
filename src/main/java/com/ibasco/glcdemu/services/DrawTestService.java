@@ -2,6 +2,7 @@ package com.ibasco.glcdemu.services;
 
 import com.ibasco.glcdemu.Context;
 import com.ibasco.glcdemu.GlcdDriverFactory;
+import com.ibasco.glcdemu.emulator.GlcdEmulator;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.pidisplay.core.util.concurrent.ThreadUtils;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
@@ -83,7 +84,10 @@ public class DrawTestService extends Service<Void> {
 
             @Override
             protected Void call() {
+                buffer.get().clear();
                 log.debug("Starting drawing task (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
+                GlcdEmulator emulator = driver.getDriverEventHandler();
+                emulator.reset();
                 while (!isCancelled()) {
                     driver.setFont(GlcdFont.FONT_10X20_ME);
                     driver.clearBuffer();
