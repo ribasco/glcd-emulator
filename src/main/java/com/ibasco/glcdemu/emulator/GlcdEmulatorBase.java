@@ -35,14 +35,4 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
     public final GlcdBusInterface getBusInterface() {
         return this.busInterface.get();
     }
-
-    @Override
-    public ObjectProperty<PixelBuffer> bufferProperty() {
-        return buffer;
-    }
-
-    @Override
-    public ObjectProperty<GlcdBusInterface> busInterfaceProperty() {
-        return busInterface;
-    }
 }

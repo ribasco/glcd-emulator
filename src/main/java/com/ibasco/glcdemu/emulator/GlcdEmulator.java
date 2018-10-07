@@ -3,7 +3,6 @@ package com.ibasco.glcdemu.emulator;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDriverEventHandler;
 import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
-import javafx.beans.property.ObjectProperty;
 
 /**
  * Interface for emulators
@@ -26,8 +25,6 @@ public interface GlcdEmulator extends GlcdDriverEventHandler {
      */
     void setBuffer(PixelBuffer buffer);
 
-    ObjectProperty<PixelBuffer> bufferProperty();
-
     /**
      * Sets the Bus communication interface for this emulator
      *
@@ -41,10 +38,8 @@ public interface GlcdEmulator extends GlcdDriverEventHandler {
      */
     GlcdBusInterface getBusInterface();
 
-    ObjectProperty<GlcdBusInterface> busInterfaceProperty();
-
     /**
-     * Clears the current buffer and resets the properties back to their initial state.
+     * Reset internal properties back to their initial state.
      */
     void reset();
 }
