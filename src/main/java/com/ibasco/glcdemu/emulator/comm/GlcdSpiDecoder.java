@@ -1,15 +1,20 @@
 package com.ibasco.glcdemu.emulator.comm;
 
 
-import com.ibasco.glcdemu.emulator.GlcdCommDecoder;
-import com.ibasco.glcdemu.emulator.GlcdCommEncoder;
+import com.ibasco.glcdemu.emulator.GlcdBusDecoder;
+import com.ibasco.glcdemu.emulator.GlcdBusEncoder;
 import com.ibasco.pidisplay.core.exceptions.NotImplementedException;
 import com.ibasco.pidisplay.core.u8g2.U8g2GpioEvent;
 import com.ibasco.pidisplay.core.u8g2.U8g2Message;
 
 import java.util.Objects;
 
-public class GlcdSpiProtocolAdapter implements GlcdCommDecoder, GlcdCommEncoder {
+/**
+ * SPI signal decoder. This class converts {@link U8g2GpioEvent} instances into a recognizable byte format.
+ *
+ * @author Rafael Ibasco
+ */
+public class GlcdSpiDecoder implements GlcdBusDecoder, GlcdBusEncoder {
 
     private int _decode_bit_index = 7;
     private byte _decode_data = 0;

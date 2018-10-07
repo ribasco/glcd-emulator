@@ -3,10 +3,10 @@ package com.ibasco.glcdemu.emulator;
 import com.ibasco.pidisplay.core.u8g2.U8g2GpioEvent;
 
 /**
- * Communications Protocol Decoder. Decodes GPIO events into a recognizable byte format.
+ * Bus interface decoder. Decodes GPIO events into a recognizable byte format.
  *
  * @author Rafael Ibasco
  */
-public interface GlcdCommDecoder {
+public interface GlcdBusDecoder {
     Byte decode(U8g2GpioEvent event);
 }
