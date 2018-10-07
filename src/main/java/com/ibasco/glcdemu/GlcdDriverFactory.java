@@ -14,6 +14,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * Factory class for constructing glcd drivers (virtual/non-virtual)
+ *
+ * @author Rafael Ibasco
+ */
 public class GlcdDriverFactory {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdDriverFactory.class);
