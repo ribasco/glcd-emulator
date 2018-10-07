@@ -20,6 +20,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * A class-path scanner service for available {@link GlcdDisplay}
+ *
+ * @author Rafael Ibasco
+ */
 public class ScannerService extends Service<ObservableList<GlcdDisplay>> {
 
     private static final Logger log = LoggerFactory.getLogger(ScannerService.class);
@@ -27,6 +32,8 @@ public class ScannerService extends Service<ObservableList<GlcdDisplay>> {
     private ObservableList<GlcdDisplay> cache = FXCollections.observableArrayList();
 
     private final AtomicBoolean forceRefresh = new AtomicBoolean(false);
+
+    private static final String WHITELIST_PACKAGE = "com.ibasco";
 
     public ScannerService() {
         setExecutor(Context.getTaskExecutor());
@@ -49,7 +56,7 @@ public class ScannerService extends Service<ObservableList<GlcdDisplay>> {
                     log.debug("Returning cached entries");
                     return cache;
                 }
-                try (ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages("com.ibasco").scan()) {
+                try (ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages(WHITELIST_PACKAGE).scan()) {
                     ClassInfoList classInfo = scanResult.getClassesImplementing(GlcdEmulator.class.getName()).filter(f -> !f.isAbstract() && f.hasAnnotation(Emulator.class.getName()));
                     List<Class<GlcdEmulator>> result = classInfo.loadClasses(GlcdEmulator.class);
 

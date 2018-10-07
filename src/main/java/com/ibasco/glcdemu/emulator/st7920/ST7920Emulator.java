@@ -132,7 +132,6 @@ public class ST7920Emulator extends GlcdEmulatorBase {
         ST7920Instruction instruction = ST7920InstructionFactory.createInstruction(value);
 
         if (instruction != null) {
-            //log.debug("Processing Instruction: {}", instruction.getName());
             switch (instruction.getFlag()) {
                 case CGRAM_SET:
                     break;
@@ -140,7 +139,6 @@ public class ST7920Emulator extends GlcdEmulatorBase {
                     DdramSet ins = (DdramSet) instruction;
                     if (ins.getAddressType() == DdramSet.ADDRESS_X) {
                         xAddress = ins.getAddress() & DdramSet.ADDRESS_X;
-                        //log.debug("DDRAM Set X = {}, Y = {}", xAddress, yAddress);
                     } else if (ins.getAddressType() == DdramSet.ADDRESS_Y) {
                         yAddress = ins.getAddress() & DdramSet.ADDRESS_Y;
                     }

@@ -23,7 +23,6 @@ public class GlcdEmulatorFactory {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdEmulatorFactory.class);
 
-
     public static GlcdEmulator createFrom(GlcdDisplay display, GlcdBusInterface busInterface) {
         return createFrom(display, busInterface, null);
     }

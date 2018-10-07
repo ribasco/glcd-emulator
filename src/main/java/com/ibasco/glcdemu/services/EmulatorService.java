@@ -141,7 +141,7 @@ public class EmulatorService extends Service<Void> {
     }
 
     /**
-     * Factory method to create listener tasks based on the connection type
+     * Factory method for constructing listener tasks based on the connection type provided
      *
      * @param connectionType
      *         The {@link ConnectionType} of this emulator
