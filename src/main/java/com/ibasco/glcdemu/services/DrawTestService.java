@@ -78,6 +78,9 @@ public class DrawTestService extends Service<Void> {
             refreshDriver();
         }
 
+        GlcdEmulator emulator = driver.getDriverEventHandler();
+        emulator.reset();
+
         return new Task<Void>() {
 
             private int ctr = 0;
