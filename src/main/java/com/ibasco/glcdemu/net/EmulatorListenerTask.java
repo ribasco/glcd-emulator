@@ -1,7 +1,6 @@
 package com.ibasco.glcdemu.net;
 
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
-import com.ibasco.glcdemu.exceptions.EmulatorProcessException;
 import com.ibasco.glcdemu.utils.Counter;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.pidisplay.core.u8g2.U8g2ByteEvent;
@@ -215,7 +214,7 @@ abstract public class EmulatorListenerTask extends Task<Void> {
             }
 
             pulseCounters();
-        } catch (EmulatorProcessException e) {
+        } catch (Exception e) {
             log.error("Problem occured during byte processing", e);
             processBytes.set(false);
             bytesPerFrame.set(0);
