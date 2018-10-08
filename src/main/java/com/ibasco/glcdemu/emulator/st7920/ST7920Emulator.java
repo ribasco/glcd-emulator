@@ -68,22 +68,20 @@ public class ST7920Emulator extends GlcdEmulatorBase {
             case U8X8_MSG_BYTE_SET_DC:
                 registerSelect = event.getValue();
                 break;
-            case U8X8_MSG_BYTE_SEND:
-                processByte(event.getValue());
-                break;
-        }
-    }
-
-    private void processByte(int data) {
-        switch (getBusInterface()) {
-            case PARALLEL_8080:
-            case PARALLEL_6800: {
-                processParallel(data);
-                break;
-            }
-            case SPI_HW_4WIRE_ST7920:
-            case SPI_SW_4WIRE_ST7920: {
-                processSPI(data);
+            case U8X8_MSG_BYTE_SEND: {
+                int value = event.getValue();
+                switch (getBusInterface()) {
+                    case PARALLEL_8080:
+                    case PARALLEL_6800: {
+                        processParallel(value);
+                        break;
+                    }
+                    case SPI_HW_4WIRE_ST7920:
+                    case SPI_SW_4WIRE_ST7920: {
+                        processSPI(value);
+                        break;
+                    }
+                }
                 break;
             }
         }
@@ -123,7 +121,7 @@ public class ST7920Emulator extends GlcdEmulatorBase {
     }
 
     /**
-     * Process incoming display instructions
+     * Process display instruction sets
      *
      * @param value
      *         The instruction data
@@ -219,8 +217,7 @@ public class ST7920Emulator extends GlcdEmulatorBase {
                 x &= mask; //apply mask to limit range between 0 and (width -1)
                 y += offset; //increment y with the overflow offset
                 if (y > (buffer.getHeight() - 1)) {
-                    log.warn("Y-coordinate greater than the maximum display height (actual: {}, max: {})", y, getBuffer().getHeight() - 1);
-                    continue;
+                    throw new IllegalStateException(String.format("Y-coordinate greater than the maximum display height (actual: %d, max: %d)", y, getBuffer().getHeight() - 1));
                 }
             }
 
