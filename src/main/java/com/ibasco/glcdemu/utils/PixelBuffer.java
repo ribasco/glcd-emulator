@@ -341,7 +341,12 @@ public class PixelBuffer {
     private void markInvalid() {
         if (!invalidated.get()) {
             invalidated.set(true);
+            invalidated();
         }
+    }
+
+    protected void invalidated() {
+
     }
 
     @Override

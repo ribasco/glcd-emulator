@@ -3,7 +3,7 @@ package com.ibasco.glcdemu.emulator.comm;
 
 import com.ibasco.glcdemu.emulator.GlcdBusDecoder;
 import com.ibasco.glcdemu.emulator.GlcdBusEncoder;
-import com.ibasco.pidisplay.core.exceptions.NotImplementedException;
+import com.ibasco.glcdemu.exceptions.NotYetImplementedException;
 import com.ibasco.pidisplay.core.u8g2.U8g2GpioEvent;
 import com.ibasco.pidisplay.core.u8g2.U8g2Message;
 
@@ -58,6 +58,6 @@ public class GlcdSpiDecoder implements GlcdBusDecoder, GlcdBusEncoder {
 
     @Override
     public U8g2GpioEvent encode(byte data) {
-        throw new NotImplementedException("Encode functionality not yet implemented");
+        throw new NotYetImplementedException("Encode functionality not yet implemented");
     }
 }

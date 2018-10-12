@@ -3,7 +3,6 @@ package com.ibasco.glcdemu.utils;
 import com.ibasco.glcdemu.GlcdDriverFactory;
 import com.ibasco.glcdemu.controls.GlcdScreen;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
-import com.ibasco.pidisplay.core.ui.Font;
 import com.ibasco.pidisplay.drivers.glcd.Glcd;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDriver;
 import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
@@ -71,7 +70,7 @@ public class FontRenderer {
         return driver;
     }
 
-    public synchronized void renderFont(GlcdScreen screen, Font font, String text) {
+    public synchronized void renderFont(GlcdScreen screen, GlcdFont font, String text) {
         synchronized (mutext) {
             try {
                 emulator.setBuffer(screen.getBuffer());
@@ -87,7 +86,7 @@ public class FontRenderer {
         }
     }
 
-    public FontInfo getFontInfo(Font font) {
+    public FontInfo getFontInfo(GlcdFont font) {
         synchronized (mutext) {
             driver.setFont(font);
             return new FontInfo(driver.getAscent(), driver.getDescent(), driver.getMaxCharWidth(), driver.getMaxCharHeight());

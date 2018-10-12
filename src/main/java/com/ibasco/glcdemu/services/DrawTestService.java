@@ -4,7 +4,6 @@ import com.ibasco.glcdemu.Context;
 import com.ibasco.glcdemu.GlcdDriverFactory;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
 import com.ibasco.glcdemu.utils.PixelBuffer;
-import com.ibasco.pidisplay.core.util.concurrent.ThreadUtils;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.pidisplay.drivers.glcd.GlcdDriver;
 import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
@@ -86,9 +85,9 @@ public class DrawTestService extends Service<Void> {
             private int ctr = 0;
 
             @Override
-            protected Void call() {
+            protected Void call() throws Exception {
                 buffer.get().clear();
-                log.debug("Starting drawing task (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
+                log.debug("Starting draw task (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
                 GlcdEmulator emulator = driver.getDriverEventHandler();
                 emulator.reset();
                 while (!isCancelled()) {
@@ -98,7 +97,7 @@ public class DrawTestService extends Service<Void> {
                     driver.sendBuffer();
                     if (ctr > 100)
                         ctr = 0;
-                    ThreadUtils.sleep(10);
+                    Thread.sleep(10);
                 }
                 return null;
             }

@@ -1,6 +1,6 @@
 package com.ibasco.glcdemu.services;
 
-import com.google.common.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 import com.ibasco.glcdemu.Context;
 import com.ibasco.glcdemu.constants.Common;
 import com.ibasco.glcdemu.controls.GlcdScreen;

@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -89,6 +90,7 @@ public class Bootstrap extends Application {
 
     private void initStageBindings() {
         Stage stage = Stages.getPrimaryStage();
+        stage.getIcons().add(new Image(ResourceUtil.getResource("images/icon.png").toExternalForm()));
         appConfig.alwaysOnTopProperty().addListener((observable, oldValue, newValue) -> stage.setAlwaysOnTop(newValue));
         appConfig.maximizedProperty().bind(stage.maximizedProperty());
         appConfig.prefWindowWidthProperty().bind(stage.widthProperty());

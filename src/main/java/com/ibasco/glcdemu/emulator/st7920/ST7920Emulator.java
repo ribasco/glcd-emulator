@@ -4,10 +4,10 @@ import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.emulator.GlcdEmulatorBase;
 import com.ibasco.glcdemu.emulator.st7920.instructions.DdramSet;
 import com.ibasco.glcdemu.exceptions.EmulatorProcessException;
+import com.ibasco.glcdemu.utils.ByteUtils;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.pidisplay.core.u8g2.U8g2ByteEvent;
 import com.ibasco.pidisplay.core.u8g2.U8g2Message;
-import com.ibasco.pidisplay.core.util.ByteUtils;
 import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
 import org.slf4j.Logger;
@@ -104,7 +104,7 @@ public class ST7920Emulator extends GlcdEmulatorBase {
                 } else if (registerSelect == SER_RS_DATA) {
                     processData(val);
                 } else {
-                    throw new EmulatorProcessException(this, "Unrecognized register select value: " + ByteUtils.toHexString(false, (byte) registerSelect));
+                    throw new EmulatorProcessException(this, "Unrecognized register select value: " + ByteUtils.toHexString((byte) registerSelect));
                 }
             }
             //make sure to limit the counter range between 0 and 1 only (0 = high byte, 1 = low byte)

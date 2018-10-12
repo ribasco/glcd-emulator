@@ -1,14 +1,15 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" build-on-make="true" name="glcd-emulator-gui">
-    <output-path>$PROJECT_DIR$/out/artifacts/glcd_emulator_gui</output-path>
+  <artifact type="javafx" name="glcd-emulator">
+    <output-path>$PROJECT_DIR$/out/artifacts/glcd_emulator</output-path>
     <properties id="javafx-properties">
       <options>
         <option name="alias" value="" />
         <option name="appClass" value="com.ibasco.glcdemu.Bootstrap" />
-        <option name="description" value="A GLCD emulator for u8g2 library" />
+        <option name="description" value="Graphics LCD emulator" />
         <option name="enabledSigning" value="true" />
         <option name="htmlPlaceholderId" value="" />
         <option name="keystore" value="" />
+        <option name="nativeBundle" value="all" />
         <option name="title" value="GLCD Emulator" />
         <option name="vendor" value="Rafael Luis Ibasco" />
         <option name="version" value="0.1-ALPHA" />

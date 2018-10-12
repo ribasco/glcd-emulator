@@ -1,6 +1,6 @@
 package com.ibasco.glcdemu.emulator;
 
-import com.ibasco.pidisplay.core.util.ByteUtils;
+import com.ibasco.glcdemu.utils.ByteUtils;
 
 abstract public class GlcdInstruction<T extends GlcdInstructionFlag> {
 
@@ -24,8 +24,8 @@ abstract public class GlcdInstruction<T extends GlcdInstructionFlag> {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("GlcdInstruction{");
-        sb.append("value=").append(ByteUtils.toHexString(false, value));
-        sb.append(", flag=").append(ByteUtils.toHexString(false, (byte) flag.getCode()));
+        sb.append("value=").append(ByteUtils.toHexString(value));
+        sb.append(", flag=").append(ByteUtils.toHexString((byte) flag.getCode()));
         sb.append('}');
         return sb.toString();
     }

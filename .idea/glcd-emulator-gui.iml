@@ -43,18 +43,6 @@
     <orderEntry type="library" name="Maven: org.controlsfx:controlsfx:8.40.14" level="project" />
     <orderEntry type="library" name="Maven: com.fazecast:jSerialComm:2.2.2" level="project" />
     <orderEntry type="library" name="Maven: com.ibasco.pidisplay:pi-display-drivers-glcd:0.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.ibasco.pidisplay:pi-display-core:0.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.pi4j:pi4j-core:1.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.pi4j:pi4j-device:1.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.pi4j:pi4j-gpio-extension:1.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:23.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
-    <orderEntry type="library" name="Maven: com.google.errorprone:error_prone_annotations:2.0.18" level="project" />
-    <orderEntry type="library" name="Maven: com.google.j2objc:j2objc-annotations:1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.14" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-text:1.1" level="project" />
-    <orderEntry type="library" name="Maven: io.reactivex.rxjava2:rxjava:2.1.5" level="project" />
-    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.ibasco.pidisplay:pi-display-native:0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: uk.org.lidalia:sysout-over-slf4j:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:native-lib-loader:2.2.0" level="project" />
