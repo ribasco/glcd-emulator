@@ -19,9 +19,9 @@ import com.ibasco.glcdemu.services.EmulatorService;
 import com.ibasco.glcdemu.services.ScannerService;
 import com.ibasco.glcdemu.services.SerialPortService;
 import com.ibasco.glcdemu.utils.*;
-import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusType;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusType;
 import com.jfoenix.controls.*;
 import com.sun.javafx.event.EventUtil;
 import com.sun.javafx.stage.StageHelper;
@@ -1548,7 +1548,6 @@ public class GlcdEmulatorController extends GlcdController {
             }
         }
         cbBusInterface.getSelectionModel().select(pBusInterface);
-        log.debug("Controller property changed...Updating selection to: {}", profile.getBusInterface());
     }
 
     private ObjectBinding<Node> createNodeVisibilityBinding(Node showNode, ObservableValue<Boolean> criteriaProperty) {

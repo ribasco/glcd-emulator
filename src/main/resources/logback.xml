@@ -38,5 +38,5 @@
     </root>
 
     <logger name="com.ibasco.glcdemu.emulator" level="DEBUG"/>
-    <logger name="com.ibasco.pidisplay.core.util.concurrent.ThreadUtils" level="INFO"/>
+    <logger name="com.ibasco.ucgdisplay.core.util.concurrent.ThreadUtils" level="INFO"/>
 </configuration>

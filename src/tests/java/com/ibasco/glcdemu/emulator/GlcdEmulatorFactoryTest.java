@@ -1,9 +1,9 @@
 package com.ibasco.glcdemu.emulator;
 
 import com.ibasco.glcdemu.emulator.st7920.ST7920Emulator;
-import com.ibasco.pidisplay.drivers.glcd.Glcd;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
+import com.ibasco.ucgdisplay.drivers.glcd.Glcd;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

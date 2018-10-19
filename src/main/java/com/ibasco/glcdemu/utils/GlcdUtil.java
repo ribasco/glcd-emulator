@@ -2,10 +2,10 @@ package com.ibasco.glcdemu.utils;
 
 import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
-import com.ibasco.pidisplay.drivers.glcd.Glcd;
-import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
+import com.ibasco.ucgdisplay.drivers.glcd.Glcd;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;

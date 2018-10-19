@@ -1,8 +1,8 @@
 package com.ibasco.glcdemu.emulator;
 
 import com.ibasco.glcdemu.utils.PixelBuffer;
-import com.ibasco.pidisplay.drivers.glcd.GlcdDriverEventHandler;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriverEventHandler;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 
 /**
  * Interface for emulators

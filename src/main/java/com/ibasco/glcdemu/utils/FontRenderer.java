@@ -3,10 +3,10 @@ package com.ibasco.glcdemu.utils;
 import com.ibasco.glcdemu.GlcdDriverFactory;
 import com.ibasco.glcdemu.controls.GlcdScreen;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
-import com.ibasco.pidisplay.drivers.glcd.Glcd;
-import com.ibasco.pidisplay.drivers.glcd.GlcdDriver;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdFont;
+import com.ibasco.ucgdisplay.drivers.glcd.Glcd;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriver;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

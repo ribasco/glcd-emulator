@@ -2,7 +2,7 @@ package com.ibasco.glcdemu.utils.json.adapters;
 
 import com.google.gson.*;
 import com.ibasco.glcdemu.model.FontCacheEntry;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdFont;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 
 import java.io.File;
 import java.lang.reflect.Type;

@@ -128,9 +128,9 @@
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
             <dependency>
-                <groupId>com.ibasco.pidisplay</groupId>
-                <artifactId>pi-display-drivers-glcd</artifactId>
-                <version>0.1-SNAPSHOT</version>
+                <groupId>com.ibasco.ucgdisplay</groupId>
+                <artifactId>ucgd-drivers-glcd</artifactId>
+                <version>0.1-alpha-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.fazecast</groupId>
@@ -240,8 +240,8 @@
             <artifactId>jSerialComm</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.ibasco.pidisplay</groupId>
-            <artifactId>pi-display-drivers-glcd</artifactId>
+            <groupId>com.ibasco.ucgdisplay</groupId>
+            <artifactId>ucgd-drivers-glcd</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hildan.fxgson</groupId>

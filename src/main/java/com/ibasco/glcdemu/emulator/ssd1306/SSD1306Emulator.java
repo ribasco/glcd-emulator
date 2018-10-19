@@ -2,9 +2,9 @@ package com.ibasco.glcdemu.emulator.ssd1306;
 
 import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.emulator.GlcdEmulatorBase;
-import com.ibasco.pidisplay.core.u8g2.U8g2ByteEvent;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
+import com.ibasco.ucgdisplay.core.u8g2.U8g2ByteEvent;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 
 @Emulator(
         controller = GlcdControllerType.SSD1306,

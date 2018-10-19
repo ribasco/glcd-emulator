@@ -2,8 +2,8 @@ package com.ibasco.glcdemu.utils.json.adapters;
 
 import com.google.gson.*;
 import com.ibasco.glcdemu.utils.GlcdUtil;
-import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,7 +7,7 @@ import com.ibasco.glcdemu.controls.GlcdScreen;
 import com.ibasco.glcdemu.enums.PixelShape;
 import com.ibasco.glcdemu.model.FontCacheEntry;
 import com.ibasco.glcdemu.utils.*;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdFont;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;

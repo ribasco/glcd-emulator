@@ -41,9 +41,9 @@
     <orderEntry type="library" name="Maven: io.github.classgraph:classgraph:4.1.6" level="project" />
     <orderEntry type="library" name="Maven: com.jfoenix:jfoenix:8.0.7" level="project" />
     <orderEntry type="library" name="Maven: org.controlsfx:controlsfx:8.40.14" level="project" />
-    <orderEntry type="library" name="Maven: com.fazecast:jSerialComm:2.2.2" level="project" />
-    <orderEntry type="library" name="Maven: com.ibasco.pidisplay:pi-display-drivers-glcd:0.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.ibasco.pidisplay:pi-display-native:0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.fazecast:jSerialComm:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.ibasco.ucgdisplay:ucgd-drivers-glcd:0.1-alpha-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.ibasco.ucgdisplay:ucgd-native:0.1-alpha-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: uk.org.lidalia:sysout-over-slf4j:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:native-lib-loader:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ant:ant:1.10.4" level="project" />

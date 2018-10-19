@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.ibasco.glcdemu.enums.SerialBaudRate;
 import com.ibasco.glcdemu.model.FontCacheEntry;
 import com.ibasco.glcdemu.utils.json.adapters.*;
-import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
 import org.hildan.fxgson.FxGson;
 
 import java.lang.reflect.Type;

@@ -4,8 +4,8 @@ package com.ibasco.glcdemu.emulator.comm;
 import com.ibasco.glcdemu.emulator.GlcdBusDecoder;
 import com.ibasco.glcdemu.emulator.GlcdBusEncoder;
 import com.ibasco.glcdemu.exceptions.NotYetImplementedException;
-import com.ibasco.pidisplay.core.u8g2.U8g2GpioEvent;
-import com.ibasco.pidisplay.core.u8g2.U8g2Message;
+import com.ibasco.ucgdisplay.core.u8g2.U8g2GpioEvent;
+import com.ibasco.ucgdisplay.core.u8g2.U8g2Message;
 
 import java.util.Objects;
 

@@ -1,6 +1,6 @@
 package com.ibasco.glcdemu.model;
 
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdFont;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;

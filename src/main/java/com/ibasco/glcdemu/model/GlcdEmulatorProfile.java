@@ -2,9 +2,9 @@ package com.ibasco.glcdemu.model;
 
 import com.ibasco.glcdemu.annotations.Auditable;
 import com.ibasco.glcdemu.enums.PixelShape;
-import com.ibasco.pidisplay.drivers.glcd.Glcd;
-import com.ibasco.pidisplay.drivers.glcd.GlcdDisplay;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.ucgdisplay.drivers.glcd.Glcd;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import javafx.beans.property.*;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.builder.ToStringBuilder;

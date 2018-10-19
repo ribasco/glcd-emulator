@@ -1,7 +1,7 @@
 package com.ibasco.glcdemu.annotations;
 
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

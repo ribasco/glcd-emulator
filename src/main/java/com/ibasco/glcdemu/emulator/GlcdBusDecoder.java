@@ -1,6 +1,6 @@
 package com.ibasco.glcdemu.emulator;
 
-import com.ibasco.pidisplay.core.u8g2.U8g2GpioEvent;
+import com.ibasco.ucgdisplay.core.u8g2.U8g2GpioEvent;
 
 /**
  * Bus interface decoder. Decodes GPIO events into a recognizable byte format.

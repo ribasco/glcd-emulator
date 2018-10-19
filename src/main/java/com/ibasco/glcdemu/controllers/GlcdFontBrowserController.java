@@ -10,7 +10,7 @@ import com.ibasco.glcdemu.utils.DialogUtil;
 import com.ibasco.glcdemu.utils.FontRenderer;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.glcdemu.utils.ResourceUtil;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdFont;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 import com.jfoenix.controls.*;
 import com.jfoenix.transitions.hamburger.HamburgerSlideCloseTransition;
 import javafx.application.Platform;

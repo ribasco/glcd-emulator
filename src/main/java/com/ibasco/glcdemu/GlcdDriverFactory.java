@@ -4,10 +4,10 @@ import com.ibasco.glcdemu.emulator.GlcdEmulator;
 import com.ibasco.glcdemu.emulator.GlcdEmulatorFactory;
 import com.ibasco.glcdemu.utils.GlcdUtil;
 import com.ibasco.glcdemu.utils.PixelBuffer;
-import com.ibasco.pidisplay.drivers.glcd.*;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdBusInterface;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdControllerType;
-import com.ibasco.pidisplay.drivers.glcd.enums.GlcdRotation;
+import com.ibasco.ucgdisplay.drivers.glcd.*;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdRotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
