@@ -8,6 +8,9 @@
     <artifactId>glcd-emulator-gui</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
+    <inceptionYear>2018</inceptionYear>
+    <description>A cross-platform Graphics LCD emulator designed for embedded devices and single board computers
+    </description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -130,7 +133,7 @@
             <dependency>
                 <groupId>com.ibasco.ucgdisplay</groupId>
                 <artifactId>ucgd-drivers-glcd</artifactId>
-                <version>0.1-alpha-SNAPSHOT</version>
+                <version>0.2-alpha-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.fazecast</groupId>
