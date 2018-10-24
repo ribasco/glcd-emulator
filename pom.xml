@@ -133,7 +133,7 @@
             <dependency>
                 <groupId>com.ibasco.ucgdisplay</groupId>
                 <artifactId>ucgd-drivers-glcd</artifactId>
-                <version>0.2-alpha-SNAPSHOT</version>
+                <version>LATEST</version>
             </dependency>
             <dependency>
                 <groupId>com.fazecast</groupId>
