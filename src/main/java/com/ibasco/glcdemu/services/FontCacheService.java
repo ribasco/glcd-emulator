@@ -27,6 +27,8 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import static com.ibasco.glcdemu.constants.Common.CACHE_DIR_PATH;
+
 /**
  * A service that cache's font details (thumbnail previews, width, height etc)
  *
@@ -68,6 +70,7 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
                 //Load from cache
                 entries = new ArrayList<>();
 
+                FileUtils.ensureDirectoryExistence(CACHE_DIR_PATH);
                 FileUtils.ensureDirectoryExistence(cacheDirPath.get());
                 GlcdFont[] values = GlcdFont.values();
 
