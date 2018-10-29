@@ -29,7 +29,7 @@ public class FileUtils {
                     throw new IOException("Not a valid directory '" + pNewDir.toString() + "'");
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to create directory : " + pDirPath.toString());
+                throw new RuntimeException("Unable to create directory : " + pDirPath.toString(), e);
             }
         }
     }
