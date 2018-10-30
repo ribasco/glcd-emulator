@@ -5,10 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ibasco.glcdemu</groupId>
-    <artifactId>glcd-emulator-gui</artifactId>
+    <artifactId>glcd-emulator</artifactId>
     <packaging>jar</packaging>
     <version>0.1.0-alpha-SNAPSHOT</version>
     <inceptionYear>2018</inceptionYear>
+    <organization>
+        <name>Rafael Ibasco</name>
+        <url>https://github.com/ribasco</url>
+    </organization>
     <description>A cross-platform Graphics LCD emulator designed for embedded devices and single board computers
     </description>
 
@@ -45,6 +49,44 @@
                     <artifactId>versions-maven-plugin</artifactId>
                     <version>2.7</version>
                 </plugin>
+                <!-- License Plugin -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>1.16</version>
+                    <executions>
+                        <execution>
+                            <id>append-license-file-headers</id>
+                            <goals>
+                                <goal>update-file-header</goal>
+                            </goals>
+                            <phase>process-sources</phase>
+                            <configuration>
+                                <licenseName>lgpl_v3</licenseName>
+                                <descriptionTemplate>${basedir}/docs/license/template.ftl
+                                </descriptionTemplate>
+                                <canUpdateCopyright>true</canUpdateCopyright>
+                                <canUpdateDescription>true</canUpdateDescription>
+                                <canUpdateLicense>true</canUpdateLicense>
+                                <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                                <processStartTag>========================START=================================
+                                </processStartTag>
+                                <processEndTag>=========================END==================================
+                                </processEndTag>
+                                <excludes>
+                                    <exclude>/docs/**</exclude>
+                                </excludes>
+                                <includes>
+                                    <include>**/*.java</include>
+                                </includes>
+                                <roots>
+                                    <root>src/main/java</root>
+                                    <root>src/tests/java</root>
+                                </roots>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -60,11 +102,29 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
+    <!-- License Information -->
+    <licenses>
+        <license>
+            <name>GNU General Lesser Public License (LGPL) version 3.0</name>
+            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.ibasco.ucgdisplay</groupId>
+                <artifactId>ucgd-drivers-glcd</artifactId>
+                <version>[1.0.1-alpha-SNAPSHOT,)</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
             <dependency>
                 <groupId>org.powermock</groupId>
@@ -137,12 +197,6 @@
                 <groupId>io.github.classgraph</groupId>
                 <artifactId>classgraph</artifactId>
                 <version>4.1.6</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-            <dependency>
-                <groupId>com.ibasco.ucgdisplay</groupId>
-                <artifactId>ucgd-drivers-glcd</artifactId>
-                <version>[1.0.1-alpha-SNAPSHOT,)</version>
             </dependency>
             <dependency>
                 <groupId>com.fazecast</groupId>
