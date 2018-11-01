@@ -9,10 +9,12 @@
     <packaging>jar</packaging>
     <version>0.1.0-alpha-SNAPSHOT</version>
     <inceptionYear>2018</inceptionYear>
+    <name>GLCD Emulator</name>
     <organization>
         <name>Rafael Ibasco</name>
         <url>https://github.com/ribasco</url>
     </organization>
+
     <description>A cross-platform Graphics LCD emulator designed for embedded devices and single board computers
     </description>
 
@@ -62,7 +64,7 @@
                             </goals>
                             <phase>process-sources</phase>
                             <configuration>
-                                <licenseName>lgpl_v3</licenseName>
+                                <licenseName>gpl_v3</licenseName>
                                 <descriptionTemplate>${basedir}/docs/license/template.ftl
                                 </descriptionTemplate>
                                 <canUpdateCopyright>true</canUpdateCopyright>
@@ -105,6 +107,28 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>update-project-license</id>
+                        <goals>
+                            <goal>update-project-license</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <licenseName>gpl_v3</licenseName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>append-license-file-headers</id>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <descriptionTemplate>${project.basedir}/docs/license/template.ftl</descriptionTemplate>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

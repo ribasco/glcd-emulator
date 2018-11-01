@@ -1,3 +1,28 @@
+/*-
+ * ========================START=================================
+ * Organization: Rafael Ibasco
+ * Project: glcd-emulator
+ * Filename: ST7920Emulator.java
+ *
+ * ---------------------------------------------------------
+ * %%
+ * Copyright (C) 2018 Rafael Ibasco
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * =========================END==================================
+ */
 package com.ibasco.glcdemu.emulator.st7920;
 
 import com.ibasco.glcdemu.annotations.Emulator;
@@ -11,10 +36,9 @@ import com.ibasco.ucgdisplay.core.u8g2.U8g2Message;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * ST7920 GLCD Emulator. Current implementation only supports spi/parallel interface (8-bit). Note that 4-bit parallel
