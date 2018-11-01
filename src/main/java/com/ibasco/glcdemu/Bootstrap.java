@@ -1,7 +1,7 @@
 /*-
  * ========================START=================================
  * Organization: Rafael Ibasco
- * Project: glcd-emulator
+ * Project: GLCD Emulator
  * Filename: Bootstrap.java
  *
  * ---------------------------------------------------------

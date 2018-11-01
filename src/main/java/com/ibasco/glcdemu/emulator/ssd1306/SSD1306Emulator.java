@@ -1,7 +1,7 @@
 /*-
  * ========================START=================================
  * Organization: Rafael Ibasco
- * Project: glcd-emulator
+ * Project: GLCD Emulator
  * Filename: SSD1306Emulator.java
  *
  * ---------------------------------------------------------
