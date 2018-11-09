@@ -58,7 +58,7 @@ public class Bootstrap extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
-    private static final String APP_TITLE = "GLCD Emulator - Alpha";
+    private static final String APP_TITLE = "GLCD Emulator - " + Bootstrap.class.getPackage().getImplementationVersion();
 
     private GlcdConfigApp appConfig;
 
@@ -74,7 +74,6 @@ public class Bootstrap extends Application {
     public void start(Stage primaryStage) throws Exception {
         Stages.setPrimaryStage(primaryStage);
         Context.getInstance().setHostServices(this.getHostServices());
-
         this.appConfig = Context.getInstance().getAppConfig();
         Thread.currentThread().setUncaughtExceptionHandler((t, e) -> {
             if (errorCount.incrementAndGet() > MAX_REPEATED_ERRORS) {
