@@ -37,9 +37,9 @@
                         <artifactId>javafx-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>create-jfx-jar</id>
+                                <id>build-jar</id>
                                 <goals>
-                                    <goal>build-jar</goal>
+                                    <goal>jar</goal>
                                 </goals>
                                 <phase>package</phase>
                             </execution>
@@ -47,7 +47,7 @@
                                 <id>build-native</id>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>build-native</goal>
+                                    <goal>native</goal>
                                 </goals>
                             </execution>
                         </executions>
