@@ -20,7 +20,7 @@ install:
 - mvn install
 
 build_script:
-- mvn package
+- mvn clean jfx:jar && mvn jfx:native
 - mvn test && mvn verify
 
 environment:
@@ -30,3 +30,6 @@ environment:
 
 matrix:
   fast_finish: true
+
+cache:
+- C:\Users\appveyor\.m2
