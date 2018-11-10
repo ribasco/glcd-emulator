@@ -98,6 +98,7 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -107,7 +108,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-@SuppressWarnings({"Duplicates", "SameParameterValue"})
+@SuppressWarnings("Duplicates")
 public class GlcdEmulatorController extends GlcdController {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdEmulatorController.class);
@@ -378,7 +379,13 @@ public class GlcdEmulatorController extends GlcdController {
     private StatusBar statusBar;
 
     @FXML
-    public JFXComboBox<GlcdBusInterface> cbBusInterface;
+    private JFXComboBox<GlcdBusInterface> cbBusInterface;
+
+    @FXML
+    private MenuItem menuAbout;
+
+    @FXML
+    private MenuItem menuReportIssue;
     //</editor-fold>
 
     private JFXDialog emulatorBrowseDialog;
@@ -524,6 +531,10 @@ public class GlcdEmulatorController extends GlcdController {
 
     @Override
     public void initializeOnce() {
+        log.info("Initializing glcd log viewer");
+        OutputStream os = new TextAreaOutputStream(taLog);
+        GlcdOutputStreamAppender.setStaticOutputStream(os);
+
         screenshotTransition = new FadeTransition(Duration.millis(500), glcdScreen);
         screenshotTransition.setFromValue(0.0);
         screenshotTransition.setToValue(1.0);
@@ -533,7 +544,7 @@ public class GlcdEmulatorController extends GlcdController {
 
         //Listen invalidation changes in active profile property
         getContext().getProfileManager().activeProfileProperty().addListener((observable, oldValue, newValue) -> {
-            log.debug("Profile switched from '{}' to '{}'", oldValue, newValue);
+            log.info("Profile switched from '{}' to '{}'", oldValue, newValue);
             activateProfile(newValue);
         });
 
@@ -671,7 +682,7 @@ public class GlcdEmulatorController extends GlcdController {
         GlcdEmulatorProfile activeProfile = getContext().getProfileManager().getActiveProfile();
         displayBuffer.set(new PixelBuffer(activeProfile.getDisplaySizeWidth(), activeProfile.getDisplaySizeHeight()));
 
-        log.debug("Display buffer refreshed (Width: {}, Height: {})", activeProfile.getDisplaySizeWidth(), activeProfile.getDisplaySizeHeight());
+        log.info("Display buffer refreshed (Width: {}, Height: {})", activeProfile.getDisplaySizeWidth(), activeProfile.getDisplaySizeHeight());
     }
 
     private void handleDrawTestAction(ActionEvent event) {
@@ -810,7 +821,7 @@ public class GlcdEmulatorController extends GlcdController {
             defaultProfile = new GlcdEmulatorProfile();
         }
         profileManager.setActiveProfile(defaultProfile);
-        log.debug("Loaded default profile: {}", defaultProfile);
+        log.info("Loaded default profile: {}", defaultProfile);
     }
 
     private void updateSliderOnScroll(ScrollEvent event) {
@@ -897,7 +908,6 @@ public class GlcdEmulatorController extends GlcdController {
         GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
 
         emulatorService = new EmulatorService();
-        emulatorService.setMessageListener(this::handleTaskMessages);
         emulatorService.displayProperty().bindBidirectional(profile.displayProperty());
         emulatorService.busInterfaceProperty().bindBidirectional(profile.busInterfaceProperty());
         emulatorService.pixelBufferProperty().bindBidirectional(displayBuffer);
@@ -1151,11 +1161,18 @@ public class GlcdEmulatorController extends GlcdController {
             Stage stage = Context.getPrimaryStage();
             stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
         });
+        menuAbout.setOnAction(event -> {
+            Stage aboutStage = Stages.getAboutStage();
+            aboutStage.setResizable(false);
+            aboutStage.showAndWait();
+        });
+        menuCheckUpdates.setOnAction(event -> Context.getInstance().getHostServices().showDocument(Common.RELEASE_URL));
+        menuReportIssue.setOnAction(event -> Context.getInstance().getHostServices().showDocument(Common.REPORT_ISSUE_URL));
         menuSaveScreen.setOnAction(event -> saveScreenCapture());
         menuSaveScreenAs.setOnAction(event -> saveScreenCaptureAs());
         menuSaveSettings.setOnAction(event -> saveAppSettings());
         btnReset.setOnAction(this::resetToDefaultSettings);
-        btnDonate.setOnAction(event -> Platform.runLater(() -> Context.getInstance().getHostServices().showDocument("http://www.ibasco.com")));
+        btnDonate.setOnAction(event -> Platform.runLater(() -> Context.getInstance().getHostServices().showDocument(Common.DONATE_URL)));
         btnOpenScreenshotPath.setOnAction(createOpenDirPathEventHandler("Select screenshot directory", tfScreenshotPath.textProperty()));
         btnOpenProfileDirPath.setOnAction(createOpenDirPathEventHandler("Select profile directory", tfProfileDirPath.textProperty()));
         btnFitScreenToWindow.setOnAction(noArgEventHandler(this::fitWindowToScreen));
@@ -1936,7 +1953,7 @@ public class GlcdEmulatorController extends GlcdController {
                     log.error("Error encoutnered during screen capture", e);
                 }
             });
-            log.info("Saved file to : {}", FilenameUtils.getFullPath(imageFile.getAbsolutePath()));
+            log.info("Saved screenshot to '{}'", FilenameUtils.getFullPath(imageFile.getAbsolutePath()));
         }
     }
 }

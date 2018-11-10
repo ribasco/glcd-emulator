@@ -45,4 +45,14 @@ public class Common {
     public static final String THEME_DEFAULT = "menuThemeDefault";
 
     public static final String THEME_DEFAULT_DARK = "menuThemeDark";
+
+    public static final String PROJECT_URL = "https://github.com/ribasco/glcd-emulator";
+
+    public static final String DONATE_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WQBFBY76JUN7Y";
+
+    public static final String RELEASE_URL = "https://github.com/ribasco/glcd-emulator/releases";
+
+    public static final String REPORT_ISSUE_URL = "https://github.com/ribasco/glcd-emulator/issues";
+
+    public static final String DEVELOPER_EMAIL = "ribasco@gmail.com";
 }

@@ -16,7 +16,7 @@
             <level>DEBUG</level>
         </filter>
         <encoder>
-            <pattern>%-8relative | %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%-6thread] %-6level %-20logger{0} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -31,12 +31,22 @@
         </encoder>
     </appender>
 
-    <root level="DEBUG">
+    <appender name="glcd-info" class="com.ibasco.glcdemu.utils.GlcdOutputStreamAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %-20logger{0} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
         <appender-ref ref="console"/>
         <appender-ref ref="file-info"/>
         <appender-ref ref="file-error"/>
+        <appender-ref ref="glcd-info"/>
     </root>
 
-    <logger name="com.ibasco.glcdemu.emulator" level="DEBUG"/>
+    <logger name="com.ibasco.glcdemu" level="INFO"/>
     <logger name="com.ibasco.ucgdisplay.core.util.concurrent.ThreadUtils" level="INFO"/>
 </configuration>

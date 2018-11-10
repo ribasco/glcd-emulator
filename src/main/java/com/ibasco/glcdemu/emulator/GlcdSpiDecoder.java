@@ -23,11 +23,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * =========================END==================================
  */
-package com.ibasco.glcdemu.emulator.comm;
+package com.ibasco.glcdemu.emulator;
 
 
-import com.ibasco.glcdemu.emulator.GlcdBusDecoder;
-import com.ibasco.glcdemu.emulator.GlcdBusEncoder;
 import com.ibasco.glcdemu.exceptions.NotYetImplementedException;
 import com.ibasco.ucgdisplay.core.u8g2.U8g2GpioEvent;
 import com.ibasco.ucgdisplay.core.u8g2.U8g2Message;

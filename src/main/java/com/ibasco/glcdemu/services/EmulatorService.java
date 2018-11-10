@@ -36,7 +36,6 @@ import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
@@ -68,8 +67,6 @@ public class EmulatorService extends Service<Void> {
 
     private ReadOnlyObjectWrapper<EmulatorListenerTask> emulatorTask = new ReadOnlyObjectWrapper<>();
     //</editor-fold>
-
-    private ChangeListener<String> messageListener;
 
     public EmulatorService() {
         setExecutor(Context.getTaskExecutor());
@@ -157,10 +154,6 @@ public class EmulatorService extends Service<Void> {
     }
     //</editor-fold>
 
-    public void setMessageListener(ChangeListener<String> listener) {
-        this.messageListener = listener;
-    }
-
     private GlcdEmulator createEmulator() {
         return GlcdEmulatorFactory.createFrom(getDisplay(), getBusInterface(), getPixelBuffer());
     }
@@ -192,9 +185,6 @@ public class EmulatorService extends Service<Void> {
         emulatorTask.set(task);
         task.listenerOptionsProperty().bind(connectionOptions);
         clientConnected.bindBidirectional(task.connectedProperty());
-        if (messageListener != null) {
-            task.messageProperty().addListener(messageListener);
-        }
         return task;
     }
 }

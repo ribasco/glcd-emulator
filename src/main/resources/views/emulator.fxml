@@ -127,7 +127,7 @@
                </graphic>
             </JFXToggleButton>
             <JFXToggleButton fx:id="btnShowPinActivity" disable="true" mnemonicParsing="false" prefHeight="29.0"
-                             prefWidth="156.0" text="Activity" textAlignment="CENTER">
+                             prefWidth="156.0" text="Activity" textAlignment="CENTER" visible="false">
                 <graphic>
                     <FontAwesomeIconView glyphName="MAP_PIN" size="20"/>
                 </graphic>
@@ -405,7 +405,7 @@
                                                                   AnchorPane.rightAnchor="0.0"
                                                                   AnchorPane.topAnchor="0.0">
                                                          <font>
-                                                             <Font name="Monospaced Regular" size="14.0"/>
+                                                             <Font name="Monospaced Regular" size="11.0"/>
                                                          </font>
                                                      </JFXTextArea>
                                                  </children>

@@ -42,10 +42,19 @@ public class Stages {
 
     private static Stage editProfileStage;
 
+    private static Stage aboutStage;
+
     private static final Logger log = LoggerFactory.getLogger(Stages.class);
 
     public static Stage getPrimaryStage() {
         return primaryStage;
+    }
+
+    public static Stage getAboutStage() {
+        if (aboutStage == null) {
+            aboutStage = com.ibasco.glcdemu.StageHelper.createDialog(getPrimaryStage(), "About", Views.ABOUT_DIALOG, Controllers.getAboutController());
+        }
+        return aboutStage;
     }
 
     public static Stage getEditProfileStage() {

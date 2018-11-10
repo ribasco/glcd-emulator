@@ -55,6 +55,15 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <includes>
+                    <include>**/*.css</include>
+                    <include>**/*.fxml</include>
+                    <include>**/*.png</include>
+                    <include>**/*.xbm</include>
+                    <include>*.properties</include>
+                    <include>**/*.txt</include>
+                    <include>**/*.xml</include>
+                </includes>
             </resource>
         </resources>
 
@@ -121,6 +130,7 @@
                                 <licenseName>gpl_v3</licenseName>
                                 <descriptionTemplate>${basedir}/docs/license/template.ftl
                                 </descriptionTemplate>
+                                <copyrightOwners>Rafael Luis Ibasco</copyrightOwners>
                                 <canUpdateCopyright>true</canUpdateCopyright>
                                 <canUpdateDescription>true</canUpdateDescription>
                                 <canUpdateLicense>true</canUpdateLicense>

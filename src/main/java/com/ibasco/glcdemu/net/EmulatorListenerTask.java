@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -155,13 +154,6 @@ abstract public class EmulatorListenerTask extends Task<Void> {
         return "-";
     }
 
-    @Override
-    protected void updateMessage(String message) {
-        String msg = String.format("%s [%s] %s", formatter.format(LocalDateTime.now()), getName(), message);
-        super.updateMessage(msg);
-        log.debug(msg);
-    }
-
     /**
      * Accept a byte from a data stream and pass to the internal emulator instance for further processing.
      *
@@ -273,7 +265,6 @@ abstract public class EmulatorListenerTask extends Task<Void> {
             cleanup();
         } catch (Exception e) {
             log.error("Problem closing resources in " + getClass().getSimpleName(), e);
-            updateMessage("Problem closing resources in " + getClass().getSimpleName());
         }
         setConnected(false);
         reset();
@@ -306,13 +297,13 @@ abstract public class EmulatorListenerTask extends Task<Void> {
             if (emulator.get().getBusInterface() == null)
                 throw new IllegalStateException("No bus interface assigned for emulator '" + emulator.get().getClass().getSimpleName() + "'");
 
-            updateMessage("Configuring emulator task");
+            log.info("Configuring emulator task");
             reset();
             configure(this.listenerOptions.get());
 
-            updateMessage(String.format("Starting emulator task (Controller = %s, Bus = %s)", emulator.get().getClass().getSimpleName(), emulator.get().getBusInterface()));
+            log.info(String.format("Starting emulator task (Controller = %s, Bus = %s)", emulator.get().getClass().getSimpleName(), emulator.get().getBusInterface()));
             process();
-            updateMessage("Emulator task exited");
+            log.info("Emulator task exited");
         } finally {
             reset();
         }

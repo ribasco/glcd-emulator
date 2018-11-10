@@ -37,4 +37,6 @@ public class Views {
     public static final String FONT_BROWSER_TOPDRAWER = "font-browser-topdrawer";
 
     public static final String EDIT_PROFILE_DIALOG = "edit-profile-dialog";
+
+    public static final String ABOUT_DIALOG = "emulator-about";
 }

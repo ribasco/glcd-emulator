@@ -20,6 +20,7 @@ install:
 
 build_script:
 - mvn clean package
+- mvn test && mvn verify
 
 environment:
   matrix:

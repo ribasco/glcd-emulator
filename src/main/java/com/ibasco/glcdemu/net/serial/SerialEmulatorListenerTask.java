@@ -79,7 +79,7 @@ public class SerialEmulatorListenerTask extends EmulatorListenerTask {
 
         if (serialPort == null) {
             String msg = "No serial ports found";
-            updateMessage(msg);
+            log.warn(msg);
             throw new IllegalStateException(msg);
         }
 
@@ -95,8 +95,7 @@ public class SerialEmulatorListenerTask extends EmulatorListenerTask {
     @Override
     protected void cleanup() {
         if (serialPort != null && serialPort.closePort()) {
-            log.debug("Serial port successfully closed");
-            updateMessage("Serial port closed");
+            log.info("Serial port successfully closed");
         }
     }
 
@@ -111,20 +110,19 @@ public class SerialEmulatorListenerTask extends EmulatorListenerTask {
 
         if (!serialPort.isOpen()) {
             if (!serialPort.isOpen()) {
-                updateMessage("Opening serial port");
+                log.info("Opening serial port");
                 if (!serialPort.openPort()) {
-                    updateMessage("Could not open serial device");
                     throw new IOException("Could not connect to serial device");
                 }
             }
         }
 
-        updateMessage("Connected to serial device");
+        log.info("Connected to serial device");
         int size = calculateBufferSize();
-        updateMessage("Calculated buffer size: " + size);
+        log.info("Calculated buffer size: " + size);
 
         try (BufferedInputStream bis = new BufferedInputStream(serialPort.getInputStream(), size)) {
-            log.debug("Using serial port: {}", serialPort);
+            log.info("Using serial port: {}", serialPort);
             reset();
             setConnected(true);
             while (!isCancelled()) {

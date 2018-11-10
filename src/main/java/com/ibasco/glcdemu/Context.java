@@ -27,12 +27,21 @@ package com.ibasco.glcdemu;
 
 import static com.ibasco.glcdemu.constants.Common.APP_CONFIG_PATH;
 import com.ibasco.glcdemu.model.GlcdConfigApp;
+import com.ibasco.glcdemu.utils.ResourceUtil;
 import javafx.application.HostServices;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -43,6 +52,8 @@ import java.util.concurrent.ForkJoinWorkerThread;
  * @author Rafael Ibasco
  */
 public final class Context {
+
+    private static final Logger log = LoggerFactory.getLogger(Context.class);
 
     private static class InstanceHolder {
         private static Context INSTANCE = new Context();
@@ -118,6 +129,21 @@ public final class Context {
 
     public static Context getInstance() {
         return InstanceHolder.INSTANCE;
+    }
+
+    public static String getAppVersion() {
+        String version = Context.class.getPackage().getImplementationVersion();
+        if (StringUtils.isBlank(version)) {
+            try {
+                URI versionFile = ResourceUtil.getResource("version.properties").toURI();
+                Properties appProperties = new Properties();
+                appProperties.load(new FileReader(new File(versionFile)));
+                version = appProperties.getProperty("version");
+            } catch (URISyntaxException | IOException e) {
+                log.error("Error loading version property file", e);
+            }
+        }
+        return version;
     }
 
     void setHostServices(HostServices services) {

@@ -25,6 +25,7 @@
  */
 package com.ibasco.glcdemu;
 
+import com.ibasco.glcdemu.controllers.GlcdAboutController;
 import com.ibasco.glcdemu.controllers.GlcdEditProfileController;
 import com.ibasco.glcdemu.controllers.GlcdEmulatorController;
 import com.ibasco.glcdemu.controllers.GlcdFontBrowserController;
@@ -38,6 +39,8 @@ public class Controllers {
     private static GlcdEditProfileController editProfileController;
 
     private static GlcdEmulatorController emulatorController;
+
+    private static GlcdAboutController aboutController;
 
     public static GlcdEmulatorController getEmulatorController() {
         if (emulatorController == null) {
@@ -62,5 +65,12 @@ public class Controllers {
             fontBrowserController = new GlcdFontBrowserController(new FontCacheService(), new FontCacheDetails());
         }
         return fontBrowserController;
+    }
+
+    public static GlcdAboutController getAboutController() {
+        if (aboutController == null) {
+            aboutController = new GlcdAboutController();
+        }
+        return aboutController;
     }
 }
