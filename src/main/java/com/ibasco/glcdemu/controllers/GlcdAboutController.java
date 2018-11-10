@@ -29,22 +29,15 @@ import com.ibasco.glcdemu.Context;
 import com.ibasco.glcdemu.GlcdController;
 import com.ibasco.glcdemu.Stages;
 import com.ibasco.glcdemu.constants.Common;
-import com.ibasco.glcdemu.utils.ResourceUtil;
+import static com.ibasco.glcdemu.utils.ResourceUtil.readFileResource;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextArea;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 
 public class GlcdAboutController extends GlcdController {
 
@@ -92,16 +85,5 @@ public class GlcdAboutController extends GlcdController {
         btnClose.setOnAction(event -> Stages.getAboutStage().close());
         lblVersion.setText(Context.getAppVersion());
 
-    }
-
-    private String readFileResource(String fileName) {
-        try {
-            URI licenseFile = ResourceUtil.getResource(fileName).toURI();
-            String data = FileUtils.readFileToString(new File(licenseFile), StandardCharsets.UTF_8);
-            return data;
-        } catch (URISyntaxException | IOException e) {
-            log.error("Could not read file resource", e);
-        }
-        return null;
     }
 }

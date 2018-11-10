@@ -38,13 +38,6 @@ public class GlcdOutputStreamAppender<E> extends OutputStreamAppender<E> {
     public void start() {
         setOutputStream(DELEGATING_OUTPUT_STREAM);
         super.start();
-        System.out.println("START");
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-        System.out.println("STOP");
     }
 
     public static void setStaticOutputStream(OutputStream outputStream) {

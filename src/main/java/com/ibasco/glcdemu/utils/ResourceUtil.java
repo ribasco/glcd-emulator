@@ -26,13 +26,19 @@
 package com.ibasco.glcdemu.utils;
 
 import com.ibasco.glcdemu.Bootstrap;
+import com.ibasco.glcdemu.Context;
 import com.ibasco.glcdemu.GlcdController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,6 +50,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @SuppressWarnings("Duplicates")
 public class ResourceUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(ResourceUtil.class);
 
     private static Callback<Class<?>, Object> controllerFactory;
 
@@ -63,7 +71,22 @@ public class ResourceUtil {
         return getResource(String.format("views/%s.fxml", resourceName));
     }
 
-
+    public static String readFileResource(String fileName) {
+        try {
+            InputStream is = Context.class.getClassLoader().getResourceAsStream(fileName);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+                sb.append("\n");
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            log.error("Could not read file resource", e);
+        }
+        return null;
+    }
     /**
      * <p>Loads an FXML resource file with the controller specified. Using this method requires that you already have an fx:controller attribute assigned for the FXML file you are loading.</p>
      *
