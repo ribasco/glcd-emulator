@@ -14,11 +14,6 @@ environment:
 pull_requests:
   do_not_increment_build_number: true
 
-branches:
-  only:
-  - master
-  - glcd-release-.*
-
 install:
 - ps: |
     Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -41,14 +36,11 @@ build_script:
 - mvn -B clean package
 - mvn -B test && mvn verify
 
-matrix:
-  fast_finish: true
-
 deploy:
-  provider: GitHub
+- provider: GitHub
   auth_token:
-    secure: "HoEC1gCy7yKVD9Bp4AOuql+DH7nzFSMOJhdQQQ2O+GOdSqljp2jxWDsMQtREYOoz"
-  artifact: target/glcd-emulator-.*-nojre\.tar\.gz, target/glcd-emulator-.*-nojre\.zip, target/jfx/native/glcd-emulator-.*\.exe
+  secure: "HoEC1gCy7yKVD9Bp4AOuql+DH7nzFSMOJhdQQQ2O+GOdSqljp2jxWDsMQtREYOoz"
+  artifact: "target/glcd-emulator-.*-nojre\.tar\.gz, target/glcd-emulator-.*-nojre\.zip, target/jfx/native/glcd-emulator-.*\.exe"
   draft: true
   prerelease: false
   on:
