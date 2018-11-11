@@ -88,6 +88,7 @@
                         <configuration>
                             <bundleArguments>
                                 <icon>${project.basedir}/src/main/deploy/package/windows/${project.artifactId}.ico</icon>
+                                <runtime/>
                             </bundleArguments>
                         </configuration>
                     </plugin>
@@ -225,7 +226,6 @@
                             <copyright>GLCD Emulator Copyright (C) 2018 Rafael Luis Ibasco</copyright>
                             <systemWide>true</systemWide>
                             <win.menuGroup>GLCD Emulator</win.menuGroup>
-                            <runtime/>
                         </bundleArguments>
                         <manifestAttributes>
                             <Url>https://github.com/ribasco/glcd-emulator</Url>
