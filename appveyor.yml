@@ -44,7 +44,7 @@ deploy:
   name: production
   auth_token:
     secure: "HoEC1gCy7yKVD9Bp4AOuql+DH7nzFSMOJhdQQQ2O+GOdSqljp2jxWDsMQtREYOoz"
-  artifacts: installer, zip-nojre, gzip-nojre
+  artifacts: installer-win, zip-nojre, gzip-nojre
   draft: true
   prerelease: false
   on:
