@@ -24,14 +24,12 @@ install:
 - ps: |
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     if (!(Test-Path -Path "C:\maven" )) {
-      (new-object System.Net.WebClient).DownloadFile(
-        'http://www.us.apache.org/dist/maven/maven-3/$env:MAVEN_VERSION/binaries/apache-maven-$env:MAVEN_VERSION-bin.zip',
-        'C:\maven-bin.zip'
-      )
+      Write-Host "Downloading Maven $env:MAVEN_VERSION"
+      (new-object System.Net.WebClient).DownloadFile("https://repo1.maven.org/maven2/org/apache/maven/apache-maven/$env:MAVEN_VERSION/apache-maven-$env:MAVEN_VERSION-bin.zip", 'C:\maven-bin.zip')
       [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\maven-bin.zip", "C:\maven")
     }
-    $env:Path +=";C:\maven\apache-maven-%MAVEN_VERSION%\bin;%JAVA_HOME%\bin"
 - cmd: SET M2_HOME=C:\maven\apache-maven-%MAVEN_VERSION%
+- cmd: SET PATH=%M2_HOME%\bin;%JAVA_HOME%\bin;%PATH%
 - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=1g -Xmx2g
 - cmd: SET JAVA_OPTS=-XX:MaxPermSize=1g -Xmx2g
 - cmd: mvn --version
@@ -39,6 +37,8 @@ install:
 
 artifacts:
 - path: 'target\jfx\native\glcd-emulator-*.exe'
+- path: 'target\glcd-emulator-.*-dist.zip'
+- path: 'target\glcd-emulator-.*-dist.tar.gz'
 
 build_script:
 - mvn -B clean package
