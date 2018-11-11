@@ -17,6 +17,7 @@ pull_requests:
 branches:
   only:
   - master
+  - glcd-release-.*
 
 install:
 - ps: |
