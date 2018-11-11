@@ -29,7 +29,7 @@ install:
 
 artifacts:
 - path: 'target\jfx\native\glcd-emulator-*.exe'
-  name: installer
+  name: installer-win
 - path: 'target\glcd-emulator-*-nojre.zip'
   name: zip-nojre
 - path: 'target\glcd-emulator-*-nojre.tar.gz'
