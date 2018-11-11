@@ -37,8 +37,8 @@ install:
 
 artifacts:
 - path: 'target\jfx\native\glcd-emulator-*.exe'
-- path: 'target\glcd-emulator-.*-dist.zip'
-- path: 'target\glcd-emulator-.*-dist.tar.gz'
+- path: 'target\glcd-emulator-.*-nojre.zip'
+- path: 'target\glcd-emulator-.*-nojre.tar.gz'
 
 build_script:
 - mvn -B clean package
@@ -51,7 +51,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: "HoEC1gCy7yKVD9Bp4AOuql+DH7nzFSMOJhdQQQ2O+GOdSqljp2jxWDsMQtREYOoz"
-  artifact: target/glcd-emulator-.*-dist\.tar\.gz, target/glcd-emulator-.*-dist\.zip, target/jfx/native/glcd-emulator-.*\.exe
+  artifact: target/glcd-emulator-.*-nojre\.tar\.gz, target/glcd-emulator-.*-nojre\.zip, target/jfx/native/glcd-emulator-.*\.exe
   draft: true
   prerelease: false
   on:

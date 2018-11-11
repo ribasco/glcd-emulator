@@ -177,6 +177,14 @@
                                             <include>README.md</include>
                                         </includes>
                                     </resource>
+                                    <resource>
+                                        <directory>${project.basedir}/docs/templates/setup</directory>
+                                        <filtering>true</filtering>
+                                        <targetPath>${project.basedir}/src/main/deploy/package/windows</targetPath>
+                                        <includes>
+                                            <include>GLCD Emulator.iss</include>
+                                        </includes>
+                                    </resource>
                                 </resources>
                             </configuration>
                         </execution>
@@ -206,11 +214,12 @@
                     <configuration>
                         <vendor>Rafael Ibasco</vendor>
                         <mainClass>com.ibasco.glcdemu.Bootstrap</mainClass>
-                        <appName>${project.artifactId}</appName>
+                        <appName>${project.name}</appName>
                         <description>${project.description}</description>
                         <verbose>true</verbose>
                         <needShortcut>true</needShortcut>
                         <needMenu>true</needMenu>
+                        <title>GLCD Emulator Title</title>
                         <bundleArguments>
                             <installdirChooser>true</installdirChooser>
                             <copyright>GLCD Emulator Copyright (C) 2018 Rafael Luis Ibasco</copyright>
@@ -338,7 +347,7 @@
                     <descriptors>
                         <descriptor>docs/scripts/assembly.xml</descriptor>
                     </descriptors>
-                    <finalName>${project.artifactId}-${project.version}-dist</finalName>
+                    <finalName>${project.artifactId}-${project.version}-nojre</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
             </plugin>
