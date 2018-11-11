@@ -7,10 +7,6 @@ cache:
   directories:
   - ${HOME}/.m2
 
-os:
-- linux
-- osx
-
 matrix:
   include:
   - os: linux
