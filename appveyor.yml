@@ -37,8 +37,8 @@ install:
 
 artifacts:
 - path: 'target\jfx\native\glcd-emulator-*.exe'
-- path: 'target\glcd-emulator-.*-nojre.zip'
-- path: 'target\glcd-emulator-.*-nojre.tar.gz'
+- path: 'target\glcd-emulator-*-nojre.zip'
+- path: 'target\glcd-emulator-*-nojre.tar.gz'
 
 build_script:
 - mvn -B clean package
