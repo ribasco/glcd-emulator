@@ -1,35 +1,58 @@
 version: '{build}'
 os: Windows Server 2012
+
+cache:
+- C:\maven\ -> appveyor.yml
+- C:\Users\appveyor\.m2\ -> pom.xml
+
+environment:
+  MAVEN_VERSION: 3.6.0
+  matrix:
+  - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+  - JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
+
 pull_requests:
   do_not_increment_build_number: true
+
 branches:
   only:
   - master
+
 skip_tags: true
+
 install:
 - ps: |
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     if (!(Test-Path -Path "C:\maven" )) {
       (new-object System.Net.WebClient).DownloadFile(
-        'http://www.us.apache.org/dist/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.zip',
+        'http://www.us.apache.org/dist/maven/maven-3/$env:MAVEN_VERSION/binaries/apache-maven-$env:MAVEN_VERSION-bin.zip',
         'C:\maven-bin.zip'
       )
       [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\maven-bin.zip", "C:\maven")
     }
-    $env:Path +=";C:\maven\apache-maven-3.2.5\bin;%JAVA_HOME%\bin"
-- mvn install
+    $env:Path +=";C:\maven\apache-maven-%MAVEN_VERSION%\bin;%JAVA_HOME%\bin"
+- cmd: SET M2_HOME=C:\maven\apache-maven-%MAVEN_VERSION%
+- cmd: SET MAVEN_OPTS=-XX:MaxPermSize=1g -Xmx2g
+- cmd: SET JAVA_OPTS=-XX:MaxPermSize=1g -Xmx2g
+- cmd: mvn --version
+- cmd: java -version
+
+artifacts:
+- path: 'target\jfx\native\glcd-emulator-*.exe'
 
 build_script:
-- mvn clean jfx:jar && mvn jfx:native
-- mvn test && mvn verify
-
-environment:
-  matrix:
-  - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-  - JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
+- mvn -B clean package
+- mvn -B test && mvn verify
 
 matrix:
   fast_finish: true
 
-cache:
-- C:\Users\appveyor\.m2
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: "HoEC1gCy7yKVD9Bp4AOuql+DH7nzFSMOJhdQQQ2O+GOdSqljp2jxWDsMQtREYOoz"
+  artifact: target/glcd-emulator-.*-dist\.tar\.gz, target/glcd-emulator-.*-dist\.zip
+  draft: true
+  prerelease: false
+  on:
+  appveyor_repo_tag: true

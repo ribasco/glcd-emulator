@@ -24,38 +24,16 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.zenjava</groupId>
-                        <artifactId>javafx-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>build-jar</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                            <execution>
-                                <id>build-native</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>native</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+    <!-- License Information -->
+    <licenses>
+        <license>
+            <name>GNU General Lesser Public License (LGPL) version 3.0</name>
+            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
+    <profiles>
         <!-- BUILD PROFILE: Linux - x86_64/amd64 -->
         <profile>
             <id>build-linux-amd64</id>
@@ -161,19 +139,50 @@
                     <include>**/*.txt</include>
                     <include>**/*.xml</include>
                 </includes>
-                <excludes>
-                    <exclude>additional/**</exclude>
-                </excludes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/docs/scripts/</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/scripts</targetPath>
+                <includes>
+                    <include>run-emulator.cmd</include>
+                    <include>run-emulator.sh</include>
+                </includes>
             </resource>
         </resources>
 
         <pluginManagement>
             <plugins>
+                <!-- Resources Plugin : Update README properties -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.1.0</version>
+                    <executions>
+                        <execution>
+                            <id>update-readme</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.basedir}</outputDirectory>
+                                <encoding>UTF-8</encoding>
+                                <resources>
+                                    <resource>
+                                        <directory>${project.basedir}/docs/templates</directory>
+                                        <filtering>true</filtering>
+                                        <targetPath>${project.basedir}</targetPath>
+                                        <includes>
+                                            <include>README.md</include>
+                                        </includes>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
+                <!-- Surefire Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -183,6 +192,12 @@
                             <include>**/*Test.java</include>
                         </includes>
                     </configuration>
+                </plugin>
+                <!-- JAR Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>com.zenjava</groupId>
@@ -201,10 +216,8 @@
                             <copyright>GLCD Emulator Copyright (C) 2018 Rafael Luis Ibasco</copyright>
                             <systemWide>true</systemWide>
                             <win.menuGroup>GLCD Emulator</win.menuGroup>
+                            <runtime/>
                         </bundleArguments>
-                        <additionalAppResources>
-                            ${project.build.directory}/additional
-                        </additionalAppResources>
                         <manifestAttributes>
                             <Url>https://github.com/ribasco/glcd-emulator</Url>
                             <Specification-Title>${project.name}</Specification-Title>
@@ -216,6 +229,11 @@
                             <Implementation-Vendor>${project.organization.name</Implementation-Vendor>
                         </manifestAttributes>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -261,10 +279,73 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!-- Github Release Plugin -->
+                <plugin>
+                    <groupId>de.jutzig</groupId>
+                    <artifactId>github-release-plugin</artifactId>
+                    <version>1.3.0</version>
+                    <configuration>
+                        <tag>release-${project.version}</tag>
+                        <deleteRelease>true</deleteRelease>
+                        <fileSets>
+                            <fileSet>
+                                <directory>${project.build.directory}</directory>
+                                <includes>
+                                </includes>
+                            </fileSet>
+                        </fileSets>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
+            <!-- JAVA FX Plugin (IMPORTANT: this needs to run before Assembly) -->
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build-jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>build-native</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build-native</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Assembly Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptors>
+                        <descriptor>docs/scripts/assembly.xml</descriptor>
+                    </descriptors>
+                    <finalName>${project.artifactId}-${project.version}-dist</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>de.jutzig</groupId>
+                <artifactId>github-release-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -273,14 +354,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>com.zenjava</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-            </plugin>
+            <!-- Versions Plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
             </plugin>
+            <!-- License Plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -309,15 +388,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <!-- License Information -->
-    <licenses>
-        <license>
-            <name>GNU General Lesser Public License (LGPL) version 3.0</name>
-            <url>http://www.gnu.org/licenses/lgpl.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
 
     <dependencyManagement>
         <dependencies>
