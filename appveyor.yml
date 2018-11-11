@@ -41,7 +41,7 @@ deploy:
   name: production
   auth_token:
     secure: "HoEC1gCy7yKVD9Bp4AOuql+DH7nzFSMOJhdQQQ2O+GOdSqljp2jxWDsMQtREYOoz"
-  artifact: "target/glcd-emulator-.*-nojre\.tar\.gz, target/glcd-emulator-.*-nojre\.zip, target/jfx/native/glcd-emulator-.*\.exe"
+  artifact: target/glcd-emulator-.*-nojre\.tar\.gz, target/glcd-emulator-.*-nojre\.zip, target/jfx/native/glcd-emulator-.*\.exe
   draft: true
   prerelease: false
   on:
