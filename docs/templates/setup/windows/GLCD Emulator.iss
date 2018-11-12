@@ -23,7 +23,7 @@ DefaultGroupName=${project.name}
 LicenseFile=
 ;WinXP or above
 MinVersion=0,5.1 
-OutputBaseFilename=glcd-emulator-setup
+OutputBaseFilename=glcd-emulator-setup-${current-arch}
 Compression=lzma
 SolidCompression=yes
 PrivilegesRequired=admin

@@ -240,6 +240,7 @@
                         <groupId>com.zenjava</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
                         <configuration>
+                            <bundler>image</bundler>
                             <bundleArguments>
                                 <icon>${project.basedir}/src/main/deploy/package/macosx/${project.artifactId}.icns</icon>
                                 <systemWide>false</systemWide>
@@ -345,7 +346,7 @@
                         <jfxMainAppJarName>${project.artifactId}-${project.version}.jar</jfxMainAppJarName>
                         <skipJNLP>true</skipJNLP>
                         <libFolderName>lib</libFolderName>
-                        <nativeReleaseVersion>${project.version}</nativeReleaseVersion>
+                        <nativeReleaseVersion>${project.version}-${current-arch}</nativeReleaseVersion>
                         <skipNativeVersionNumberSanitizing>true</skipNativeVersionNumberSanitizing>
                         <additionalAppResources>docs/additional</additionalAppResources>
                         <nativeOutputDir>${project.build.directory}/jfx/native</nativeOutputDir>
@@ -458,7 +459,7 @@
                     <descriptors>
                         <descriptor>docs/scripts/assembly.xml</descriptor>
                     </descriptors>
-                    <finalName>${project.artifactId}-${project.version}-nojre</finalName>
+                    <finalName>${project.artifactId}-${project.version}-${current-arch}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
             </plugin>

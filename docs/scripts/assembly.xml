@@ -20,7 +20,7 @@
         <file>
             <outputDirectory>/</outputDirectory>
             <source>${project.build.directory}/jfx/app/${project.artifactId}-${project.version}.jar</source>
-            <destName>${project.artifactId}-${project.version}.jar</destName>
+            <destName>${project.artifactId}-${project.version}-${current-arch}.jar</destName>
         </file>
     </files>
     <fileSets>

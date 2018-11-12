@@ -30,10 +30,10 @@ install:
 artifacts:
 - path: 'target\jfx\native\glcd-emulator-*.exe'
   name: installer-win
-- path: 'target\glcd-emulator-*-nojre.zip'
-  name: zip-nojre
-- path: 'target\glcd-emulator-*-nojre.tar.gz'
-  name: gzip-nojre
+- path: 'target\glcd-emulator-*-amd64.zip'
+  name: zip-amd64
+- path: 'target\glcd-emulator-*-amd64.tar.gz'
+  name: gzip-amd64
 
 build_script:
 - mvn -B clean package
@@ -44,7 +44,7 @@ deploy:
   name: production
   auth_token:
     secure: "HoEC1gCy7yKVD9Bp4AOuql+DH7nzFSMOJhdQQQ2O+GOdSqljp2jxWDsMQtREYOoz"
-  artifacts: installer-win, zip-nojre, gzip-nojre
+  artifacts: installer-win, zip-amd64, gzip-amd64
   draft: true
   prerelease: false
   on:
