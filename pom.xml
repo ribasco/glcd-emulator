@@ -29,7 +29,7 @@
         <license>
             <name>GNU General Public License (GPL) version 3.0</name>
             <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
-            <distribution>repo</distribution>
+            <distribution>manual</distribution>
         </license>
     </licenses>
 
