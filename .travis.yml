@@ -33,16 +33,14 @@ before_deploy:
 - git config --local user.name "${GITHUB_NAME}"
 - git config --local user.email "${GITHUB_EMAIL}"
 
-#deploy:
-#  provider: releases
-#  api_key:
-#  - secure: "WMVNvnq1jAdiubTKzwd+aqxaq7zZJ/UIIXfnXUnXFPCnwN/kMMACpBdkpfoXNks5hV9Nzhpe+Z9G6H4zAlR8WJ+XXhPOPUzHJ/LVbYPQchmyaCxsl3lLsyQ59aNVOLRD6TOUeTIXiwEHxaK+oloBQ2j/vJDxpaXYyq/RIk10L7tZVBjW/w7bQvIfO70VJOIKQTgVjSdd8xv8aLlGdBzn5lXsLdiNWftRxrRf8AKu8kpt51+215DAdOZFtfoh6sOanGduvn4CyjKJrPRZJUsTCsJZ1Y0aVfA0IxzEyyEJzyN+vwDT/6Eofsw3sfds8htEwFF/81QPtPfG8qT2YKZcxlPsV6hi9k6IW6I6Y8KB3RiH+iB6l7FLGDIT98SQazL9QP2X776WWwIss7Ox6mWzNDc/0jv7mj8bdtQvNQnwomK+U9XoyR/v2VTLkOiLhnBCznovoI6nivV+lJEygjxRd4qzFLwb64xo+5wyfTEODqEkeBCqtlTq5Fu8CsRepwc1hp0JjTxFVj6snGyCeMscVu1pGkmVXSlz2GSMBe5itF5spJde0mM+nlXyS3odVWAec4xG/jKqRGk8WR4FLdxX/fe3+uba2ZW9NwpRHTEgHc1KAVlqj9a4hkmnJy5lHF7RHtcupCy/JCoCLJd/cVyR8UyFToHfFeCalkLsZeZi4gA="
-#  file_glob: true
-#  file:
-#  - ${TRAVIS_BUILD_DIR}/target/glcd-emulator-*-nojre.tar.gz
-#  - ${TRAVIS_BUILD_DIR}/target/glcd-emulator-*-nojre.zip
-#  - ${TRAVIS_BUILD_DIR}/target/jfx/native/glcd-emulator-setup.exe
-#  skip_cleanup: true
-#  overwrite: true
-#  on:
-#    tags: true
+deploy:
+  provider: releases
+  api_key:
+  - secure: "WMVNvnq1jAdiubTKzwd+aqxaq7zZJ/UIIXfnXUnXFPCnwN/kMMACpBdkpfoXNks5hV9Nzhpe+Z9G6H4zAlR8WJ+XXhPOPUzHJ/LVbYPQchmyaCxsl3lLsyQ59aNVOLRD6TOUeTIXiwEHxaK+oloBQ2j/vJDxpaXYyq/RIk10L7tZVBjW/w7bQvIfO70VJOIKQTgVjSdd8xv8aLlGdBzn5lXsLdiNWftRxrRf8AKu8kpt51+215DAdOZFtfoh6sOanGduvn4CyjKJrPRZJUsTCsJZ1Y0aVfA0IxzEyyEJzyN+vwDT/6Eofsw3sfds8htEwFF/81QPtPfG8qT2YKZcxlPsV6hi9k6IW6I6Y8KB3RiH+iB6l7FLGDIT98SQazL9QP2X776WWwIss7Ox6mWzNDc/0jv7mj8bdtQvNQnwomK+U9XoyR/v2VTLkOiLhnBCznovoI6nivV+lJEygjxRd4qzFLwb64xo+5wyfTEODqEkeBCqtlTq5Fu8CsRepwc1hp0JjTxFVj6snGyCeMscVu1pGkmVXSlz2GSMBe5itF5spJde0mM+nlXyS3odVWAec4xG/jKqRGk8WR4FLdxX/fe3+uba2ZW9NwpRHTEgHc1KAVlqj9a4hkmnJy5lHF7RHtcupCy/JCoCLJd/cVyR8UyFToHfFeCalkLsZeZi4gA="
+  file_glob: true
+  file:
+  - ${TRAVIS_BUILD_DIR}/target/jfx/native/glcd-emulator-*.deb
+  skip_cleanup: true
+  overwrite: false
+  on:
+    tags: true

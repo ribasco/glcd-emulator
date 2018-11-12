@@ -17,15 +17,10 @@
         </dependencySet>
     </dependencySets>
     <files>
-        <!--<file>
-            <outputDirectory>/</outputDirectory>
-            <source>${project.artifactid}-${project.version}.jar</source>
-            <filtered>true</filtered>
-        </file>-->
         <file>
             <outputDirectory>/</outputDirectory>
-            <source>${project.build.directory}/jfx/app/${project.artifactId}-${project.version}-jfx.jar</source>
-            <destName>glcd-emulator-${project.version}.jar</destName>
+            <source>${project.build.directory}/jfx/app/${project.artifactId}-${project.version}.jar</source>
+            <destName>${project.artifactId}-${project.version}.jar</destName>
         </file>
     </files>
     <fileSets>
@@ -37,12 +32,5 @@
                 <include>run-emulator.sh</include>
             </includes>
         </fileSet>
-        <!--<fileSet>
-            <directory>${project.build.directory}/jfx/app/</directory>
-            <outputDirectory>/</outputDirectory>
-            <includes>
-                <include>*-jfx.jar</include>
-            </includes>
-        </fileSet>-->
     </fileSets>
 </assembly>

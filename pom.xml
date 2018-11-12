@@ -55,11 +55,14 @@
                         <groupId>com.zenjava</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
                         <configuration>
+                            <bundler>deb</bundler>
                             <bundleArguments>
-                                <icon>${project.basedir}/src/main/deploy/package/linux/${project.artifactId}.png</icon>
+                                <icon>${project.basedir}/src/main/deploy/package/linux/${project.name}.png</icon>
                                 <licenseType>GPL v3</licenseType>
                                 <email>ribasco@gmail.com</email>
                                 <category>Development</category>
+                                <systemWide>false</systemWide>
+                                <linux.bundleName>${project.artifactId}</linux.bundleName>
                             </bundleArguments>
                         </configuration>
                     </plugin>
@@ -86,8 +89,12 @@
                         <groupId>com.zenjava</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
                         <configuration>
+                            <bundler>exe</bundler>
                             <bundleArguments>
-                                <icon>${project.basedir}/src/main/deploy/package/windows/${project.artifactId}.ico</icon>
+                                <icon>${project.basedir}/src/main/deploy/package/windows/${project.name}.ico</icon>
+                                <systemWide>true</systemWide>
+                                <installdirChooser>true</installdirChooser>
+                                <win.menuGroup>GLCD Emulator</win.menuGroup>
                                 <runtime/>
                             </bundleArguments>
                         </configuration>
@@ -118,6 +125,7 @@
                         <configuration>
                             <bundleArguments>
                                 <icon>${project.basedir}/src/main/deploy/package/macos/${project.artifactId}.icns</icon>
+                                <systemWide>false</systemWide>
                             </bundleArguments>
                         </configuration>
                     </plugin>
@@ -160,8 +168,9 @@
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.1.0</version>
                     <executions>
+                        <!-- Copy and filter resources to it's target directory -->
                         <execution>
-                            <id>update-readme</id>
+                            <id>process-resources</id>
                             <phase>process-resources</phase>
                             <goals>
                                 <goal>copy-resources</goal>
@@ -170,6 +179,7 @@
                                 <outputDirectory>${project.basedir}</outputDirectory>
                                 <encoding>UTF-8</encoding>
                                 <resources>
+                                    <!-- Project level resources -->
                                     <resource>
                                         <directory>${project.basedir}/docs/templates</directory>
                                         <filtering>true</filtering>
@@ -178,12 +188,46 @@
                                             <include>README.md</include>
                                         </includes>
                                     </resource>
+                                    <!-- Windows package resources -->
                                     <resource>
-                                        <directory>${project.basedir}/docs/templates/setup</directory>
+                                        <directory>${project.basedir}/docs/templates/setup/windows</directory>
                                         <filtering>true</filtering>
                                         <targetPath>${project.basedir}/src/main/deploy/package/windows</targetPath>
                                         <includes>
                                             <include>GLCD Emulator.iss</include>
+                                        </includes>
+                                    </resource>
+                                    <!-- Linux package resources (Common resources) -->
+                                    <resource>
+                                        <directory>${project.basedir}/docs/templates/setup/linux</directory>
+                                        <filtering>true</filtering>
+                                        <targetPath>${project.basedir}/src/main/deploy/package/linux</targetPath>
+                                        <includes>
+                                            <include>*.desktop</include>
+                                            <include>*.png</include>
+                                        </includes>
+                                    </resource>
+                                    <!-- Linux package resources (deb) -->
+                                    <resource>
+                                        <directory>${project.basedir}/docs/templates/setup/linux/deb</directory>
+                                        <filtering>true</filtering>
+                                        <targetPath>${project.basedir}/src/main/deploy/package/linux</targetPath>
+                                        <includes>
+                                            <include>control</include>
+                                            <include>copyright</include>
+                                            <include>postinst</include>
+                                            <include>postrm</include>
+                                            <include>preinst</include>
+                                            <include>prerm</include>
+                                        </includes>
+                                    </resource>
+                                    <!-- Linux package resources (rpm) -->
+                                    <resource>
+                                        <directory>${project.basedir}/docs/templates/setup/linux/rpm</directory>
+                                        <filtering>true</filtering>
+                                        <targetPath>${project.basedir}/src/main/deploy/package/linux</targetPath>
+                                        <includes>
+                                            <include>*.spec</include>
                                         </includes>
                                     </resource>
                                 </resources>
@@ -208,6 +252,7 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.1.0</version>
                 </plugin>
+                <!-- JavaFX Plugin -->
                 <plugin>
                     <groupId>com.zenjava</groupId>
                     <artifactId>javafx-maven-plugin</artifactId>
@@ -220,12 +265,18 @@
                         <verbose>true</verbose>
                         <needShortcut>true</needShortcut>
                         <needMenu>true</needMenu>
-                        <title>GLCD Emulator Title</title>
+                        <title>GLCD Emulator</title>
+                        <failOnError>true</failOnError>
+                        <jfxMainAppJarName>${project.artifactId}-${project.version}.jar</jfxMainAppJarName>
+                        <skipJNLP>true</skipJNLP>
+                        <libFolderName>lib</libFolderName>
+                        <nativeReleaseVersion>${project.version}</nativeReleaseVersion>
+                        <skipNativeVersionNumberSanitizing>true</skipNativeVersionNumberSanitizing>
+                        <additionalAppResources>docs/additional</additionalAppResources>
+                        <nativeOutputDir>${project.build.directory}/jfx/native</nativeOutputDir>
                         <bundleArguments>
-                            <installdirChooser>true</installdirChooser>
                             <copyright>GLCD Emulator Copyright (C) 2018 Rafael Luis Ibasco</copyright>
-                            <systemWide>true</systemWide>
-                            <win.menuGroup>GLCD Emulator</win.menuGroup>
+                            <licenseFile>license.txt</licenseFile>
                         </bundleArguments>
                         <manifestAttributes>
                             <Url>https://github.com/ribasco/glcd-emulator</Url>
@@ -239,11 +290,13 @@
                         </manifestAttributes>
                     </configuration>
                 </plugin>
+                <!-- Assembly Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>3.1.0</version>
                 </plugin>
+                <!-- Versions Plugin -->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
@@ -288,28 +341,11 @@
                         </execution>
                     </executions>
                 </plugin>
-                <!-- Github Release Plugin -->
-                <plugin>
-                    <groupId>de.jutzig</groupId>
-                    <artifactId>github-release-plugin</artifactId>
-                    <version>1.3.0</version>
-                    <configuration>
-                        <tag>release-${project.version}</tag>
-                        <deleteRelease>true</deleteRelease>
-                        <fileSets>
-                            <fileSet>
-                                <directory>${project.build.directory}</directory>
-                                <includes>
-                                </includes>
-                            </fileSet>
-                        </fileSets>
-                    </configuration>
-                </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
-            <!-- JAVA FX Plugin (IMPORTANT: this needs to run before Assembly) -->
+            <!-- JavaFX Plugin (IMPORTANT: this needs to run before Assembly) -->
             <plugin>
                 <groupId>com.zenjava</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
@@ -403,7 +439,7 @@
             <dependency>
                 <groupId>com.ibasco.ucgdisplay</groupId>
                 <artifactId>ucgd-drivers-glcd</artifactId>
-                <version>(1.1.0,)</version>
+                <version>(1.2.0,)</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
             <dependency>

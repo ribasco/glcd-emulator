@@ -1,0 +1,9 @@
+Package: glcd-emulator
+Version: ${project.version}
+Section: misc
+Priority: optional
+Architecture: all
+Depends:
+Maintainer: Rafael Ibasco <ribasco@gmail.com>
+Description: ${project.description}
+Distribution: development
