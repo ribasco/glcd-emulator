@@ -117,9 +117,10 @@
                             <bundler>deb</bundler>
                             <bundleArguments>
                                 <icon>${project.basedir}/src/main/deploy/package/linux/${project.name}.png</icon>
+                                <applicationCategory>Development</applicationCategory>
+                                <runtime>null</runtime>
                                 <licenseType>GPL v3</licenseType>
                                 <email>ribasco@gmail.com</email>
-                                <category>Development</category>
                                 <systemWide>false</systemWide>
                                 <linux.bundleName>${project.artifactId}</linux.bundleName>
                             </bundleArguments>
@@ -195,6 +196,7 @@
         </profile>
 
         <!-- BUILD PROFILE: Mac OSX - x86_64/amd64 -->
+        <!-- See comments here: https://bugs.openjdk.java.net/browse/JDK-8188763 -->
         <profile>
             <id>build-mac-amd64</id>
             <activation>

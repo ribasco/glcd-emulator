@@ -20,7 +20,8 @@ matrix:
 
 sudo: false
 
-before_install: false
+before_install:
+- mvn jfx:list-bundlers
 
 install:
 - mvn install
@@ -40,6 +41,7 @@ deploy:
   file_glob: true
   file:
   - ${TRAVIS_BUILD_DIR}/target/jfx/native/glcd-emulator-*.deb
+  - ${TRAVIS_BUILD_DIR}/target/jfx/native/*.pkg
   skip_cleanup: true
   overwrite: false
   on:
