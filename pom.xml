@@ -33,6 +33,9 @@
         </license>
     </licenses>
 
+    <!--
+    -  More info about <bundler> inclusions/exclusions: https://github.com/javafx-maven-plugin/javafx-maven-plugin/issues/293#issuecomment-303016297
+    -->
     <profiles>
         <!-- BUILD PROFILE: Linux - x86_64/amd64 -->
         <profile>
@@ -172,6 +175,7 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- JavaFX Plugin -->
                     <plugin>
                         <groupId>com.zenjava</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
@@ -201,7 +205,7 @@
                 </os>
             </activation>
             <properties>
-                <current-os>macos---x</current-os>
+                <current-os>macosx</current-os>
                 <current-arch>amd64</current-arch>
             </properties>
             <build>
@@ -236,11 +240,12 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- JavaFX Plugin -->
                     <plugin>
                         <groupId>com.zenjava</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
                         <configuration>
-                            <bundler>image</bundler>
+                            <bundler>pkg</bundler>
                             <bundleArguments>
                                 <icon>${project.basedir}/src/main/deploy/package/macosx/${project.artifactId}.icns</icon>
                                 <systemWide>false</systemWide>
