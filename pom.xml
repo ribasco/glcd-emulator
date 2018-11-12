@@ -118,7 +118,6 @@
                             <bundleArguments>
                                 <icon>${project.basedir}/src/main/deploy/package/linux/${project.name}.png</icon>
                                 <applicationCategory>Development</applicationCategory>
-                                <runtime>null</runtime>
                                 <licenseType>GPL v3</licenseType>
                                 <email>ribasco@gmail.com</email>
                                 <systemWide>false</systemWide>

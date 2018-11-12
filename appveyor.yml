@@ -26,6 +26,7 @@ install:
 - cmd: SET PATH=%M2_HOME%\bin;%JAVA_HOME%\bin;%PATH%
 - cmd: mvn --version
 - cmd: java -version
+- cmd: mvn jfx:list-bundlers
 
 artifacts:
 - path: 'target\jfx\native\glcd-emulator-*.exe'
