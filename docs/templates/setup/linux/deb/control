@@ -6,4 +6,3 @@ Architecture: all
 Depends:
 Maintainer: Rafael Ibasco <ribasco@gmail.com>
 Description: ${project.description}
-Distribution: development
