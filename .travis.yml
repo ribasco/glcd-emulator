@@ -44,5 +44,6 @@ deploy:
   - ${TRAVIS_BUILD_DIR}/target/jfx/native/glcd-emulator-*.pkg
   skip_cleanup: true
   overwrite: false
+  draft: true
   on:
     tags: true
