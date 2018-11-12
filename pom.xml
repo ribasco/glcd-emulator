@@ -247,6 +247,7 @@
                         <artifactId>javafx-maven-plugin</artifactId>
                         <configuration>
                             <bundler>pkg</bundler>
+                            <appName>${project.artifactId}</appName>
                             <bundleArguments>
                                 <icon>${project.basedir}/src/main/deploy/package/macosx/${project.artifactId}.icns</icon>
                                 <systemWide>false</systemWide>
