@@ -51,6 +51,62 @@
 
             <build>
                 <plugins>
+                    <!-- Resources Plugin : Copy and Filter Linux Resources -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <!-- Copy and filter resources to it's target directory -->
+                            <execution>
+                                <id>process-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}</outputDirectory>
+                                    <encoding>UTF-8</encoding>
+                                    <resources>
+                                        <!-- Linux package resources (Common resources) -->
+                                        <resource>
+                                            <directory>${project.basedir}/docs/templates/setup/linux</directory>
+                                            <filtering>true</filtering>
+                                            <targetPath>${project.basedir}/src/main/deploy/package/linux</targetPath>
+                                            <includes>
+                                                <include>*.desktop</include>
+                                                <include>*.png</include>
+                                            </includes>
+                                        </resource>
+                                        <!-- Linux package resources (deb) -->
+                                        <resource>
+                                            <directory>${project.basedir}/docs/templates/setup/linux/deb</directory>
+                                            <filtering>true</filtering>
+                                            <targetPath>${project.basedir}/src/main/deploy/package/linux</targetPath>
+                                            <includes>
+                                                <include>control</include>
+                                                <include>copyright</include>
+                                                <include>postinst</include>
+                                                <include>postrm</include>
+                                                <include>preinst</include>
+                                                <include>prerm</include>
+                                            </includes>
+                                        </resource>
+                                        <!-- Linux package resources (rpm) -->
+                                        <resource>
+                                            <directory>${project.basedir}/docs/templates/setup/linux/rpm</directory>
+                                            <filtering>true</filtering>
+                                            <targetPath>${project.basedir}/src/main/deploy/package/linux</targetPath>
+                                            <includes>
+                                                <include>*.spec</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- JavaFX Plugin -->
                     <plugin>
                         <groupId>com.zenjava</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
@@ -85,6 +141,37 @@
             </properties>
             <build>
                 <plugins>
+                    <!-- Resources Plugin Copy-and Filter Windows resources -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <!-- Copy and filter resources to it's target directory -->
+                            <execution>
+                                <id>process-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}</outputDirectory>
+                                    <encoding>UTF-8</encoding>
+                                    <resources>
+                                        <!-- Windows package resources -->
+                                        <resource>
+                                            <directory>${project.basedir}/docs/templates/setup/windows</directory>
+                                            <filtering>true</filtering>
+                                            <targetPath>${project.basedir}/src/main/deploy/package/windows</targetPath>
+                                            <includes>
+                                                <include>GLCD Emulator.iss</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>com.zenjava</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
@@ -114,17 +201,47 @@
                 </os>
             </activation>
             <properties>
-                <current-os>macosx</current-os>
+                <current-os>macos---x</current-os>
                 <current-arch>amd64</current-arch>
             </properties>
             <build>
                 <plugins>
+                    <!-- Resources Plugin Copy-and Filter MacOSX resources -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <!-- Copy and filter resources to it's target directory -->
+                            <execution>
+                                <id>process-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}</outputDirectory>
+                                    <encoding>UTF-8</encoding>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/docs/templates/setup/macosx</directory>
+                                            <filtering>true</filtering>
+                                            <targetPath>${project.basedir}/src/main/deploy/package/macosx</targetPath>
+                                            <includes>
+                                                <include>*.*</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>com.zenjava</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
                         <configuration>
                             <bundleArguments>
-                                <icon>${project.basedir}/src/main/deploy/package/macos/${project.artifactId}.icns</icon>
+                                <icon>${project.basedir}/src/main/deploy/package/macosx/${project.artifactId}.icns</icon>
                                 <systemWide>false</systemWide>
                             </bundleArguments>
                         </configuration>
@@ -186,48 +303,6 @@
                                         <targetPath>${project.basedir}</targetPath>
                                         <includes>
                                             <include>README.md</include>
-                                        </includes>
-                                    </resource>
-                                    <!-- Windows package resources -->
-                                    <resource>
-                                        <directory>${project.basedir}/docs/templates/setup/windows</directory>
-                                        <filtering>true</filtering>
-                                        <targetPath>${project.basedir}/src/main/deploy/package/windows</targetPath>
-                                        <includes>
-                                            <include>GLCD Emulator.iss</include>
-                                        </includes>
-                                    </resource>
-                                    <!-- Linux package resources (Common resources) -->
-                                    <resource>
-                                        <directory>${project.basedir}/docs/templates/setup/linux</directory>
-                                        <filtering>true</filtering>
-                                        <targetPath>${project.basedir}/src/main/deploy/package/linux</targetPath>
-                                        <includes>
-                                            <include>*.desktop</include>
-                                            <include>*.png</include>
-                                        </includes>
-                                    </resource>
-                                    <!-- Linux package resources (deb) -->
-                                    <resource>
-                                        <directory>${project.basedir}/docs/templates/setup/linux/deb</directory>
-                                        <filtering>true</filtering>
-                                        <targetPath>${project.basedir}/src/main/deploy/package/linux</targetPath>
-                                        <includes>
-                                            <include>control</include>
-                                            <include>copyright</include>
-                                            <include>postinst</include>
-                                            <include>postrm</include>
-                                            <include>preinst</include>
-                                            <include>prerm</include>
-                                        </includes>
-                                    </resource>
-                                    <!-- Linux package resources (rpm) -->
-                                    <resource>
-                                        <directory>${project.basedir}/docs/templates/setup/linux/rpm</directory>
-                                        <filtering>true</filtering>
-                                        <targetPath>${project.basedir}/src/main/deploy/package/linux</targetPath>
-                                        <includes>
-                                            <include>*.spec</include>
                                         </includes>
                                     </resource>
                                 </resources>
