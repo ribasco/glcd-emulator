@@ -9,25 +9,18 @@
 <?import javafx.scene.text.*?>
 <VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                    prefHeight="400.0" prefWidth="600.0">
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
             <children>
-                <JFXTabPane fx:id="tpAbout" layoutX="110.0" layoutY="161.0" prefHeight="157.0" prefWidth="392.0"
-                            AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                            AnchorPane.topAnchor="100.0">
+                <JFXTabPane fx:id="tpAbout" layoutX="110.0" layoutY="161.0" prefHeight="157.0" prefWidth="392.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
                     <tabs>
                         <Tab text="About">
                             <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
-                                        <GridPane hgap="10.0" layoutX="83.0" layoutY="47.0" vgap="5.0"
-                                                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+                                        <GridPane hgap="10.0" layoutX="83.0" layoutY="47.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
                                             <columnConstraints>
-                                                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="295.0"
-                                                                   minWidth="10.0" prefWidth="74.0"/>
-                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="508.0" minWidth="10.0"
-                                                                   prefWidth="501.0"/>
+                                                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="74.0"/>
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="508.0" minWidth="10.0" prefWidth="501.0"/>
                                             </columnConstraints>
                                             <rowConstraints>
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
@@ -48,23 +41,25 @@
                                                         <Font name="System Bold" size="12.0"/>
                                                     </font>
                                                 </Label>
-                                                <Label text="Website:" GridPane.rowIndex="2"/>
-                                                <Hyperlink fx:id="linkWebsite" text="https://github.com/ribasco"
-                                                           underline="true" GridPane.columnIndex="1"
-                                                           GridPane.rowIndex="2"/>
-                                                <Label text="Version:" GridPane.rowIndex="3"/>
-                                                <Hyperlink fx:id="linkEmail" text="ribasco@gmail.com"
-                                                           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                                                <Label fx:id="lblVersion" text="version" GridPane.columnIndex="1"
-                                                       GridPane.rowIndex="3"/>
+                                                <Label text="Website:" GridPane.rowIndex="2">
+                                                    <font>
+                                                        <Font name="System Bold" size="12.0"/>
+                                                    </font>
+                                                </Label>
+                                                <Hyperlink fx:id="linkWebsite" text="https://github.com/ribasco" underline="true" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                                <Label text="Version:" GridPane.rowIndex="3">
+                                                    <font>
+                                                        <Font name="System Bold" size="12.0"/>
+                                                    </font>
+                                                </Label>
+                                                <Hyperlink fx:id="linkEmail" text="ribasco@gmail.com" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                                <Label fx:id="lblVersion" text="version" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                                             </children>
                                             <padding>
                                                 <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
                                             </padding>
                                         </GridPane>
-                                        <Label fx:id="lblLicenseShort" layoutX="14.0" layoutY="12.0" prefHeight="82.0"
-                                               prefWidth="575.0" textAlignment="JUSTIFY" AnchorPane.leftAnchor="0.0"
-                                               AnchorPane.rightAnchor="0.0">
+                                        <Label fx:id="lblLicenseShort" layoutX="14.0" layoutY="12.0" prefHeight="82.0" prefWidth="575.0" textAlignment="JUSTIFY" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                             <font>
                                                 <Font name="Courier New" size="12.0"/>
                                             </font>
@@ -80,9 +75,7 @@
                             <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
-                                        <JFXTextArea fx:id="taLicense" editable="false" layoutX="39.0" layoutY="19.0"
-                                                     AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                                     AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                        <JFXTextArea fx:id="taLicense" editable="false" layoutX="39.0" layoutY="19.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <font>
                                                 <Font name="Courier New" size="12.0"/>
                                             </font>
@@ -95,10 +88,7 @@
                             <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
-                                        <JFXTextArea fx:id="taThirdParty" editable="false" layoutX="-22.0"
-                                                     layoutY="19.0" prefColumnCount="200" AnchorPane.bottomAnchor="0.0"
-                                                     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                                                     AnchorPane.topAnchor="0.0">
+                                        <JFXTextArea fx:id="taThirdParty" editable="false" layoutX="-22.0" layoutY="19.0" prefColumnCount="200" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <font>
                                                 <Font name="Courier New" size="12.0"/>
                                             </font>
@@ -114,16 +104,13 @@
                         <Font name="Arial Black" size="39.0"/>
                     </font>
                 </Label>
-                <JFXButton fx:id="btnClose" layoutX="505.0" layoutY="361.0" prefHeight="25.0" prefWidth="81.0"
-                           text="OK"/>
-                <ImageView fitHeight="50.0" fitWidth="39.0" layoutX="546.0" layoutY="14.0" pickOnBounds="true"
-                           preserveRatio="true">
+                <JFXButton fx:id="btnClose" layoutX="505.0" layoutY="361.0" prefHeight="25.0" prefWidth="81.0" text="OK"/>
+                <ImageView fitHeight="50.0" fitWidth="39.0" layoutX="546.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../images/icon.png"/>
                     </image>
                 </ImageView>
-                <JFXButton fx:id="btnDonate" layoutX="14.0" layoutY="361.0" prefHeight="25.0" prefWidth="193.0"
-                           text="Donate and show your support!"/>
+                <JFXButton fx:id="btnDonate" layoutX="14.0" layoutY="361.0" prefHeight="25.0" prefWidth="258.0" text="Donate and show your support!"/>
             </children>
         </AnchorPane>
     </children>
