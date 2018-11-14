@@ -25,6 +25,7 @@
  */
 package com.ibasco.glcdemu;
 
+import com.ibasco.glcdemu.constants.Common;
 import com.ibasco.glcdemu.constants.Views;
 import com.ibasco.glcdemu.model.GlcdConfigApp;
 import com.ibasco.glcdemu.utils.DialogUtil;
@@ -86,8 +87,7 @@ public class Bootstrap extends Application {
                 try {
                     Optional<ButtonType> result = dialog.showAndWait();
                     if (result.isPresent() && REPORT_BUTTON.equals(result.get())) {
-                        //TODO: Implement report to Github
-                        log.debug("Reporting Issue to Github...");
+                        Context.getInstance().getHostServices().showDocument(Common.REPORT_ISSUE_URL);
                     }
                 } finally {
                     errorCount.decrementAndGet();
