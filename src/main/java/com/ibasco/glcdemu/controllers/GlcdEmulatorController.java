@@ -517,7 +517,7 @@ public class GlcdEmulatorController extends Controller {
     private void setupDisplayScreen() {
         attachAutoFitWindowBindings(glcdScreen.widthProperty());
         attachAutoFitWindowBindings(glcdScreen.heightProperty());
-        glcdScreen.setShowFPS(true);
+        //glcdScreen.setShowFPS(true);
     }
 
     @Override
@@ -806,9 +806,13 @@ public class GlcdEmulatorController extends Controller {
         int defaultProfileId = appConfig.getDefaultProfileId();
         ProfileManager profileManager = getContext().getProfileManager();
         GlcdEmulatorProfile defaultProfile = profileManager.getProfile(defaultProfileId);
+
         if (defaultProfile == null) {
-            log.debug("No default profile found in file system for id '{}', using default", defaultProfileId);
+            log.info("No default profile found in file system for id '{}', using default", defaultProfileId);
             defaultProfile = new GlcdEmulatorProfile();
+            appConfig.setDefaultProfile(defaultProfile);
+            profileManager.getProfiles().add(defaultProfile);
+            log.info("Setting new default profile to '{}'", defaultProfile);
         }
         profileManager.setActiveProfile(defaultProfile);
         log.info("Loaded default profile: {}", defaultProfile);
@@ -1033,8 +1037,13 @@ public class GlcdEmulatorController extends Controller {
                 btnCancel.setOnAction(e -> emulatorBrowseDialog.close());
                 btnSelect.setOnAction(ev -> {
                     GlcdDisplay selectedDisplay = lvEmulators.getSelectionModel().getSelectedItem();
-                    log.debug("Selected display: {}", selectedDisplay);
+                    String displayController = selectedDisplay.getController().name() + " - " + selectedDisplay.getName();
+                    log.info("Selected display controller: {}", displayController);
                     getContext().getProfileManager().getActiveProfile().setDisplay(selectedDisplay);
+                    log.info("Updating display with/height properties based on '{}'", displayController);
+                    getContext().getProfileManager().getActiveProfile().setDisplaySizeWidth(selectedDisplay.getDisplaySize().getDisplayWidth());
+                    getContext().getProfileManager().getActiveProfile().setDisplaySizeHeight(selectedDisplay.getDisplaySize().getDisplayHeight());
+                    fitWindowToScreen();
                     emulatorBrowseDialog.close();
                 });
 
@@ -1099,6 +1108,9 @@ public class GlcdEmulatorController extends Controller {
      */
     private void setupNodeProperties() {
         btnDrawAnimTest.setOnAction(this::handleDrawTestAction);
+
+        spnDisplayWidth.setDisable(true);
+        spnDisplayHeight.setDisable(true);
 
         cbBusInterface.setItems(busInterfaceList);
         btnFreezeDisplay.setOnAction(event -> {
@@ -1553,6 +1565,24 @@ public class GlcdEmulatorController extends Controller {
         profileBindGroup.registerBidirectional(spnDisplayHeight.getValueFactory().valueProperty(), profile.displaySizeHeightProperty());
         profileBindGroup.registerBidirectional(slContrast.valueProperty(), profile.lcdContrastProperty());
         profileBindGroup.registerBidirectional(slMargin.valueProperty(), profile.lcdMarginProperty());
+
+        profile.displaySizeWidthProperty().addListener((observable, oldValue, newValue) -> {
+            log.debug("Validating display width change");
+            int maxWidth = profile.getDisplay().getDisplaySize().getDisplayWidth();
+            if (newValue > maxWidth) {
+                log.warn("Display width is greater than the maximum width of the selected display controller (Max Width = {}, Actual Width = {})", maxWidth, newValue);
+                DialogUtil.showWarning("Warning", String.format("The display width you set is greater than the maximum width of the selected display controller. (Max Width = %d Actual Width = %d)", maxWidth, newValue), Context.getPrimaryStage());
+            }
+        });
+
+        profile.displaySizeHeightProperty().addListener((observable, oldValue, newValue) -> {
+            log.debug("Validating display height change");
+            int maxHeight = profile.getDisplay().getDisplaySize().getDisplayHeight();
+            if (newValue > maxHeight) {
+                log.warn("Display height is greater than the maximum width of the selected display controller (Max Width = {}, Actual Width = {})", maxHeight, newValue);
+                DialogUtil.showWarning("Warning", String.format("The display height you set is greater than the maximum width of the selected display controller (Max Height = %d Actual Height = %d)", maxHeight, newValue), Context.getPrimaryStage());
+            }
+        });
 
         profileBindGroup.registerBidirectional(cbPixelShape.valueProperty(), profile.lcdPixelShapeProperty());
 

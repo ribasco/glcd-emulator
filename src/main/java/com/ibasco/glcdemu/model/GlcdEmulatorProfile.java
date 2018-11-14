@@ -75,11 +75,11 @@ public class GlcdEmulatorProfile extends GlcdConfig {
 
     public GlcdEmulatorProfile(String name) {
         setName(name);
+        setId(-1);
     }
 
     public GlcdEmulatorProfile(GlcdEmulatorProfile source) {
         this(source.getName());
-        setId(-1);
         setFile(null);
         setName(source.getName());
         setDescription(source.getDescription());
@@ -306,11 +306,13 @@ public class GlcdEmulatorProfile extends GlcdConfig {
     @Override
     public String toString() {
         ToStringBuilder b = new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE);
+        b.append("Profile = {");
         b.append(getId());
         b.append(getName());
         b.append(getDisplaySizeWidth());
         b.append(getDisplaySizeHeight());
         b.append(getLcdPixelSize());
+        b.append("}");
         return b.toString();
     }
 }

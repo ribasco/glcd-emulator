@@ -25,8 +25,7 @@
  */
 package com.ibasco.glcdemu.model;
 
-import static com.ibasco.glcdemu.ProfileManager.DEFAULT_PROFILE_DIR_PATH;
-import static com.ibasco.glcdemu.ProfileManager.DEFAULT_PROFILE_ID;
+import static com.ibasco.glcdemu.ProfileManager.*;
 import com.ibasco.glcdemu.constants.Common;
 import com.ibasco.glcdemu.enums.*;
 import com.ibasco.glcdemu.utils.NetUtils;
@@ -221,8 +220,13 @@ public class GlcdConfigApp extends GlcdConfig {
     }
 
     public void setDefaultProfile(GlcdEmulatorProfile profile) {
-        if (!isDefault(profile))
+        if (!isDefault(profile)) {
+            if (profile.getId() == -1) {
+                profile.setId(nextProfileId());
+                log.info("New profile id generated: {}", profile.getId());
+            }
             setDefaultProfileId(profile.getId());
+        }
     }
 
     public void setDefaultProfileId(int defaultProfileId) {
