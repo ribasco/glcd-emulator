@@ -52,7 +52,7 @@ public class Common {
 
     public static final String RELEASE_URL = "https://github.com/ribasco/glcd-emulator/releases";
 
-    public static final String REPORT_ISSUE_URL = "https://github.com/ribasco/glcd-emulator/issues";
+    public static final String REPORT_ISSUE_URL = "https://github.com/ribasco/glcd-emulator/issues/new";
 
     public static final String DEVELOPER_EMAIL = "ribasco@gmail.com";
 }
