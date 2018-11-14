@@ -26,7 +26,7 @@
 package com.ibasco.glcdemu.services;
 
 import com.ibasco.glcdemu.Context;
-import com.ibasco.glcdemu.GlcdDriverFactory;
+import com.ibasco.glcdemu.DriverFactory;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
@@ -91,7 +91,7 @@ public class DrawTestService extends Service<Void> {
             throw new NullPointerException("Bus interface is not specified");
         if (buffer.get() == null)
             throw new NullPointerException("Buffer is not specified");
-        driver = GlcdDriverFactory.createVirtual(display.get(), busInterface.get(), buffer.get());
+        driver = DriverFactory.createVirtual(display.get(), busInterface.get(), buffer.get());
     }
 
     @Override

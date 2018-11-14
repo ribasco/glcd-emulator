@@ -61,9 +61,9 @@ public final class Context {
 
     private ReadOnlyObjectWrapper<GlcdConfigApp> appConfig;
 
-    private GlcdConfigManager configService;
+    private ConfigManager configService;
 
-    private GlcdProfileManager profileService;
+    private ProfileManager profileService;
 
     private ExecutorService taskExecutor;
 
@@ -86,16 +86,16 @@ public final class Context {
         return appConfig.getReadOnlyProperty();
     }
 
-    public final GlcdProfileManager getProfileManager() {
+    public final ProfileManager getProfileManager() {
         if (profileService == null) {
-            profileService = new GlcdProfileManager();
+            profileService = new ProfileManager();
         }
         return profileService;
     }
 
-    public final GlcdConfigManager getConfigService() {
+    public final ConfigManager getConfigService() {
         if (configService == null) {
-            configService = new GlcdConfigManager();
+            configService = new ConfigManager();
         }
         return configService;
     }

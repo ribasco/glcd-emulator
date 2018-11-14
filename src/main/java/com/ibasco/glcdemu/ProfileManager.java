@@ -47,10 +47,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 @SuppressWarnings("WeakerAccess")
-public class GlcdProfileManager {
+public class ProfileManager {
 
     //<editor-fold desc="Public static properties">
-    public static final Logger log = LoggerFactory.getLogger(GlcdProfileManager.class);
+    public static final Logger log = LoggerFactory.getLogger(ProfileManager.class);
 
     public static final GlcdEmulatorProfile DEFAULT_PROFILE = new GlcdEmulatorProfile("default");
 
@@ -75,7 +75,7 @@ public class GlcdProfileManager {
 
     private GlcdConfigApp appConfig = Context.getInstance().getAppConfig();
 
-    private GlcdConfigManager configService = Context.getInstance().getConfigService();
+    private ConfigManager configService = Context.getInstance().getConfigService();
 
     public static class Predicates {
         public static Predicate<GlcdEmulatorProfile> byId(int id) {
@@ -95,7 +95,7 @@ public class GlcdProfileManager {
         }
     }
 
-    GlcdProfileManager() {
+    ProfileManager() {
     }
 
     public int newUniqueId() {

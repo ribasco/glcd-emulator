@@ -25,8 +25,8 @@
  */
 package com.ibasco.glcdemu.model;
 
-import static com.ibasco.glcdemu.GlcdProfileManager.DEFAULT_PROFILE_DIR_PATH;
-import static com.ibasco.glcdemu.GlcdProfileManager.DEFAULT_PROFILE_ID;
+import static com.ibasco.glcdemu.ProfileManager.DEFAULT_PROFILE_DIR_PATH;
+import static com.ibasco.glcdemu.ProfileManager.DEFAULT_PROFILE_ID;
 import com.ibasco.glcdemu.constants.Common;
 import com.ibasco.glcdemu.enums.*;
 import com.ibasco.glcdemu.utils.NetUtils;

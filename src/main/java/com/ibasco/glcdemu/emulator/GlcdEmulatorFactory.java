@@ -26,7 +26,7 @@
 package com.ibasco.glcdemu.emulator;
 
 import com.ibasco.glcdemu.Context;
-import com.ibasco.glcdemu.GlcdDriverFactory;
+import com.ibasco.glcdemu.DriverFactory;
 import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.drivers.glcd.Glcd;
@@ -114,7 +114,7 @@ public class GlcdEmulatorFactory {
         GlcdDisplay display = Glcd.ST7920.D_128x64;
         GlcdBusInterface busInterface = GlcdBusInterface.SPI_HW_4WIRE_ST7920;
 
-        GlcdDriver driver = GlcdDriverFactory.createVirtual(display, busInterface);
+        GlcdDriver driver = DriverFactory.createVirtual(display, busInterface);
 
         driver.clearBuffer();
         driver.setFont(GlcdFont.FONT_7X13_TR);

@@ -44,9 +44,9 @@ import java.util.function.Predicate;
  *
  * @author Rafael Ibasco
  */
-public class GlcdDriverFactory {
+public class DriverFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(GlcdDriverFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(DriverFactory.class);
 
     /**
      * Creates a virtual driver with the specified bus interface

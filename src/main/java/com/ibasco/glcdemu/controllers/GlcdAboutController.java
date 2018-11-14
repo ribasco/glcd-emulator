@@ -26,7 +26,7 @@
 package com.ibasco.glcdemu.controllers;
 
 import com.ibasco.glcdemu.Context;
-import com.ibasco.glcdemu.GlcdController;
+import com.ibasco.glcdemu.Controller;
 import com.ibasco.glcdemu.Stages;
 import com.ibasco.glcdemu.constants.Common;
 import static com.ibasco.glcdemu.utils.ResourceUtil.readFileResource;
@@ -39,7 +39,7 @@ import javafx.scene.control.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GlcdAboutController extends GlcdController {
+public class GlcdAboutController extends Controller {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdAboutController.class);
 

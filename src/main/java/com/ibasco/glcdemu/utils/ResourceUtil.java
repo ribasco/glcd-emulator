@@ -27,7 +27,7 @@ package com.ibasco.glcdemu.utils;
 
 import com.ibasco.glcdemu.Bootstrap;
 import com.ibasco.glcdemu.Context;
-import com.ibasco.glcdemu.GlcdController;
+import com.ibasco.glcdemu.Controller;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
@@ -55,7 +55,7 @@ public class ResourceUtil {
 
     private static Callback<Class<?>, Object> controllerFactory;
 
-    private static AtomicReference<GlcdController> lastController = new AtomicReference<>();
+    private static AtomicReference<Controller> lastController = new AtomicReference<>();
 
     private static AtomicReference<Parent> lastRootNode = new AtomicReference<>();
 
@@ -107,13 +107,13 @@ public class ResourceUtil {
      * @param resourceName
      *         The FXML resource name (excluding the extension)
      * @param controller
-     *         The {@link GlcdController} wthat will be assigned for the resource
+     *         The {@link Controller} wthat will be assigned for the resource
      * @param <T>
      *         Any subclass of {@link Parent} node
      *
      * @return The {@link javafx.scene.Node} or {@link Parent} root instance of the view
      */
-    public static <T extends Parent> T loadFxmlResource(String resourceName, GlcdController controller) throws IOException {
+    public static <T extends Parent> T loadFxmlResource(String resourceName, Controller controller) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         T node = null;
         try {
@@ -143,15 +143,15 @@ public class ResourceUtil {
     }
 
     /**
-     * Get the last {@link GlcdController} instance returned by {@link #loadFxmlResource}.
+     * Get the last {@link Controller} instance returned by {@link #loadFxmlResource}.
      *
      * @param <T>
-     *         Any valid subclass of {@link GlcdController}
+     *         Any valid subclass of {@link Controller}
      *
-     * @return An instance of {@link GlcdController}
+     * @return An instance of {@link Controller}
      */
     @SuppressWarnings("unchecked")
-    public static <T extends GlcdController> T getLastController() {
+    public static <T extends Controller> T getLastController() {
         if (lastController == null)
             return null;
         return (T) lastController.get();

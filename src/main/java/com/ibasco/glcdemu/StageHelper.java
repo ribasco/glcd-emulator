@@ -37,19 +37,19 @@ import java.util.function.Consumer;
 
 public class StageHelper {
 
-    public static Stage createDialog(Window owner, String title, String viewResourceName, GlcdController controller) {
+    public static Stage createDialog(Window owner, String title, String viewResourceName, Controller controller) {
         return createDialog(owner, title, viewResourceName, controller, null);
     }
 
-    public static Stage createDialog(Window owner, String title, String viewResourceName, GlcdController controller, Scene scene) {
+    public static Stage createDialog(Window owner, String title, String viewResourceName, Controller controller, Scene scene) {
         return createDialog(owner, title, viewResourceName, controller, scene, null);
     }
 
-    public static <T extends Parent> Stage createDialog(Window owner, String title, String viewResourceName, GlcdController controller, Scene scene, Consumer<T> func) {
+    public static <T extends Parent> Stage createDialog(Window owner, String title, String viewResourceName, Controller controller, Scene scene, Consumer<T> func) {
         return createStageFromResource(owner, true, Modality.APPLICATION_MODAL, title, viewResourceName, controller, scene, func);
     }
 
-    public static <T extends Parent> Stage createStageFromResource(Window owner, boolean resizable, Modality modality, String title, String viewResourceName, GlcdController controller, Scene scene, Consumer<T> func) {
+    public static <T extends Parent> Stage createStageFromResource(Window owner, boolean resizable, Modality modality, String title, String viewResourceName, Controller controller, Scene scene, Consumer<T> func) {
         Stage stage;
         try {
             stage = new Stage();

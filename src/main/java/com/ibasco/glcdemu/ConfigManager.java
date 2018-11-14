@@ -43,14 +43,14 @@ import java.time.ZonedDateTime;
  *
  * @author Rafael Ibasco
  */
-public class GlcdConfigManager {
+public class ConfigManager {
 
-    private static final Logger log = LoggerFactory.getLogger(GlcdConfigManager.class);
+    private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
 
     /**
      * This should only be instatiated from the application context level
      */
-    GlcdConfigManager() {
+    ConfigManager() {
     }
 
     //<editor-fold desc="Public Methods">

@@ -25,7 +25,7 @@
  */
 package com.ibasco.glcdemu.controllers;
 
-import com.ibasco.glcdemu.GlcdController;
+import com.ibasco.glcdemu.Controller;
 import com.ibasco.glcdemu.model.FontCacheDetails;
 import com.ibasco.glcdemu.model.FontCacheEntry;
 import com.ibasco.glcdemu.services.FontCacheService;
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GlcdFontTopDrawerController extends GlcdController implements Initializable {
+public class GlcdFontTopDrawerController extends Controller implements Initializable {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdFontTopDrawerController.class);
 

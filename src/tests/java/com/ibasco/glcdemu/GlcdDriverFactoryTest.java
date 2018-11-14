@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 //import org.junit.jupiter.api.Test;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({GlcdDriverFactory.class, GlcdEmulatorFactory.class, GlcdDriver.class, U8g2Graphics.class, NativeLibraryLoader.class})
+@PrepareForTest({DriverFactory.class, GlcdEmulatorFactory.class, GlcdDriver.class, U8g2Graphics.class, NativeLibraryLoader.class})
 class GlcdDriverFactoryTest {
     private static final Logger log = LoggerFactory.getLogger(GlcdDriverFactoryTest.class);
 
@@ -77,7 +77,7 @@ class GlcdDriverFactoryTest {
         when(GlcdEmulatorFactory.createFrom(any(GlcdDisplay.class), eq(GlcdBusInterface.PARALLEL_8080), eq(mockedBuffer))).thenReturn(mockedEmulator);
         when(U8g2Graphics.setup(anyString(), anyInt(), anyInt(), anyInt(), anyInt(), any(), eq(true))).thenReturn(1L);
 
-        GlcdDriver driver = GlcdDriverFactory.createVirtual(GlcdControllerType.ST7920, GlcdBusInterface.PARALLEL_8080, mockedBuffer);
+        GlcdDriver driver = DriverFactory.createVirtual(GlcdControllerType.ST7920, GlcdBusInterface.PARALLEL_8080, mockedBuffer);
 
         assertNotNull(driver);
         assertNotNull(driver.getDriverEventHandler());

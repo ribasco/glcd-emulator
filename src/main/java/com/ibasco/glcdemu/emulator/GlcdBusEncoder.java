@@ -28,7 +28,7 @@ package com.ibasco.glcdemu.emulator;
 import com.ibasco.ucgdisplay.core.u8g2.U8g2GpioEvent;
 
 /**
- * Converts bytes to {@link U8g2GpioEvent}
+ * Bus interface encoder. Encodes byte to a {@link U8g2GpioEvent}
  *
  * @author Rafael Ibasco
  */

@@ -25,7 +25,7 @@
  */
 package com.ibasco.glcdemu.utils;
 
-import com.ibasco.glcdemu.GlcdDriverFactory;
+import com.ibasco.glcdemu.DriverFactory;
 import com.ibasco.glcdemu.controls.GlcdScreen;
 import com.ibasco.glcdemu.emulator.GlcdEmulator;
 import com.ibasco.ucgdisplay.drivers.glcd.Glcd;
@@ -86,7 +86,7 @@ public class FontRenderer {
         config.setRotation(GlcdRotation.ROTATION_NONE);*/
 
         //emulator = new ST7920Emulator();
-        driver = GlcdDriverFactory.createVirtual(Glcd.ST7920.D_128x64, GlcdBusInterface.SPI_HW_4WIRE_ST7920);//new GlcdDriver(config, true, emulator);
+        driver = DriverFactory.createVirtual(Glcd.ST7920.D_128x64, GlcdBusInterface.SPI_HW_4WIRE_ST7920);//new GlcdDriver(config, true, emulator);
         emulator = driver.getDriverEventHandler();
         driver.setFont(GlcdFont.FONT_7X13B_TR); //default font
     }

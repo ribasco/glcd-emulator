@@ -109,7 +109,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @SuppressWarnings("Duplicates")
-public class GlcdEmulatorController extends GlcdController {
+public class GlcdEmulatorController extends Controller {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdEmulatorController.class);
 
@@ -814,7 +814,7 @@ public class GlcdEmulatorController extends GlcdController {
     private void setupDefaultProfile() {
         //Load default profile
         int defaultProfileId = appConfig.getDefaultProfileId();
-        GlcdProfileManager profileManager = getContext().getProfileManager();
+        ProfileManager profileManager = getContext().getProfileManager();
         GlcdEmulatorProfile defaultProfile = profileManager.getProfile(defaultProfileId);
         if (defaultProfile == null) {
             log.debug("No default profile found in file system for id '{}', using default", defaultProfileId);
@@ -1413,7 +1413,7 @@ public class GlcdEmulatorController extends GlcdController {
 
     private void resetToDefaultSettings(ActionEvent event) {
         if (DialogUtil.promptConfirmation("Reset active profile to default settings?", "")) {
-            GlcdProfileManager profileManager = getContext().getProfileManager();
+            ProfileManager profileManager = getContext().getProfileManager();
             GlcdEmulatorProfile activeProfile = profileManager.getActiveProfile();
 
             //Retain active profile's identity, everything else should reset to default
@@ -1643,7 +1643,7 @@ public class GlcdEmulatorController extends GlcdController {
     }
 
     private List<GlcdEmulatorProfile> profileGetModified() {
-        return getContext().getProfileManager().findList(GlcdProfileManager.Predicates.modified());
+        return getContext().getProfileManager().findList(ProfileManager.Predicates.modified());
     }
 
     private void profileSaveAll(List<GlcdEmulatorProfile> profiles) {
@@ -1734,7 +1734,7 @@ public class GlcdEmulatorController extends GlcdController {
     }
 
     private void profileDuplicateAction(ActionEvent event) {
-        GlcdProfileManager profileManager = getContext().getProfileManager();
+        ProfileManager profileManager = getContext().getProfileManager();
         GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
         GlcdEmulatorProfile duplicatedProfile = profileManager.create("", selectedProfile);
         TextInputDialog textInputDialog = new TextInputDialog(duplicatedProfile.getName());

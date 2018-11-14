@@ -30,11 +30,11 @@ import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-abstract public class GlcdController implements Initializable {
+abstract public class Controller implements Initializable {
 
     private boolean initialized = false;
 
-    public GlcdController() {
+    public Controller() {
     }
 
     @Override

@@ -25,7 +25,7 @@
  */
 package com.ibasco.glcdemu.controllers;
 
-import com.ibasco.glcdemu.GlcdController;
+import com.ibasco.glcdemu.Controller;
 import com.ibasco.glcdemu.constants.Views;
 import com.ibasco.glcdemu.controls.GlcdScreen;
 import com.ibasco.glcdemu.enums.PixelShape;
@@ -65,7 +65,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 
-public class GlcdFontBrowserController extends GlcdController implements Initializable {
+public class GlcdFontBrowserController extends Controller implements Initializable {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdFontBrowserController.class);
 

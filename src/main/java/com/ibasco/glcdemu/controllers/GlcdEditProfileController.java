@@ -25,7 +25,7 @@
  */
 package com.ibasco.glcdemu.controllers;
 
-import com.ibasco.glcdemu.GlcdController;
+import com.ibasco.glcdemu.Controller;
 import com.ibasco.glcdemu.model.GlcdEmulatorProfile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GlcdEditProfileController extends GlcdController implements Initializable {
+public class GlcdEditProfileController extends Controller implements Initializable {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdEditProfileController.class);
 
