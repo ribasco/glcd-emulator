@@ -31,7 +31,7 @@
         </encoder>
     </appender>
 
-    <appender name="glcd-info" class="com.ibasco.glcdemu.utils.GlcdOutputStreamAppender">
+    <appender name="glcd-info" class="com.ibasco.glcdemulator.utils.GlcdOutputStreamAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
@@ -47,6 +47,6 @@
         <appender-ref ref="glcd-info"/>
     </root>
 
-    <logger name="com.ibasco.glcdemu" level="INFO"/>
+    <logger name="com.ibasco.glcdemulator" level="INFO"/>
     <logger name="com.ibasco.ucgdisplay.core.util.concurrent.ThreadUtils" level="INFO"/>
 </configuration>

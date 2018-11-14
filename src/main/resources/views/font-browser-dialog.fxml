@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.ibasco.glcdemu.controls.GlcdScreen?>
+<?import com.ibasco.glcdemulator.controls.GlcdScreen?>
 <?import com.jfoenix.controls.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>

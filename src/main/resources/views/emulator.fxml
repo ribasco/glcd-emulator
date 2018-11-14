@@ -2,7 +2,7 @@
 
 <!--suppress JavaFxDefaultTag -->
 
-<?import com.ibasco.glcdemu.controls.GlcdScreen?>
+<?import com.ibasco.glcdemulator.controls.GlcdScreen?>
 <?import com.jfoenix.controls.*?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
@@ -14,7 +14,7 @@
 <?import org.controlsfx.control.StatusBar?>
 <VBox fx:id="vbRoot" minHeight="726.0" minWidth="1119.0" prefHeight="726.0" prefWidth="1119.0"
       xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.ibasco.glcdemu.controllers.GlcdEmulatorController">
+      fx:controller="com.ibasco.glcdemulator.controllers.GlcdEmulatorController">
    <children>
        <MenuBar fx:id="mbMain" VBox.vgrow="ALWAYS">
         <menus>
