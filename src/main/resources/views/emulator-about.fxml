@@ -7,7 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
             <children>
@@ -105,7 +105,7 @@
                     </font>
                 </Label>
                 <JFXButton fx:id="btnClose" layoutX="505.0" layoutY="361.0" prefHeight="25.0" prefWidth="81.0" text="OK"/>
-                <ImageView fitHeight="50.0" fitWidth="39.0" layoutX="546.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fitHeight="73.0" fitWidth="107.0" layoutX="513.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../images/icon.png"/>
                     </image>
