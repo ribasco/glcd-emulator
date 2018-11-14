@@ -112,7 +112,7 @@ public class DrawTestService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
                 buffer.get().clear();
-                log.debug("Starting draw task (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
+                log.info("START: Draw test (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
                 GlcdEmulator emulator = driver.getDriverEventHandler();
                 emulator.reset();
                 while (!isCancelled()) {
@@ -122,8 +122,9 @@ public class DrawTestService extends Service<Void> {
                     driver.sendBuffer();
                     if (ctr > 100)
                         ctr = 0;
-                    Thread.sleep(10);
+                    Thread.sleep(5);
                 }
+                log.info("STOP: Draw test (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
                 return null;
             }
         };

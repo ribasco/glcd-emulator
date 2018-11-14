@@ -23,7 +23,7 @@ DefaultGroupName=GLCD Emulator
 LicenseFile=
 ;WinXP or above
 MinVersion=0,5.1 
-OutputBaseFilename=glcd-emulator-setup
+OutputBaseFilename=glcd-emulator-setup-amd64
 Compression=lzma
 SolidCompression=yes
 PrivilegesRequired=admin

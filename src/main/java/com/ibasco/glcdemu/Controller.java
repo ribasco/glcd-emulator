@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Ibasco
  * Project: GLCD Emulator
- * Filename: GlcdController.java
+ * Filename: Controller.java
  *
  * ---------------------------------------------------------
  * %%

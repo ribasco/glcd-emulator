@@ -88,6 +88,7 @@ public class TcpEmulatorListenerTask extends EmulatorListenerTask {
 
     @Override
     protected void process() throws Exception {
+        log.info("Starting TCP listen task");
         try {
             ByteBuffer recv = ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN);
 
@@ -140,10 +141,15 @@ public class TcpEmulatorListenerTask extends EmulatorListenerTask {
                 }
             } //while
         } finally {
-            log.debug("Exiting listen service");
+            log.info("Exiting TCP listen task");
             selector.close();
             socketChannel.close();
         }
+    }
+
+    @Override
+    protected String getName() {
+        return "TCP-LISTENER";
     }
 
     @Override

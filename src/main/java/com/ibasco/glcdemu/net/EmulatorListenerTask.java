@@ -250,6 +250,7 @@ abstract public class EmulatorListenerTask extends Task<Void> {
     }
 
     protected void reset() {
+        log.info("[{}] Resetting emulator properties", getName());
         if (getEmulator() != null) {
             getEmulator().reset();
         }
@@ -262,6 +263,7 @@ abstract public class EmulatorListenerTask extends Task<Void> {
 
     private void closeAndReset() {
         try {
+            log.info("[{}] Task cleanup", getName());
             cleanup();
         } catch (Exception e) {
             log.error("Problem closing resources in " + getClass().getSimpleName(), e);
@@ -273,37 +275,38 @@ abstract public class EmulatorListenerTask extends Task<Void> {
     @Override
     protected void failed() {
         closeAndReset();
-        log.error("Emulator task failed", getException());
+        log.error("[{}] Emulator task failed", getName(), getException());
     }
 
     @Override
     protected void succeeded() {
         closeAndReset();
-        log.info("Emulator task completed successfully");
+        log.info("[{}] Emulator task completed successfully", getName());
     }
 
     @Override
     protected void cancelled() {
         closeAndReset();
-        log.info("Emulator task cancelled");
+        log.info("[{}] Emulator task cancelled", getName());
     }
 
     @Override
     protected Void call() throws Exception {
         try {
             if (emulator.get() == null)
-                throw new NullPointerException("Emulator cannot be null");
+                throw new IllegalArgumentException("Emulator cannot be null");
 
             if (emulator.get().getBusInterface() == null)
                 throw new IllegalStateException("No bus interface assigned for emulator '" + emulator.get().getClass().getSimpleName() + "'");
 
-            log.info("Configuring emulator task");
+            log.info("[{}] Created emulator task (Controller = {}, Bus = {})", getName(), emulator.get().getClass().getSimpleName(), emulator.get().getBusInterface());
             reset();
+
+            log.info("[{}] Configuring emulator task", getName());
             configure(this.listenerOptions.get());
 
-            log.info(String.format("Starting emulator task (Controller = %s, Bus = %s)", emulator.get().getClass().getSimpleName(), emulator.get().getBusInterface()));
             process();
-            log.info("Emulator task exited");
+            log.info("[{}] Emulator task exited gracefully (Controller = {}, Bus = {})", getName(), emulator.get().getClass().getSimpleName(), emulator.get().getBusInterface());
         } finally {
             reset();
         }

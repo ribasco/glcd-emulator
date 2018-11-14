@@ -163,13 +163,7 @@ public class GlcdEmulatorController extends Controller {
     private CheckMenuItem menuPinActivity;
 
     @FXML
-    private RadioMenuItem menuThemeDefault;
-
-    @FXML
     private ToggleGroup menuThemes;
-
-    @FXML
-    private RadioMenuItem menuThemeDark;
 
     @FXML
     private MenuItem menuCheckUpdates;
@@ -185,9 +179,6 @@ public class GlcdEmulatorController extends Controller {
 
     @FXML
     private JFXToggleButton btnShowSettings;
-
-    @FXML
-    private AnchorPane apGlcd;
 
     @FXML
     private BorderPane bpGlcd;
@@ -526,12 +517,11 @@ public class GlcdEmulatorController extends Controller {
     private void setupDisplayScreen() {
         attachAutoFitWindowBindings(glcdScreen.widthProperty());
         attachAutoFitWindowBindings(glcdScreen.heightProperty());
-        //glcdScreen.setShowFPS(true);
+        glcdScreen.setShowFPS(true);
     }
 
     @Override
     public void initializeOnce() {
-        log.info("Initializing glcd log viewer");
         OutputStream os = new TextAreaOutputStream(taLog);
         GlcdOutputStreamAppender.setStaticOutputStream(os);
 

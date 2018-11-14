@@ -106,7 +106,7 @@ public class SerialEmulatorListenerTask extends EmulatorListenerTask {
 
     @Override
     protected void process() throws Exception {
-        log.debug("Started remote serial task");
+        log.info("Starting Serial listen task");
 
         if (!serialPort.isOpen()) {
             if (!serialPort.isOpen()) {
@@ -131,5 +131,7 @@ public class SerialEmulatorListenerTask extends EmulatorListenerTask {
                 }
             }
         }
+
+        log.info("Exiting Serial listen task");
     }
 }

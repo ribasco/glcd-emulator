@@ -26,15 +26,11 @@
 package com.ibasco.glcdemu.emulator;
 
 import com.ibasco.glcdemu.Context;
-import com.ibasco.glcdemu.DriverFactory;
 import com.ibasco.glcdemu.annotations.Emulator;
 import com.ibasco.glcdemu.utils.PixelBuffer;
-import com.ibasco.ucgdisplay.drivers.glcd.Glcd;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
-import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriver;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
-import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
@@ -108,17 +104,5 @@ public class GlcdEmulatorFactory {
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Unable to instantiate emulator '" + emulatorClass + "'", e);
         }
-    }
-
-    public static void main(String[] args) {
-        GlcdDisplay display = Glcd.ST7920.D_128x64;
-        GlcdBusInterface busInterface = GlcdBusInterface.SPI_HW_4WIRE_ST7920;
-
-        GlcdDriver driver = DriverFactory.createVirtual(display, busInterface);
-
-        driver.clearBuffer();
-        driver.setFont(GlcdFont.FONT_7X13_TR);
-        driver.drawString(10, 10, "Hello World");
-        driver.sendBuffer();
     }
 }
