@@ -27,6 +27,7 @@ package com.ibasco.glcdemulator.emulator;
 
 import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.annotations.Emulator;
+import com.ibasco.glcdemulator.exceptions.EmulatorFactoryException;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
@@ -50,7 +51,7 @@ public class GlcdEmulatorFactory {
 
     public static GlcdEmulator createFrom(GlcdDisplay display, GlcdBusInterface busInterface, PixelBuffer buffer) {
         if (display == null)
-            throw new NullPointerException("Display cannot be null");
+            throw new IllegalArgumentException("Display cannot be null");
 
         GlcdEmulator emulator = createFrom(display.getController());
 
@@ -102,7 +103,7 @@ public class GlcdEmulatorFactory {
         try {
             return emulatorClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Unable to instantiate emulator '" + emulatorClass + "'", e);
+            throw new EmulatorFactoryException("Unable to instantiate emulator '" + emulatorClass + "'", e);
         }
     }
 }

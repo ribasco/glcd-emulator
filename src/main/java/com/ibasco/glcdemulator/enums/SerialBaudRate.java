@@ -25,6 +25,7 @@
  */
 package com.ibasco.glcdemulator.enums;
 
+import com.ibasco.glcdemulator.exceptions.SerialException;
 import com.ibasco.glcdemulator.utils.EnumValue;
 
 import java.util.Arrays;
@@ -58,7 +59,7 @@ public enum SerialBaudRate implements EnumValue<Integer> {
 
     public SerialBaudRate customValue(int value) {
         if (!this.equals(RATE_CUSTOM))
-            throw new RuntimeException("You can only use this method if the enum is RATE_CUSTOM");
+            throw new SerialException("You can only use this method if the enum is RATE_CUSTOM");
         this.value = value;
         return this;
     }

@@ -25,6 +25,7 @@
  */
 package com.ibasco.glcdemulator.emulator.st7920;
 
+import com.ibasco.glcdemulator.emulator.GlcdInstructionException;
 import com.ibasco.glcdemulator.emulator.st7920.instructions.*;
 
 @SuppressWarnings({"Duplicates", "WeakerAccess"})
@@ -36,7 +37,7 @@ public class ST7920InstructionFactory {
         ST7920InstructionFlag flag = getInstructionFlag(value);
 
         if (flag == null)
-            throw new RuntimeException("No instruction flags match for the specified value : " + Integer.toHexString(value).toUpperCase());
+            throw new GlcdInstructionException("No instruction flags match for the specified value : " + Integer.toHexString(value).toUpperCase());
 
         ST7920Instruction instruction = null;
 

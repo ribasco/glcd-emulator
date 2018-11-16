@@ -26,10 +26,9 @@
 package com.ibasco.glcdemulator.utils;
 
 import com.ibasco.glcdemulator.annotations.Auditable;
-import com.ibasco.glcdemulator.model.GlcdEmulatorProfile;
+import com.ibasco.glcdemulator.exceptions.BeanUtilsException;
 import javafx.scene.paint.Color;
 import org.apache.commons.beanutils.BeanMap;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
@@ -50,13 +49,13 @@ public class BeanUtils {
         try {
             org.apache.commons.beanutils.BeanUtils.copyProperties(dest, src);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Unable to copy bean properties", e);
+            throw new BeanUtilsException("Unable to copy bean properties", e);
         }
     }
 
     public static List<PropertyDescriptor> diff(Object lhs, Object rhs) {
         if (lhs == null || rhs == null)
-            throw new NullPointerException("Arguments must not be null");
+            throw new IllegalArgumentException("Arguments must not be null");
 
         if (!lhs.getClass().equals(rhs.getClass()))
             throw new IllegalArgumentException("Beans should be of the same type");
@@ -145,25 +144,10 @@ public class BeanUtils {
                 log.debug("\t[EQUALS] Property = {}, Old Value = {}, New Value = {}", propertyName, oldValue, newValue);
             }
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException("Error occured during comparison of two domain for equality", e);
+            throw new BeanUtilsException("Error occured during comparison of two domain for equality", e);
         } finally {
             log.debug("[END] Bean Comparison: Old = {}, New = {}", oldObject, newObject);
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        GlcdEmulatorProfile profileOrig = new GlcdEmulatorProfile();
-        //profileOrig.setName("OldProfile");
-        GlcdEmulatorProfile profileNew = new GlcdEmulatorProfile();
-        //profileNew.setName("NewProfile");
-
-        try {
-            for (PropertyDescriptor desc : BeanUtils.diff(profileOrig, profileNew)) {
-                log.debug("- Name: {}, Value = {}", desc.getName(), PropertyUtils.getProperty(profileNew, desc.getName()));
-            }
-        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
     }
 }

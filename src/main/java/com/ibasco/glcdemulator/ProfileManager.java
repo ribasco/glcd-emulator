@@ -224,7 +224,7 @@ public class ProfileManager {
 
     public GlcdEmulatorProfile getProfileFromFS(File profile) {
         if (profile == null)
-            throw new NullPointerException("File cannot be null");
+            throw new IllegalArgumentException("File cannot be null");
         GlcdEmulatorProfile profileFromFs = configService.getConfig(profile, GlcdEmulatorProfile.class);
         return profileFromFs;
     }
@@ -248,7 +248,7 @@ public class ProfileManager {
 
     private String createDefaultProfileName(GlcdEmulatorProfile profile) {
         if (profile == null)
-            throw new NullPointerException("Profile cannot be null");
+            throw new IllegalArgumentException("Profile cannot be null");
         return "glcd_" +
                 profile.getDisplaySizeWidth() +
                 "x" +
@@ -260,7 +260,7 @@ public class ProfileManager {
 
     private String createProfilePath(GlcdEmulatorProfile profile) {
         if (profile == null)
-            throw new NullPointerException("Profile argument must not be null");
+            throw new IllegalArgumentException("Profile argument must not be null");
         return createProfilePath(profile.getName());
     }
 

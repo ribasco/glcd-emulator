@@ -28,6 +28,7 @@ package com.ibasco.glcdemulator.utils;
 import com.ibasco.glcdemulator.Bootstrap;
 import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.Controller;
+import com.ibasco.glcdemulator.exceptions.ResourceUtilException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
@@ -166,7 +167,7 @@ public class ResourceUtil {
                     try {
                         return param.newInstance();
                     } catch (InstantiationException | IllegalAccessException e1) {
-                        throw new RuntimeException("Unable to produce controller", e);
+                        throw new ResourceUtilException("Unable to produce controller", e);
                     }
                 }
             };

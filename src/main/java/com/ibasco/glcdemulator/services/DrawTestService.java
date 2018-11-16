@@ -86,11 +86,11 @@ public class DrawTestService extends Service<Void> {
 
     private void refreshDriver() {
         if (display.get() == null)
-            throw new NullPointerException("Controller cannot be null");
+            throw new IllegalStateException("Controller cannot be null");
         if (busInterface.get() == null)
-            throw new NullPointerException("Bus interface is not specified");
+            throw new IllegalStateException("Bus interface is not specified");
         if (buffer.get() == null)
-            throw new NullPointerException("Buffer is not specified");
+            throw new IllegalStateException("Buffer is not specified");
         driver = DriverFactory.createVirtual(display.get(), busInterface.get(), buffer.get());
     }
 

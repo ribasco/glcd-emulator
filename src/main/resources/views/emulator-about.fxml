@@ -7,7 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<VBox xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
             <children>
@@ -60,9 +60,6 @@
                                             </padding>
                                         </GridPane>
                                         <Label fx:id="lblLicenseShort" layoutX="14.0" layoutY="12.0" prefHeight="82.0" prefWidth="575.0" textAlignment="JUSTIFY" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                                            <font>
-                                                <Font name="Courier New" size="12.0"/>
-                                            </font>
                                             <padding>
                                                 <Insets left="10.0" right="10.0"/>
                                             </padding>
@@ -110,7 +107,11 @@
                         <Image url="@../images/icon.png"/>
                     </image>
                 </ImageView>
-                <JFXButton fx:id="btnDonate" layoutX="14.0" layoutY="361.0" prefHeight="25.0" prefWidth="258.0" text="Donate and show your support!"/>
+                <JFXButton fx:id="btnDonate" layoutX="14.0" layoutY="361.0" prefHeight="25.0" prefWidth="258.0" ripplerFill="BLACK" style="-fx-background-color: #F7A52C;" text="Donate and show your support!">
+                    <font>
+                        <Font name="System Bold" size="12.0"/>
+                    </font>
+                </JFXButton>
             </children>
         </AnchorPane>
     </children>

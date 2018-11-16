@@ -63,7 +63,7 @@ public class GlcdUtil {
 
     public static Class<? extends GlcdEmulator> findEmulatorClass(GlcdDisplay display) {
         if (display == null)
-            throw new NullPointerException("Display argument cannot be null");
+            throw new IllegalArgumentException("Display argument cannot be null");
         try (ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages("com.ibasco").scan()) {
             ClassInfoList classInfo = scanResult.getClassesImplementing(GlcdEmulator.class.getName()).filter(f -> !f.isAbstract() && f.hasAnnotation(Emulator.class.getName()));
             List<Class<GlcdEmulator>> result = classInfo.loadClasses(GlcdEmulator.class);

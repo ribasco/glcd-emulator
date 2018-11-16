@@ -25,7 +25,7 @@
  */
 package com.ibasco.glcdemulator.exceptions;
 
-public class EmulatorServiceException extends Exception {
+public class EmulatorServiceException extends RuntimeException {
     public EmulatorServiceException() {
     }
 

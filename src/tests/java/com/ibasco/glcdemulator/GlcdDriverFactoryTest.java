@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 //import org.junit.jupiter.api.Test;
 
+//TODO: As of v1.2.3, the ucgdisplay library has been updated externalizing native dependencies. Powermock should no longer be used in the suceeding versions and the code below should be changed for a pure mockito-junit5 implementation
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({DriverFactory.class, GlcdEmulatorFactory.class, GlcdDriver.class, U8g2Graphics.class, NativeLibraryLoader.class})
 class GlcdDriverFactoryTest {

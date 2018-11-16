@@ -56,7 +56,7 @@ public class ConfigManager {
     //<editor-fold desc="Public Methods">
     public void save(GlcdConfig config) throws IOException {
         if (config == null)
-            throw new NullPointerException("Config cannot be null");
+            throw new IllegalArgumentException("Config cannot be null");
         save(config, config.getFile());
     }
 
@@ -68,7 +68,7 @@ public class ConfigManager {
 
     public void save(GlcdConfig config, File file) throws IOException {
         if (config == null)
-            throw new NullPointerException("Config cannot be null");
+            throw new IllegalArgumentException("Config cannot be null");
         if (file == null) {
             log.warn("File not specified, using default = {}", APP_CONFIG_PATH);
             file = new File(APP_CONFIG_PATH);
@@ -101,7 +101,7 @@ public class ConfigManager {
     public <T extends GlcdConfig> T getConfig(File file, Class<T> configType, T defaultConfig) {
         try {
             if (file == null)
-                throw new NullPointerException("Config file cannot be null");
+                throw new IllegalArgumentException("Config file cannot be null");
             if (file.exists()) {
                 String json = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
                 T config = JsonUtils.fromJson(json, configType);

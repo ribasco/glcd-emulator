@@ -29,6 +29,7 @@ import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.emulator.GlcdEmulator;
 import com.ibasco.glcdemulator.emulator.GlcdEmulatorFactory;
 import com.ibasco.glcdemulator.enums.ConnectionType;
+import com.ibasco.glcdemulator.exceptions.EmulatorServiceException;
 import com.ibasco.glcdemulator.net.EmulatorListenerTask;
 import com.ibasco.glcdemulator.net.ListenerOptions;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
@@ -171,7 +172,7 @@ public class EmulatorService extends Service<Void> {
             Class<? extends EmulatorListenerTask> listenerClass = connectionType.getListenerClass();
             return listenerClass.getConstructor(GlcdEmulator.class).newInstance(createEmulator());
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException("Error occured while instatiating listener class", e);
+            throw new EmulatorServiceException("Error occured while instatiating listener class", e);
         }
     }
 

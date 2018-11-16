@@ -26,6 +26,7 @@
 package com.ibasco.glcdemulator;
 
 import com.ibasco.glcdemulator.exceptions.ThemeNotFoundException;
+import com.ibasco.glcdemulator.exceptions.ThemeRegistrationException;
 import com.ibasco.glcdemulator.utils.ResourceUtil;
 import com.sun.javafx.stage.StageHelper;
 import javafx.beans.property.SimpleStringProperty;
@@ -68,21 +69,13 @@ public class ThemeManager {
         themeMap.put("menuThemeDefault", ResourceUtil.getStylesheet(THEME_DEFAULT).toExternalForm());
         themeMap.put("menuThemeDark", ResourceUtil.getStylesheet(THEME_DEFAULT_DARK).toExternalForm());
         activeTheme.bindBidirectional(Context.getInstance().getAppConfig().themeIdProperty());
-        registerExternalThemes();
-    }
-
-    /**
-     * Reads the config file for registered external themes and stores them into the internal map
-     */
-    private void registerExternalThemes() {
-        //TODO: Implement
     }
 
     public void register(String themeId, File file) {
         try {
             themeMap.put(themeId, file.toURI().toURL().toExternalForm());
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Could not register theme", e);
+            throw new ThemeRegistrationException("Could not register theme", e);
         }
     }
 

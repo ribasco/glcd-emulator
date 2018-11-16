@@ -34,6 +34,7 @@ import com.ibasco.glcdemulator.controls.GlcdScreen;
 import com.ibasco.glcdemulator.controls.StatusIndicator;
 import com.ibasco.glcdemulator.emulator.GlcdEmulator;
 import com.ibasco.glcdemulator.enums.*;
+import com.ibasco.glcdemulator.exceptions.EmulatorControllerException;
 import com.ibasco.glcdemulator.model.GlcdConfigApp;
 import com.ibasco.glcdemulator.model.GlcdEmulatorProfile;
 import com.ibasco.glcdemulator.net.ListenerOptions;
@@ -987,7 +988,7 @@ public class GlcdEmulatorController extends Controller {
             emulatorService.restart();
         } catch (Exception e) {
             tbListen.setSelected(false);
-            throw new RuntimeException("Could not start emulator service", e);
+            throw new EmulatorControllerException("Could not start emulator service", e);
         }
     }
 
@@ -1085,7 +1086,7 @@ public class GlcdEmulatorController extends Controller {
             }
             return emulatorBrowseDialog;
         } catch (IOException e) {
-            throw new RuntimeException("Could not open emulator browse view", e);
+            throw new EmulatorControllerException("Could not open emulator browse view", e);
         }
     }
 
@@ -1274,7 +1275,7 @@ public class GlcdEmulatorController extends Controller {
         try {
             return ResourceUtil.loadFxmlResource("emulator-settings-serial-fc", this);
         } catch (IOException e) {
-            throw new RuntimeException("Problem loading Flow Control view", e);
+            throw new EmulatorControllerException("Problem loading Flow Control view", e);
         }
     }
 

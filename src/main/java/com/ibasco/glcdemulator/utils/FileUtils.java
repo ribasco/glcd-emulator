@@ -25,6 +25,7 @@
  */
 package com.ibasco.glcdemulator.utils;
 
+import com.ibasco.glcdemulator.exceptions.FileUtilsException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class FileUtils {
                     throw new IOException("Not a valid directory '" + pNewDir.toString() + "'");
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to create directory : " + pDirPath.toString(), e);
+                throw new FileUtilsException("Unable to create directory : " + pDirPath.toString(), e);
             }
         }
     }

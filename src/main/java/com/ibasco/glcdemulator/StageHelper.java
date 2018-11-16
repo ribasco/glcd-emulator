@@ -25,6 +25,7 @@
  */
 package com.ibasco.glcdemulator;
 
+import com.ibasco.glcdemulator.exceptions.StageHelperException;
 import com.ibasco.glcdemulator.utils.ResourceUtil;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -67,7 +68,7 @@ public class StageHelper {
             Context.getInstance().getThemeManager().applyTheme(scene);
             stage.setScene(scene);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new StageHelperException(e);
         }
         return stage;
     }
