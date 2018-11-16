@@ -1,7 +1,7 @@
 ;This file will be executed next to the application bundle image
 ;I.e. current directory will contain folder GLCD Emulator with application files
 [Setup]
-AppId={{com.ibasco.glcdemulator}}
+AppId=${project.groupId}
 AppName=${project.name}
 AppVersion=${project.version}
 AppVerName=${project.name}
