@@ -73,7 +73,7 @@ public class TcpEmulatorListenerTask extends EmulatorListenerTask {
         client.configureBlocking(false);
         client.register(selector, SelectionKey.OP_READ);
         setConnected(true);
-        log.debug("Accepted new client: {}", client.getLocalAddress());
+        log.info("Accepted new client: {}", client.getLocalAddress());
     }
 
     private void initSocketServer() throws IOException {
@@ -83,7 +83,7 @@ public class TcpEmulatorListenerTask extends EmulatorListenerTask {
         socketChannel.configureBlocking(false);
         socketChannel.register(selector, SelectionKey.OP_ACCEPT);
         socketChannel.bind(listenAddress);
-        log.debug("Emulator service is now listening on '{}:{}'", listenAddress.getAddress().getHostAddress(), listenAddress.getPort());
+        log.info("Emulator service is now listening on '{}:{}'", listenAddress.getAddress().getHostAddress(), listenAddress.getPort());
     }
 
     @Override
@@ -117,7 +117,7 @@ public class TcpEmulatorListenerTask extends EmulatorListenerTask {
 
                                 if (bytesRead == -1) {
                                     client.close();
-                                    log.debug("Client closed connection");
+                                    log.info("Client closed connection");
                                     setConnected(false);
                                     reset();
                                     continue;
