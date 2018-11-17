@@ -3,13 +3,13 @@
 [Setup]
 AppId=com.ibasco.glcdemulator
 AppName=GLCD Emulator
-AppVersion=0.1.0-alpha-SNAPSHOT
+AppVersion=0.1.1-alpha-SNAPSHOT
 AppVerName=GLCD Emulator
 AppPublisher=Rafael Ibasco
 AppComments=A cross-platform Graphics LCD emulator designed for embedded devices and single board computers
 AppCopyright=GLCD Emulator Copyright (C) 2018 Rafael Luis Ibasco
-AppPublisherURL=https://github.com/ribasco/glcd-emulator/wiki
-AppSupportURL=https://github.com/ribasco/glcd-emulator/issues
+AppPublisherURL=https://github.com/ribasco/glcd-emulator/issues
+AppSupportURL=https://github.com/ribasco/glcd-emulator/wiki
 AppUpdatesURL=https://github.com/ribasco/glcd-emulator/releases
 DefaultDirName={pf}\GLCD Emulator
 DisableStartupPrompt=Yes
