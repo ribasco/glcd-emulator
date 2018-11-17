@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -18,7 +17,7 @@
                                             <children>
                                                 <JFXComboBox fx:id="cbDisplay" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="292.0" promptText="Select Display"/>
                                                 <JFXComboBox fx:id="cbDrawOperation" layoutX="14.0" layoutY="54.0" prefHeight="25.0" prefWidth="293.0" promptText="Draw Operation"/>
-                                                <ScrollPane layoutX="14.0" layoutY="96.0" prefHeight="221.0" prefWidth="421.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="96.0">
+                                                <ScrollPane layoutX="14.0" layoutY="96.0" prefHeight="182.0" prefWidth="296.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="96.0">
                                                     <content>
                                                         <GridPane fx:id="gpParams">
                                                             <columnConstraints>
@@ -37,6 +36,7 @@
                                                 </ScrollPane>
                                                 <JFXButton fx:id="btnInvoke" layoutX="14.0" layoutY="328.0" prefHeight="40.0" prefWidth="132.0" text="Invoke"/>
                                                 <JFXCheckBox fx:id="cbSendBuffer" layoutX="162.0" layoutY="339.0" prefHeight="18.0" prefWidth="141.0" text="Invoke sendBuffer()"/>
+                                                <JFXComboBox fx:id="cbFont" layoutX="154.0" layoutY="293.0" prefHeight="25.0" prefWidth="158.0" promptText="Font"/>
                                             </children>
                                         </AnchorPane>
                                     </content>

@@ -6,6 +6,7 @@ import com.ibasco.glcdemulator.utils.ByteUtils;
 import com.ibasco.ucgdisplay.drivers.glcd.*;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusType;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -21,10 +22,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -63,11 +62,16 @@ public class GlcdDeveloperController extends Controller {
     @FXML
     private TableView<EventLogEntry> tvEventLog;
 
+    @FXML
+    private JFXComboBox<GlcdFont> cbFont;
+
     private ObjectProperty<Method> selectedMethod = new SimpleObjectProperty<>();
 
     private ObjectProperty<GlcdDisplayDetails> selectedDisplay = new SimpleObjectProperty<>();
 
     private MethodDetails currentMethod;
+
+    private ObservableList<GlcdFont> fontList = FXCollections.observableArrayList(GlcdFont.values());
 
     private class MethodParam {
         private Parameter parameter;
@@ -82,11 +86,19 @@ public class GlcdDeveloperController extends Controller {
             Object[] args = new Object[arguments.size()];
             int index = 0;
             for (MethodParam param : arguments) {
-                log.info("VALUE TYPE: {}, TO TYPE: {}", param.value.getValue().getClass().getTypeName(), param.parameter.getType());
                 Object val;
+                Object sourceValue = param.value.get();
+                log.error("Source value type = {}, Actual value type = {}", param.value.getValue().getClass().getSimpleName(), param.parameter.getType().getSimpleName());
                 if (param.parameter.getType().equals(int.class)) {
-                    String sourceValue = (String) param.value.get();
-                    val = Integer.valueOf(sourceValue);
+                    val = Integer.valueOf((String) sourceValue);
+                } else if (param.parameter.getType().equals(short.class)) {
+                    val = Short.valueOf((String) sourceValue);
+                } else if (param.parameter.getType().equals(long.class)) {
+                    val = Long.valueOf((String) sourceValue);
+                } else if (param.parameter.getType().equals(byte.class)) {
+                    val = Byte.valueOf((String) sourceValue);
+                } else if (param.parameter.getType().isEnum()) {
+                    val = sourceValue;
                 } else {
                     val = param.value.get();
                 }
@@ -120,22 +132,37 @@ public class GlcdDeveloperController extends Controller {
     private ObservableList<EventLogEntry> logEntries = FXCollections.observableArrayList();
 
     private GlcdDriverEventHandler eventHandler = event -> {
-        String name = event.getMessage().getDescription();
+        String name = event.getMessage().name();
+        String desc = event.getMessage().getDescription();
         String hexValue = ByteUtils.toHexString((byte) event.getValue());
         int decValue = Byte.toUnsignedInt((byte) event.getValue());
-        logEntries.add(new EventLogEntry(name, hexValue, decValue));
+        logEntries.add(new EventLogEntry(name, desc, hexValue, decValue));
 
     };
 
     public class EventLogEntry {
         private final SimpleStringProperty eventName;
+        private final SimpleStringProperty eventDescription;
         private final SimpleStringProperty valueHex;
         private final SimpleIntegerProperty valueDec;
 
-        private EventLogEntry(String eventName, String valueHex, int valueDec) {
+        private EventLogEntry(String eventName, String eventDesc, String valueHex, int valueDec) {
             this.eventName = new SimpleStringProperty(eventName);
+            this.eventDescription = new SimpleStringProperty(eventDesc);
             this.valueHex = new SimpleStringProperty(valueHex);
             this.valueDec = new SimpleIntegerProperty(valueDec);
+        }
+
+        public String getEventDescription() {
+            return eventDescription.get();
+        }
+
+        public SimpleStringProperty eventDescriptionProperty() {
+            return eventDescription;
+        }
+
+        public void setEventDescription(String eventDescription) {
+            this.eventDescription.set(eventDescription);
         }
 
         private String getEventName() {
@@ -188,6 +215,7 @@ public class GlcdDeveloperController extends Controller {
         ColumnConstraints alignLabel = new ColumnConstraints();
         alignLabel.setHalignment(HPos.CENTER);
         gpParams.getColumnConstraints().add(0, alignLabel);
+        gpParams.getColumnConstraints().add(1, alignLabel);
 
         cbDisplay.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<GlcdDisplayDetails>() {
             @Override
@@ -223,15 +251,19 @@ public class GlcdDeveloperController extends Controller {
 
         cbDrawOperation.setItems(methodList);
         cbDisplay.setItems(displayList);
+        cbFont.setItems(fontList);
 
         TableColumn<EventLogEntry, String> eventNameCol = new TableColumn<>("Event");
         eventNameCol.setCellValueFactory(new PropertyValueFactory<>("eventName"));
+        TableColumn<EventLogEntry, String> eventDesc = new TableColumn<>("Description");
+        eventDesc.setCellValueFactory(new PropertyValueFactory<>("eventDescription"));
         TableColumn<EventLogEntry, String> valueHexCol = new TableColumn<>("Value (Hex)");
         valueHexCol.setCellValueFactory(new PropertyValueFactory<>("valueHex"));
         TableColumn<EventLogEntry, Integer> valueDecCol = new TableColumn<>("Value (Dec)");
         valueDecCol.setCellValueFactory(new PropertyValueFactory<>("valueDec"));
 
-        tvEventLog.getColumns().addAll(eventNameCol, valueHexCol, valueDecCol);
+        //noinspection unchecked
+        tvEventLog.getColumns().addAll(eventNameCol, eventDesc, valueHexCol, valueDecCol);
 
         tvEventLog.setItems(logEntries);
     }
@@ -249,9 +281,13 @@ public class GlcdDeveloperController extends Controller {
                     virtualDriver.sendBuffer();
                 }
             } catch (IllegalAccessException | InvocationTargetException e) {
+                log.error("Invocation error", e);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invocation error");
-                alert.setContentText(e.getLocalizedMessage());
+                alert.setHeaderText(e.getMessage());
+                if (e.getCause() != null) {
+                    alert.setContentText(e.getCause().getMessage());
+                }
                 alert.showAndWait();
             }
         }
@@ -273,13 +309,34 @@ public class GlcdDeveloperController extends Controller {
         int row = 0;
         gpParams.getChildren().clear();
 
-        int argIndex = 0;
-        for (MethodParam param : details.arguments) {
-            log.debug("\tParam = {}, Type: {}", param.parameter.getName(), param.parameter.getType());
-            gpParams.add(new Label(param.parameter.getName() + " (" + param.parameter.getType().getSimpleName() + ")"), 0, row);
-            JFXTextField textField = new JFXTextField();
-            details.arguments.get(argIndex++).value.bind(textField.textProperty());
-            gpParams.add(textField, 1, row++);
+        try {
+            int argIndex = 0;
+            for (MethodParam param : details.arguments) {
+                log.debug("\tParam = {}, Type: {}", param.parameter.getName(), param.parameter.getType());
+                gpParams.add(new Label(param.parameter.getName() + " (" + param.parameter.getType().getSimpleName() + ")"), 0, row);
+
+                Node valueField;
+
+                if (param.parameter.getType().isEnum()) {
+                    JFXComboBox comboBox = new JFXComboBox();
+                    details.arguments.get(argIndex++).value.bind(comboBox.getSelectionModel().selectedItemProperty());
+                    Field enumField = param.parameter.getType().getDeclaredField("$VALUES");
+                    enumField.setAccessible(true);
+                    Enum[] e = (Enum[]) enumField.get(null);
+                    //noinspection unchecked
+                    comboBox.setItems(FXCollections.observableArrayList(e));
+                    valueField = comboBox;
+                } else {
+                    JFXTextField textField = new JFXTextField();
+                    details.arguments.get(argIndex++).value.bind(textField.textProperty());
+                    valueField = textField;
+                }
+                ((Control) valueField).setPrefWidth(100);
+                ((Control) valueField).setMinWidth(100);
+                gpParams.add(valueField, 1, row++);
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 
