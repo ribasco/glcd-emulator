@@ -170,3 +170,8 @@
     -fx-background-color: #F7A52C;
     -fx-text-fill: black;
 }
+
+#cbDisplay, #cbDrawOperation, #tvEventLog {
+    -fx-font-family: "Consolas";
+}
+

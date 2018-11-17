@@ -65,7 +65,7 @@ public class Bootstrap extends Application {
 
     private static final String APP_TITLE = "GLCD Emulator - " + Context.getAppVersion();
 
-    private static final String OPT_DEV_SHORT = "d";
+    private static final String OPT_DEV_SHORT = "dev";
 
     private static final String OPT_DEV_LONG = "developer";
 
@@ -146,7 +146,7 @@ public class Bootstrap extends Application {
         Stage stage = Stages.getPrimaryStage();
 
         //Initialize Stage Properties
-        stage.setTitle(APP_TITLE);
+        stage.setTitle(APP_TITLE + (appConfig.isDeveloperMode() ? " (Developer Mode)" : ""));
         stage.setIconified(false);
         stage.setAlwaysOnTop(appConfig.isAlwaysOnTop());
         stage.setMinWidth(appConfig.getMinWindowWidth());

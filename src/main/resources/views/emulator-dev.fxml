@@ -3,11 +3,11 @@
 <?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="419.0" prefWidth="784.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdDeveloperController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="599.0" prefWidth="1027.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdDeveloperController">
     <children>
-        <SplitPane dividerPositions="0.41815856777493604" prefHeight="502.0" prefWidth="451.0" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.3170731707317073" prefHeight="502.0" prefWidth="451.0" VBox.vgrow="ALWAYS">
             <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
                     <children>
                         <JFXTabPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <tabs>
@@ -16,10 +16,9 @@
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="325.0" prefWidth="449.0">
                                             <children>
                                                 <JFXComboBox fx:id="cbDisplay" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="292.0" promptText="Select Display"/>
-                                                <JFXComboBox fx:id="cbDrawOperation" layoutX="14.0" layoutY="54.0" prefHeight="25.0" prefWidth="293.0" promptText="Draw Operation"/>
-                                                <ScrollPane layoutX="14.0" layoutY="96.0" prefHeight="182.0" prefWidth="296.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="96.0">
+                                                <ScrollPane layoutX="13.0" layoutY="225.0" prefHeight="283.0" prefWidth="294.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="225.0">
                                                     <content>
-                                                        <GridPane fx:id="gpParams">
+                                                        <GridPane fx:id="gpParams" hgap="5.0" vgap="5.0">
                                                             <columnConstraints>
                                                                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
                                                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
@@ -34,9 +33,9 @@
                                                         </GridPane>
                                                     </content>
                                                 </ScrollPane>
-                                                <JFXButton fx:id="btnInvoke" layoutX="14.0" layoutY="328.0" prefHeight="40.0" prefWidth="132.0" text="Invoke"/>
-                                                <JFXCheckBox fx:id="cbSendBuffer" layoutX="162.0" layoutY="339.0" prefHeight="18.0" prefWidth="141.0" text="Invoke sendBuffer()"/>
-                                                <JFXComboBox fx:id="cbFont" layoutX="154.0" layoutY="293.0" prefHeight="25.0" prefWidth="158.0" promptText="Font"/>
+                                                <JFXButton fx:id="btnInvoke" layoutX="14.0" layoutY="522.0" prefHeight="30.0" prefWidth="132.0" text="Invoke" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="176.0"/>
+                                                <JFXCheckBox fx:id="cbSendBuffer" layoutX="161.0" layoutY="528.0" prefHeight="18.0" prefWidth="141.0" text="Invoke sendBuffer()" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="20.0"/>
+                                                <JFXListView fx:id="cbDrawOperation" layoutX="12.0" layoutY="57.0" prefHeight="153.0" prefWidth="294.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="57.0"/>
                                             </children>
                                         </AnchorPane>
                                     </content>
@@ -53,7 +52,22 @@
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                             <children>
-                                                <TableView fx:id="tvEventLog" layoutX="36.0" layoutY="26.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                                <SplitPane dividerPositions="0.7195767195767195" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                    <items>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
+                                                            <children>
+                                                                <TableView fx:id="tvEventLog" prefHeight="261.0" prefWidth="452.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                                            </children>
+                                                        </AnchorPane>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
+                                                            <children>
+                                                                <JFXButton fx:id="btnClearLogs" layoutX="14.0" layoutY="64.0" text="Clear Logs"/>
+                                                                <Label layoutX="14.0" layoutY="14.0" text="Bytes received: "/>
+                                                                <Label fx:id="lblBytesReceived" layoutX="96.0" layoutY="14.0" prefHeight="17.0" prefWidth="63.0" text="Label"/>
+                                                            </children>
+                                                        </AnchorPane>
+                                                    </items>
+                                                </SplitPane>
                                             </children>
                                         </AnchorPane>
                                     </content>

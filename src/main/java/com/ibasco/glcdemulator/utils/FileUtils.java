@@ -25,9 +25,14 @@
  */
 package com.ibasco.glcdemulator.utils;
 
+import com.ibasco.glcdemulator.Context;
+import com.ibasco.glcdemulator.constants.Common;
 import com.ibasco.glcdemulator.exceptions.FileUtilsException;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +47,8 @@ public class FileUtils {
     /**
      * Creates a new directory if the path specified does not yet exist on the file system
      *
-     * @param dirPath The directory path
+     * @param dirPath
+     *         The directory path
      */
     public static void ensureDirectoryExistence(String dirPath) {
         if (StringUtils.isBlank(dirPath))
@@ -58,5 +64,19 @@ public class FileUtils {
                 throw new FileUtilsException("Unable to create directory : " + pDirPath.toString(), e);
             }
         }
+    }
+
+    public static File openFileFromDialog(String title, String initDirectory, FileChooser.ExtensionFilter extFilters, Window owner) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(title);
+        if (!StringUtils.isBlank(initDirectory)) {
+            fileChooser.setInitialDirectory(new File(initDirectory));
+        } else {
+            fileChooser.setInitialDirectory(new File(Common.USER_DIR));
+        }
+        fileChooser.getExtensionFilters().add(extFilters);
+        if (owner == null)
+            owner = Context.getPrimaryStage();
+        return fileChooser.showOpenDialog(owner);
     }
 }
