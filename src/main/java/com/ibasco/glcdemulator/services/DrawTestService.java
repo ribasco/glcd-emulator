@@ -107,7 +107,7 @@ public class DrawTestService extends Service<Void> {
 
         return new Task<Void>() {
 
-            private int ctr = 0;
+            private int xPos = 0;
 
             @Override
             protected Void call() throws Exception {
@@ -117,12 +117,17 @@ public class DrawTestService extends Service<Void> {
                 emulator.reset();
                 while (!isCancelled()) {
                     driver.setFont(GlcdFont.FONT_10X20_ME);
+
                     driver.clearBuffer();
-                    driver.drawString(10, 32, "Test: " + String.valueOf(++ctr));
+                    int y = (driver.getHeight() / 2) + (driver.getAscent() / 2);
+                    String sampleText = "X = " + String.valueOf(++xPos) + ", Y = " + String.valueOf(y) + "";
+                    int textWidth = driver.getMaxCharWidth() * sampleText.length();
+                    driver.drawString(xPos, y, sampleText);
                     driver.sendBuffer();
-                    if (ctr > 100)
-                        ctr = 0;
-                    Thread.sleep(5);
+
+                    if (xPos > (driver.getWidth() + textWidth))
+                        xPos = 0;
+                    Thread.sleep(10);
                 }
                 log.info("STOP: Draw test (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
                 return null;
