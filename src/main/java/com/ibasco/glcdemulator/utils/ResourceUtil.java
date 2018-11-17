@@ -28,10 +28,9 @@ package com.ibasco.glcdemulator.utils;
 import com.ibasco.glcdemulator.Bootstrap;
 import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.Controller;
-import com.ibasco.glcdemulator.exceptions.ResourceUtilException;
+import com.ibasco.glcdemulator.Controllers;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -122,6 +120,7 @@ public class ResourceUtil {
             if (viewUrl == null)
                 return null;
             loader.setClassLoader(ResourceUtil.class.getClassLoader());
+            loader.setControllerFactory(Controllers::getController);
             loader.setLocation(viewUrl);
             loader.setRoot(null);
             if (controller != null)
@@ -129,7 +128,6 @@ public class ResourceUtil {
             node = loader.load();
             return node;
         } finally {
-            lastController.set(loader.getController());
             lastRootNode.set(node);
         }
     }
@@ -141,37 +139,5 @@ public class ResourceUtil {
      */
     public static Parent getLastRootNode() {
         return lastRootNode.get();
-    }
-
-    /**
-     * Get the last {@link Controller} instance returned by {@link #loadFxmlResource}.
-     *
-     * @param <T>
-     *         Any valid subclass of {@link Controller}
-     *
-     * @return An instance of {@link Controller}
-     */
-    @SuppressWarnings("unchecked")
-    public static <T extends Controller> T getLastController() {
-        if (lastController == null)
-            return null;
-        return (T) lastController.get();
-    }
-
-    private static Callback<Class<?>, Object> getControllerFactory(Stage stage) {
-        if (controllerFactory == null) {
-            controllerFactory = param -> {
-                try {
-                    return param.getConstructor(Stage.class).newInstance(stage);
-                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                    try {
-                        return param.newInstance();
-                    } catch (InstantiationException | IllegalAccessException e1) {
-                        throw new ResourceUtilException("Unable to produce controller", e);
-                    }
-                }
-            };
-        }
-        return controllerFactory;
     }
 }

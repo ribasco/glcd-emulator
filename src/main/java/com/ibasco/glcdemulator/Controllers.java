@@ -25,52 +25,93 @@
  */
 package com.ibasco.glcdemulator;
 
-import com.ibasco.glcdemulator.controllers.GlcdAboutController;
-import com.ibasco.glcdemulator.controllers.GlcdEditProfileController;
-import com.ibasco.glcdemulator.controllers.GlcdEmulatorController;
-import com.ibasco.glcdemulator.controllers.GlcdFontBrowserController;
+import com.ibasco.glcdemulator.controllers.*;
+import com.ibasco.glcdemulator.exceptions.ControllerLoadException;
 import com.ibasco.glcdemulator.model.FontCacheDetails;
 import com.ibasco.glcdemulator.services.FontCacheService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Factory class for all available JavaFX Controllers
+ *
+ * @author Rafael Ibasco
+ */
 public class Controllers {
 
-    private static GlcdFontBrowserController fontBrowserController;
+    private static final Map<Class<?>, Controller> controllerMap = new HashMap<>();
 
-    private static GlcdEditProfileController editProfileController;
+    private static final Logger log = LoggerFactory.getLogger(Controllers.class);
 
-    private static GlcdEmulatorController emulatorController;
-
-    private static GlcdAboutController aboutController;
-
-    public static GlcdEmulatorController getEmulatorController() {
-        if (emulatorController == null) {
-            emulatorController = new GlcdEmulatorController();
+    public static <T extends Controller> T getController(Class<?> key, Object... args) {
+        if (args == null || args.length == 0) {
+            return getController(key, null, (Object) null);
         }
-        return emulatorController;
+        return getController(key, getParamsFromArgs(args), args);
     }
 
-    static void setEmulatorController(GlcdEmulatorController controller) {
-        emulatorController = controller;
+    private static Class<?>[] getParamsFromArgs(Object[] args) {
+        if (args == null || args.length == 0)
+            throw new IllegalArgumentException("Arguments must not be null or empty");
+        Class<?>[] params = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            Object arg = args[i];
+            params[i] = arg.getClass();
+        }
+        return params;
+    }
+
+    /**
+     * Retrieves the controller from the cache. If it does not yet exists, then a new instance will be created.
+     *
+     * @param key
+     *         The controller class
+     * @param <T>
+     *         The type extending {@link Controller}
+     *
+     * @return The cached controller instance
+     */
+    public static <T extends Controller> T getController(Class<?> key, Class<?>[] params, Object... args) {
+        Controller controller = controllerMap.computeIfAbsent(key, aClass -> {
+            try {
+                log.debug("Computing new instance for {}", key);
+                if (params != null && (args != null && args.length != 0)) {
+                    if (params.length != args.length)
+                        throw new IllegalArgumentException("Parameter count does not match the argument count");
+                    //noinspection unchecked
+                    return (T) aClass.getConstructor(params).newInstance(args);
+                }
+                //noinspection unchecked
+                return (T) aClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                throw new ControllerLoadException(e);
+            }
+        });
+        //noinspection unchecked
+        return (T) controller;
+    }
+
+    public static GlcdDeveloperController getDeveloperController() {
+        return getController(GlcdDeveloperController.class);
+    }
+
+    public static GlcdEmulatorController getEmulatorController() {
+        return getController(GlcdEmulatorController.class);
     }
 
     public static GlcdEditProfileController getEditProfileController() {
-        if (editProfileController == null) {
-            editProfileController = new GlcdEditProfileController();
-        }
-        return editProfileController;
+        return getController(GlcdEditProfileController.class);
     }
 
     public static GlcdFontBrowserController getFontBrowserController() {
-        if (fontBrowserController == null) {
-            fontBrowserController = new GlcdFontBrowserController(new FontCacheService(), new FontCacheDetails());
-        }
-        return fontBrowserController;
+        return getController(GlcdFontBrowserController.class, new FontCacheService(), new FontCacheDetails());
     }
 
     public static GlcdAboutController getAboutController() {
-        if (aboutController == null) {
-            aboutController = new GlcdAboutController();
-        }
-        return aboutController;
+        return getController(GlcdAboutController.class);
     }
 }
