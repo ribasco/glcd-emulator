@@ -29,6 +29,7 @@ import com.ibasco.glcdemulator.constants.Views;
 import com.jfoenix.controls.JFXDrawersStack;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +47,22 @@ public class Stages {
 
     private static final Logger log = LoggerFactory.getLogger(Stages.class);
 
+    private static Stage developerStage;
+
+    public static Stage getDeveloperStage() {
+        if (developerStage == null) {
+            developerStage = StageHelper.createDialog(getPrimaryStage(), "Developer Window", Views.DEVELOPER_WINDOW, Modality.NONE);
+        }
+        return developerStage;
+    }
+
     public static Stage getPrimaryStage() {
         return primaryStage;
     }
 
     public static Stage getAboutStage() {
         if (aboutStage == null) {
-            aboutStage = com.ibasco.glcdemulator.StageHelper.createDialog(getPrimaryStage(), "About", Views.ABOUT_DIALOG, Controllers.getAboutController());
+            aboutStage = com.ibasco.glcdemulator.StageHelper.createDialog(getPrimaryStage(), "About", Views.ABOUT_DIALOG);
         }
         return aboutStage;
     }
@@ -69,13 +79,14 @@ public class Stages {
             JFXDrawersStack drawersStack = new JFXDrawersStack();
             Scene scene = new Scene(drawersStack);
             fontBrowserStage = StageHelper.createDialog(Context.getPrimaryStage(),
-                    "U8G2 Font Browser",
+                    "GLCD Font Browser",
                     Views.FONT_BROWSER_DIALOG,
                     Controllers.getFontBrowserController(),
                     scene,
                     (Consumer<VBox>) drawersStack::setContent
             );
         }
+
         return fontBrowserStage;
     }
 

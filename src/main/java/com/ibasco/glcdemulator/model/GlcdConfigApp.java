@@ -93,12 +93,26 @@ public class GlcdConfigApp extends GlcdConfig {
     private IntegerProperty serialFlowControl = new SimpleIntegerProperty(SerialFlowControl.NONE.toValue());
 
     private StringProperty serialPortName = new SimpleStringProperty();
+
+    private BooleanProperty developerMode = new SimpleBooleanProperty(false);
     //</editor-fold>
 
     public GlcdConfigApp() {
     }
 
     //<editor-fold desc="Getter/Setters">
+    public boolean isDeveloperMode() {
+        return developerMode.get();
+    }
+
+    public BooleanProperty developerModeProperty() {
+        return developerMode;
+    }
+
+    public void setDeveloperMode(boolean developerMode) {
+        this.developerMode.set(developerMode);
+    }
+
     public String getSerialPortName() {
         return serialPortName.get();
     }

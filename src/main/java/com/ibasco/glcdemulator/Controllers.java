@@ -78,15 +78,19 @@ public class Controllers {
     public static <T extends Controller> T getController(Class<?> key, Class<?>[] params, Object... args) {
         Controller controller = controllerMap.computeIfAbsent(key, aClass -> {
             try {
-                log.debug("Computing new instance for {}", key);
+                T ctrl;
                 if (params != null && (args != null && args.length != 0)) {
                     if (params.length != args.length)
                         throw new IllegalArgumentException("Parameter count does not match the argument count");
+
                     //noinspection unchecked
-                    return (T) aClass.getConstructor(params).newInstance(args);
+                    ctrl = (T) aClass.getConstructor(params).newInstance(args);
+                } else {
+                    //noinspection unchecked
+                    ctrl = (T) aClass.newInstance();
                 }
-                //noinspection unchecked
-                return (T) aClass.newInstance();
+                log.debug("Computing new instance for controller {} = {}", key, ctrl);
+                return ctrl;
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new ControllerLoadException(e);
             }

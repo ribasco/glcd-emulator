@@ -38,6 +38,14 @@ import java.util.function.Consumer;
 
 public class StageHelper {
 
+    public static Stage createDialog(Window owner, String title, String viewResourceName) {
+        return createDialog(owner, title, viewResourceName, null, null);
+    }
+
+    public static Stage createDialog(Window owner, String title, String viewResourceName, Modality modality) {
+        return createDialog(owner, title, viewResourceName, null, null, null, modality);
+    }
+
     public static Stage createDialog(Window owner, String title, String viewResourceName, Controller controller) {
         return createDialog(owner, title, viewResourceName, controller, null);
     }
@@ -47,7 +55,11 @@ public class StageHelper {
     }
 
     public static <T extends Parent> Stage createDialog(Window owner, String title, String viewResourceName, Controller controller, Scene scene, Consumer<T> func) {
-        return createStageFromResource(owner, true, Modality.APPLICATION_MODAL, title, viewResourceName, controller, scene, func);
+        return createDialog(owner, title, viewResourceName, controller, scene, func, Modality.APPLICATION_MODAL);
+    }
+
+    public static <T extends Parent> Stage createDialog(Window owner, String title, String viewResourceName, Controller controller, Scene scene, Consumer<T> func, Modality modality) {
+        return createStageFromResource(owner, true, modality, title, viewResourceName, controller, scene, func);
     }
 
     public static <T extends Parent> Stage createStageFromResource(Window owner, boolean resizable, Modality modality, String title, String viewResourceName, Controller controller, Scene scene, Consumer<T> func) {
@@ -58,7 +70,12 @@ public class StageHelper {
             stage.initModality(modality);
             stage.setResizable(resizable);
             stage.setTitle(title);
-            T content = ResourceUtil.loadFxmlResource(viewResourceName, controller);
+            T content;
+            if (controller == null) {
+                content = ResourceUtil.loadFxmlResource(viewResourceName);
+            } else {
+                content = ResourceUtil.loadFxmlResource(viewResourceName, controller);
+            }
             if (content == null)
                 throw new IOException("Could not load view resource '" + viewResourceName + "'");
             if (func != null)

@@ -106,6 +106,11 @@ public class DriverFactory {
                 .busInterface(busInterface)
                 .build();
 
+        //use a dummy i2c address
+        if (busInterface.name().contains("I2C")) {
+            config.setDeviceAddress(0x10);
+        }
+
         return new GlcdDriver(config, true, handler);
     }
 }

@@ -378,6 +378,9 @@ public class GlcdEmulatorController extends Controller {
 
     @FXML
     private MenuItem menuReportIssue;
+
+    @FXML
+    private JFXButton btnDeveloper;
     //</editor-fold>
 
     private JFXDialog emulatorBrowseDialog;
@@ -541,6 +544,10 @@ public class GlcdEmulatorController extends Controller {
 
         appConfig.defaultProfileIdProperty().addListener((observable, oldValue, newValue) -> log.info("Default profile changed from {} to {}", oldValue, newValue));
 
+        btnDeveloper.setVisible(appConfig.isDeveloperMode());
+        btnDeveloper.setDisable(!appConfig.isDeveloperMode());
+        btnDeveloper.setOnAction(this::showDeveloperWindow);
+
         setupNodeProperties(); //must be called first
         setupDisplayScreen();
         setupDefaultProfile();
@@ -556,6 +563,20 @@ public class GlcdEmulatorController extends Controller {
 
         if (appConfig.isRunEmulatorAtStartup()) {
             startEmulatorService();
+        }
+    }
+
+    private void showDeveloperWindow(ActionEvent event) {
+        try {
+            VBox root = ResourceUtil.loadFxmlResource(Views.DEVELOPER_WINDOW);
+            log.info("Got node: {}", root);
+            //log.info("Got controller: {}", developerController);
+            Stage developerStage = Stages.getDeveloperStage();
+            GlcdDeveloperController controller = Controllers.getDeveloperController();
+            log.info("Developer controller available? : {}", controller);
+            developerStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

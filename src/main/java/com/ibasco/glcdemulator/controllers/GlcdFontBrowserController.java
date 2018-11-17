@@ -118,6 +118,22 @@ public class GlcdFontBrowserController extends Controller implements Initializab
         this.details = details;
     }
 
+    public FontCacheService getFontCacheService() {
+        return fontCacheService;
+    }
+
+    public void setFontCacheService(FontCacheService fontCacheService) {
+        this.fontCacheService = fontCacheService;
+    }
+
+    public FontCacheDetails getDetails() {
+        return details;
+    }
+
+    public void setDetails(FontCacheDetails details) {
+        this.details = details;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initFontDisplay();

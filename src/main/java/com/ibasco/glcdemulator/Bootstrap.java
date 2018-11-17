@@ -25,6 +25,9 @@
  */
 package com.ibasco.glcdemulator;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.ibasco.glcdemulator.constants.Common;
 import com.ibasco.glcdemulator.constants.Views;
 import com.ibasco.glcdemulator.model.GlcdConfigApp;
@@ -43,7 +46,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.slf4j.Logger;
+import org.apache.commons.cli.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -57,11 +61,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Bootstrap extends Application {
 
-    private static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
     private static final String APP_TITLE = "GLCD Emulator - " + Context.getAppVersion();
 
-    private GlcdConfigApp appConfig;
+    private static final String OPT_DEV_SHORT = "d";
+
+    private static final String OPT_DEV_LONG = "developer";
+
+    private static final String OPT_LIMITFPS_SHORT = "l";
+
+    private static final String OPT_LIMITFPS_LONG = "limitFps";
+
+    private static final String OPT_LOGLEVEL_SHORT = "log";
+
+    private static final String OPT_LOGLEVEL_LONG = "logLevel";
+
+    private static GlcdConfigApp appConfig;
 
     private static final double MIN_STAGE_WIDTH_SETTINGS = 1135.0;
 
@@ -71,12 +87,16 @@ public class Bootstrap extends Application {
 
     private static AtomicInteger errorCount = new AtomicInteger(1);
 
+    private static final CommandLineParser parser = new DefaultParser();
+
+    private static final HelpFormatter helpFormatter = new HelpFormatter();
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Stages.setPrimaryStage(primaryStage);
         Context.getInstance().setHostServices(this.getHostServices());
         log.info("App Version: {}", Context.getAppVersion());
-        this.appConfig = Context.getInstance().getAppConfig();
+
         Thread.currentThread().setUncaughtExceptionHandler((t, e) -> {
             if (errorCount.incrementAndGet() > MAX_REPEATED_ERRORS) {
                 return;
@@ -100,8 +120,7 @@ public class Bootstrap extends Application {
     private void launchEmulator() throws IOException {
         initStageProperties();
         initStageBindings();
-        Parent root = ResourceUtil.loadFxmlResource(Views.EMULATOR, null);
-        Controllers.setEmulatorController(ResourceUtil.getLastController());
+        Parent root = ResourceUtil.loadFxmlResource(Views.EMULATOR);
         if (root == null)
             throw new IOException("Could not load primary view");
         Stage stage = Context.getPrimaryStage();
@@ -169,8 +188,84 @@ public class Bootstrap extends Application {
         }
     }
 
-    public static void main(String[] args) {
-        System.setProperty("quantum.multithreaded", "false");
+    private static void initializeCLI(String[] args) {
+        // create Options object
+        Options options = new Options();
+        // add t option
+        options.addOption(OPT_DEV_SHORT, OPT_DEV_LONG, false, "Enable developer mode");
+        options.addOption(OPT_LIMITFPS_SHORT, OPT_LIMITFPS_LONG, true, "On some operating systems, enabling this option would cap the screen FPS to 60");
+        options.addOption(OPT_LOGLEVEL_SHORT, OPT_LOGLEVEL_LONG, true, "Sets the logging level of the application");
+
+        CommandLine cmd = null;
+
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println();
+            helpFormatter.printHelp("<glcd app> <options>", options);
+            System.out.println();
+            log.error("Command line parse exception", e);
+            System.exit(-1);
+        }
+
+        if (cmd != null) {
+            if (cmd.hasOption(OPT_DEV_SHORT)) {
+                logPropValue("Developer Mode", true);
+                appConfig.setDeveloperMode(true);
+            } else {
+                logPropValue("Developer Mode", false);
+                appConfig.setDeveloperMode(false);
+            }
+
+            //Set system properties
+            String ans = "false";
+            if (cmd.hasOption(OPT_LIMITFPS_SHORT)) {
+                ans = cmd.getOptionValue(OPT_LIMITFPS_SHORT, "false");
+                if (ans.trim().equalsIgnoreCase("true")) {
+                    logPropValue("Limit FPS", true);
+                } else {
+                    logPropValue("Limit FPS", false);
+                }
+            } else {
+                logPropValue("Limit FPS", false);
+            }
+            System.setProperty("quantum.multithreaded", ans);
+
+            //Set logging level
+            if (cmd.hasOption(OPT_LOGLEVEL_SHORT)) {
+                String logLevel = cmd.getOptionValue(OPT_LOGLEVEL_SHORT, "info").trim().toUpperCase();
+                LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+                log.info("");
+                for (Logger logger : loggerContext.getLoggerList()) {
+                    Level level = Level.valueOf(logLevel);
+                    log.info("> Setting '{}' Logger level to {}", logger, level);
+                    logger.setLevel(level);
+                }
+            } else {
+                logPropValue("Custom log level", false);
+            }
+
+            log.info("");
+        }
+    }
+
+    private static void logPropValue(String name, boolean value) {
+        log.info("> {}: {}", StringUtils.rightPad(name, 20), value ? "YES" : "NO");
+    }
+
+    public static void main(String[] args) throws Exception {
+        log.info("..######...##........######..########.....########.##.....##.##.....##.##..........###....########..#######..########.");
+        log.info(".##....##..##.......##....##.##.....##....##.......###...###.##.....##.##.........##.##......##....##.....##.##.....##");
+        log.info(".##........##.......##.......##.....##....##.......####.####.##.....##.##........##...##.....##....##.....##.##.....##");
+        log.info(".##...####.##.......##.......##.....##....######...##.###.##.##.....##.##.......##.....##....##....##.....##.########.");
+        log.info(".##....##..##.......##.......##.....##....##.......##.....##.##.....##.##.......#########....##....##.....##.##...##..");
+        log.info(".##....##..##.......##....##.##.....##....##.......##.....##.##.....##.##.......##.....##....##....##.....##.##....##.");
+        log.info("..######...########..######..########.....########.##.....##..#######..########.##.....##....##.....#######..##.....##");
+        log.info("");
+        log.info("RUNTIME PROPERTIES");
+
+        appConfig = Context.getInstance().getAppConfig();
+        initializeCLI(args);
         launch(args);
     }
 }
