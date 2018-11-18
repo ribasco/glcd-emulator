@@ -239,7 +239,7 @@ public class GlcdDeveloperController extends Controller {
         if (currentMethod != null) {
             log.info("Invoking method: {}", currentMethod.method);
             for (MethodParam arg : currentMethod.arguments) {
-                log.info("Param = {}, Value = {}, Type = {}", arg.parameter.getName(), arg.value.getValue(), arg.parameter.getType());
+                log.debug("> Param = {}, Value = {}, Type = {}", arg.parameter.getName(), arg.value.getValue(), arg.parameter.getType());
             }
             try {
                 eventIndex.set(0);
