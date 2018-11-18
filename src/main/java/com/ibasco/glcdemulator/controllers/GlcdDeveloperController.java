@@ -290,12 +290,13 @@ public class GlcdDeveloperController extends Controller {
                     }
                 }
 
-                currentMethod.method.invoke(virtualDriver, currentMethod.toValueArgs());
+                Object retval = currentMethod.method.invoke(virtualDriver, currentMethod.toValueArgs());
+
                 if (cbSendBuffer.isSelected()) {
                     virtualDriver.sendBuffer();
                 }
 
-                DialogUtil.showInfo("Success", "Method invoked successfully");
+                DialogUtil.showInfo("Success", "Method invoked successfully" + ((retval != null) ? " (Return Value: " + String.valueOf(retval) + ")" : ""));
                 lblBytesReceived.setText(String.valueOf(numOfBytes.getAndSet(0)));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 log.error("Invocation error", e);
