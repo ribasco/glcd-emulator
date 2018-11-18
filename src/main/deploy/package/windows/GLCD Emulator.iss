@@ -1,16 +1,16 @@
 ;This file will be executed next to the application bundle image
 ;I.e. current directory will contain folder GLCD Emulator with application files
 [Setup]
-AppId={{com.ibasco.glcdemu}}
+AppId=com.ibasco.glcdemulator
 AppName=GLCD Emulator
-AppVersion=0.1.0-alpha-SNAPSHOT
+AppVersion=0.1.1-alpha-SNAPSHOT
 AppVerName=GLCD Emulator
 AppPublisher=Rafael Ibasco
-AppComments=GLCD Emulator
+AppComments=A cross-platform Graphics LCD emulator designed for embedded devices and single board computers
 AppCopyright=GLCD Emulator Copyright (C) 2018 Rafael Luis Ibasco
-;AppPublisherURL=http://java.com/
-;AppSupportURL=http://java.com/
-;AppUpdatesURL=http://java.com/
+AppPublisherURL=https://github.com/ribasco/glcd-emulator/issues
+AppSupportURL=https://github.com/ribasco/glcd-emulator/wiki
+AppUpdatesURL=https://github.com/ribasco/glcd-emulator/releases
 DefaultDirName={pf}\GLCD Emulator
 DisableStartupPrompt=Yes
 DisableDirPage=No
@@ -23,7 +23,7 @@ DefaultGroupName=GLCD Emulator
 LicenseFile=
 ;WinXP or above
 MinVersion=0,5.1 
-OutputBaseFilename=glcd-emulator-setup
+OutputBaseFilename=glcd-emulator-setup-amd64
 Compression=lzma
 SolidCompression=yes
 PrivilegesRequired=admin

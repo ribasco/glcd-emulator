@@ -1,16 +1,16 @@
 ;This file will be executed next to the application bundle image
 ;I.e. current directory will contain folder GLCD Emulator with application files
 [Setup]
-AppId={{com.ibasco.glcdemu}}
+AppId=${project.groupId}
 AppName=${project.name}
 AppVersion=${project.version}
 AppVerName=${project.name}
 AppPublisher=Rafael Ibasco
-AppComments=${project.name}
+AppComments=${project.description}
 AppCopyright=${project.name} Copyright (C) 2018 Rafael Luis Ibasco
-;AppPublisherURL=http://java.com/
-;AppSupportURL=http://java.com/
-;AppUpdatesURL=http://java.com/
+AppPublisherURL=https://github.com/ribasco/glcd-emulator/issues
+AppSupportURL=https://github.com/ribasco/glcd-emulator/wiki
+AppUpdatesURL=https://github.com/ribasco/glcd-emulator/releases
 DefaultDirName={pf}\${project.name}
 DisableStartupPrompt=Yes
 DisableDirPage=No

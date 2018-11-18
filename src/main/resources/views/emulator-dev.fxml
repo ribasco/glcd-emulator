@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="599.0" prefWidth="1027.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdDeveloperController">
+    <children>
+        <SplitPane dividerPositions="0.3170731707317073" prefHeight="502.0" prefWidth="451.0" VBox.vgrow="ALWAYS">
+            <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
+                    <children>
+                        <JFXTabPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <tabs>
+                                <Tab text="Draw Operations">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="325.0" prefWidth="449.0">
+                                            <children>
+                                                <JFXComboBox fx:id="cbDisplay" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="292.0" promptText="Select Display"/>
+                                                <ScrollPane layoutX="13.0" layoutY="225.0" prefHeight="283.0" prefWidth="294.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="225.0">
+                                                    <content>
+                                                        <GridPane fx:id="gpParams" hgap="5.0" vgap="5.0">
+                                                            <columnConstraints>
+                                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                                            </columnConstraints>
+                                                            <rowConstraints>
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                            </rowConstraints>
+                                                        </GridPane>
+                                                    </content>
+                                                </ScrollPane>
+                                                <JFXButton fx:id="btnInvoke" layoutX="14.0" layoutY="522.0" prefHeight="30.0" prefWidth="132.0" text="Invoke" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="176.0"/>
+                                                <JFXCheckBox fx:id="cbSendBuffer" layoutX="161.0" layoutY="528.0" prefHeight="18.0" prefWidth="141.0" text="Invoke sendBuffer()" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="20.0"/>
+                                                <JFXListView fx:id="cbDrawOperation" layoutX="12.0" layoutY="57.0" prefHeight="153.0" prefWidth="294.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="57.0"/>
+                                            </children>
+                                        </AnchorPane>
+                                    </content>
+                                </Tab>
+                            </tabs>
+                        </JFXTabPane>
+                    </children>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="230.0" prefWidth="449.0">
+                    <children>
+                        <JFXTabPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <tabs>
+                                <Tab text="Output Buffer Log">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                            <children>
+                                                <SplitPane dividerPositions="0.8154121863799283" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                    <items>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
+                                                            <children>
+                                                                <TableView fx:id="tvEventLog" prefHeight="261.0" prefWidth="452.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                                            </children>
+                                                        </AnchorPane>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
+                                                            <children>
+                                                                <JFXButton fx:id="btnClearLogs" layoutX="14.0" layoutY="61.0" prefHeight="25.0" prefWidth="119.0" text="Clear Logs" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0"/>
+                                                                <Label layoutX="14.0" layoutY="14.0" text="Bytes received: ">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="12.0"/>
+                                                                    </font>
+                                                                </Label>
+                                                                <Label fx:id="lblBytesReceived" layoutX="102.0" layoutY="14.0" prefHeight="17.0" prefWidth="63.0" text="Label"/>
+                                                                <JFXButton fx:id="btnExportCsv" layoutX="156.0" layoutY="61.0" text="Export to CSV" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="156.0"/>
+                                                            </children>
+                                                        </AnchorPane>
+                                                    </items>
+                                                </SplitPane>
+                                            </children>
+                                        </AnchorPane>
+                                    </content>
+                                </Tab>
+                            </tabs>
+                        </JFXTabPane>
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </children>
+</VBox>
