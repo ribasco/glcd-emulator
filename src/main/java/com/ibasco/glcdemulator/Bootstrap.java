@@ -32,6 +32,7 @@ import com.ibasco.glcdemulator.constants.Common;
 import com.ibasco.glcdemulator.constants.Views;
 import com.ibasco.glcdemulator.model.GlcdConfigApp;
 import com.ibasco.glcdemulator.utils.DialogUtil;
+import static com.ibasco.glcdemulator.utils.DialogUtil.REPORT_BUTTON;
 import com.ibasco.glcdemulator.utils.ResourceUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -52,8 +53,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.ibasco.glcdemulator.utils.DialogUtil.REPORT_BUTTON;
 
 /**
  * Main application bootstrap
@@ -210,12 +209,11 @@ public class Bootstrap extends Application {
         }
 
         if (cmd != null) {
-            if (cmd.hasOption(OPT_DEV_SHORT)) {
-                logPropValue("Developer Mode", true);
+            if (appConfig.isDeveloperMode()) {
+                logPropValue("Developer Mode (Config)", true);
+            } else if (cmd.hasOption(OPT_DEV_SHORT)) {
                 appConfig.setDeveloperMode(true);
-            } else {
-                logPropValue("Developer Mode", false);
-                appConfig.setDeveloperMode(false);
+                logPropValue("Developer Mode", true);
             }
 
             //Set system properties
@@ -251,7 +249,7 @@ public class Bootstrap extends Application {
     }
 
     private static void logPropValue(String name, boolean value) {
-        log.info("> {}: {}", StringUtils.rightPad(name, 20), value ? "YES" : "NO");
+        log.info("> {}: {}", StringUtils.rightPad(name, 30), value ? "YES" : "NO");
     }
 
     public static void main(String[] args) throws Exception {
