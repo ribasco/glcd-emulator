@@ -1,5 +1,6 @@
 package com.ibasco.glcdemulator.controllers;
 
+import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.Controller;
 import com.ibasco.glcdemulator.DriverFactory;
 import com.ibasco.glcdemulator.Stages;
@@ -91,8 +92,6 @@ public class GlcdDeveloperController extends Controller {
         numOfBytes.incrementAndGet();
     };
 
-    Comparator<Method> methodNameComparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
@@ -141,7 +140,7 @@ public class GlcdDeveloperController extends Controller {
             }
         });
 
-        FXCollections.sort(methodList, methodNameComparator);
+        FXCollections.sort(methodList, Comparator.comparing(Method::getName));
 
         cbDrawOperation.setItems(methodList);
         cbDisplay.setItems(displayList);
@@ -164,6 +163,10 @@ public class GlcdDeveloperController extends Controller {
     }
 
     private void invokeCurrentMethod(ActionEvent event) {
+        if (virtualDriver == null) {
+            DialogUtil.showWarning("Display controller not selected", "Please select a display controller first", Context.getPrimaryStage());
+            return;
+        }
         if (currentMethod != null) {
             log.info("Invoking method: {}", currentMethod.method);
             for (MethodParam arg : currentMethod.arguments) {
@@ -180,7 +183,7 @@ public class GlcdDeveloperController extends Controller {
                 lblBytesReceived.setText(String.valueOf(numOfBytes.getAndSet(0)));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 log.error("Invocation error", e);
-                String message = "";
+                String message;
                 if (e.getCause() != null && !StringUtils.isBlank(e.getCause().getMessage())) {
                     message = e.getCause().getMessage();
                 } else {
