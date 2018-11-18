@@ -184,7 +184,7 @@
                             <bundler>exe</bundler>
                             <bundleArguments>
                                 <icon>${project.basedir}/src/main/deploy/package/windows/${project.name}.ico</icon>
-                                <systemWide>true</systemWide>
+                                <systemWide>false</systemWide>
                                 <installdirChooser>true</installdirChooser>
                                 <win.menuGroup>GLCD Emulator</win.menuGroup>
                                 <runtime/>
@@ -361,6 +361,7 @@
                         <bundleArguments>
                             <copyright>GLCD Emulator Copyright (C) 2018 Rafael Luis Ibasco</copyright>
                             <licenseFile>license.txt</licenseFile>
+                            <systemWide>false</systemWide>
                         </bundleArguments>
                         <manifestAttributes>
                             <Url>https://github.com/ribasco/glcd-emulator</Url>
