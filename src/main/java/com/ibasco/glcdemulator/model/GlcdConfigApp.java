@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: GlcdConfigApp.java
  *
@@ -25,13 +25,14 @@
  */
 package com.ibasco.glcdemulator.model;
 
-import static com.ibasco.glcdemulator.ProfileManager.*;
 import com.ibasco.glcdemulator.constants.Common;
 import com.ibasco.glcdemulator.enums.*;
 import com.ibasco.glcdemulator.utils.NetUtils;
 import javafx.beans.property.*;
 
 import java.io.File;
+
+import static com.ibasco.glcdemulator.ProfileManager.*;
 
 public class GlcdConfigApp extends GlcdConfig {
 

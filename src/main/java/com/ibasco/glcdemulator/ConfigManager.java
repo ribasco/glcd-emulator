@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: ConfigManager.java
  *
@@ -25,7 +25,6 @@
  */
 package com.ibasco.glcdemulator;
 
-import static com.ibasco.glcdemulator.constants.Common.APP_CONFIG_PATH;
 import com.ibasco.glcdemulator.model.GlcdConfig;
 import com.ibasco.glcdemulator.utils.JsonUtils;
 import org.apache.commons.io.FileUtils;
@@ -37,6 +36,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+
+import static com.ibasco.glcdemulator.constants.Common.APP_CONFIG_PATH;
 
 /**
  * Service that provides basic CRUD operations for application specific configuration files

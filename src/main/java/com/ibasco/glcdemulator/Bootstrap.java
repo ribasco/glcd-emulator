@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: Bootstrap.java
  *
@@ -32,7 +32,6 @@ import com.ibasco.glcdemulator.constants.Common;
 import com.ibasco.glcdemulator.constants.Views;
 import com.ibasco.glcdemulator.model.GlcdConfigApp;
 import com.ibasco.glcdemulator.utils.DialogUtil;
-import static com.ibasco.glcdemulator.utils.DialogUtil.REPORT_BUTTON;
 import com.ibasco.glcdemulator.utils.ResourceUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -53,6 +52,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.ibasco.glcdemulator.utils.DialogUtil.REPORT_BUTTON;
 
 /**
  * Main application bootstrap

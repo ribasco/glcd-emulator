@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: DisplayHome.java
  *
@@ -26,6 +26,7 @@
 package com.ibasco.glcdemulator.emulator.st7920.instructions;
 
 import com.ibasco.glcdemulator.emulator.st7920.ST7920Instruction;
+
 import static com.ibasco.glcdemulator.emulator.st7920.ST7920InstructionFlag.HOME;
 
 public class DisplayHome extends ST7920Instruction {

@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: ST7920Emulator.java
  *
@@ -36,9 +36,10 @@ import com.ibasco.ucgdisplay.core.u8g2.U8g2Message;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * ST7920 GLCD Emulator. Current implementation only supports spi/parallel interface (8-bit). Note that 4-bit parallel

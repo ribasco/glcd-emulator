@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: DdramSet.java
  *
@@ -28,6 +28,7 @@ package com.ibasco.glcdemulator.emulator.st7920.instructions;
 import com.ibasco.glcdemulator.emulator.st7920.ST7920Instruction;
 import com.ibasco.glcdemulator.emulator.st7920.ST7920InstructionFlag;
 import org.slf4j.Logger;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class DdramSet extends ST7920Instruction {
