@@ -34,12 +34,19 @@
                                                         </GridPane>
                                                     </content>
                                                 </ScrollPane>
-                                                <JFXButton fx:id="btnInvoke" layoutX="14.0" layoutY="522.0" prefHeight="30.0" prefWidth="104.0" text="Invoke" AnchorPane.bottomAnchor="8.0"
-                                                           AnchorPane.rightAnchor="204.0"/>
-                                                <JFXCheckBox fx:id="cbSendBuffer" layoutX="131.0" layoutY="533.0" prefHeight="18.0" prefWidth="171.0" text="Invoke sendBuffer()"
-                                                             AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="19.0"/>
-                                                <JFXListView fx:id="cbDrawOperation" layoutX="12.0" layoutY="57.0" prefHeight="153.0" prefWidth="294.0" AnchorPane.leftAnchor="13.0"
-                                                             AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="57.0"/>
+                                                <JFXButton fx:id="btnInvoke" layoutX="14.0" layoutY="522.0" prefHeight="30.0" prefWidth="104.0" text="Invoke" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="204.0"/>
+                                                <JFXCheckBox fx:id="cbSendBuffer" layoutX="131.0" layoutY="533.0" prefHeight="18.0" prefWidth="171.0" text="Invoke sendBuffer()" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="19.0"/>
+                                                <JFXListView fx:id="cbDrawOperation" layoutX="12.0" layoutY="57.0" prefHeight="153.0" prefWidth="294.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="57.0"/>
+                                            </children>
+                                        </AnchorPane>
+                                    </content>
+                                </Tab>
+                                <Tab text="Settings">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                            <children>
+                                                <JFXCheckBox fx:id="checkDefaultFont" layoutX="12.0" layoutY="26.0" text="Use default font"/>
+                                                <JFXComboBox fx:id="cbDefaultFont" layoutX="131.0" layoutY="23.0" prefHeight="25.0" prefWidth="179.0"/>
                                             </children>
                                         </AnchorPane>
                                     </content>
@@ -60,22 +67,19 @@
                                                     <items>
                                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
                                                             <children>
-                                                                <TableView fx:id="tvEventLog" prefHeight="261.0" prefWidth="452.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                                                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                                                <TableView fx:id="tvEventLog" prefHeight="261.0" prefWidth="452.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                                                             </children>
                                                         </AnchorPane>
                                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
                                                             <children>
-                                                                <JFXButton fx:id="btnClearLogs" layoutX="14.0" layoutY="61.0" prefHeight="25.0" prefWidth="119.0" text="Clear Logs"
-                                                                           AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0"/>
+                                                                <JFXButton fx:id="btnClearLogs" layoutX="14.0" layoutY="61.0" prefHeight="25.0" prefWidth="119.0" text="Clear Logs" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0"/>
                                                                 <Label layoutX="14.0" layoutY="14.0" text="Bytes received: ">
                                                                     <font>
                                                                         <Font name="System Bold" size="12.0"/>
                                                                     </font>
                                                                 </Label>
                                                                 <Label fx:id="lblBytesReceived" layoutX="133.0" layoutY="13.0" prefHeight="17.0" prefWidth="63.0" text="Label"/>
-                                                                <JFXButton fx:id="btnExportCsv" layoutX="156.0" layoutY="61.0" text="Export to CSV" AnchorPane.bottomAnchor="14.0"
-                                                                           AnchorPane.leftAnchor="156.0"/>
+                                                                <JFXButton fx:id="btnExportCsv" layoutX="156.0" layoutY="61.0" text="Export to CSV" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="156.0"/>
                                                             </children>
                                                         </AnchorPane>
                                                     </items>

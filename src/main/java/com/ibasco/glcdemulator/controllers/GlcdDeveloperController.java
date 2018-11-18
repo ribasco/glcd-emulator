@@ -36,6 +36,7 @@ import com.ibasco.glcdemulator.utils.FileUtils;
 import com.ibasco.ucgdisplay.drivers.glcd.*;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusType;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 import com.jfoenix.controls.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -105,6 +106,12 @@ public class GlcdDeveloperController extends Controller {
     @FXML
     private JFXButton btnExportCsv;
 
+    @FXML
+    private JFXCheckBox checkDefaultFont;
+
+    @FXML
+    private JFXComboBox<GlcdFont> cbDefaultFont;
+
     private final DateTimeFormatter csvFileNameFormatter = DateTimeFormatter.ofPattern("YYYYMMddkkmmss'_EventLog.csv'");
 
     private ObjectProperty<Method> selectedMethod = new SimpleObjectProperty<>();
@@ -120,6 +127,8 @@ public class GlcdDeveloperController extends Controller {
     private AtomicInteger numOfBytes = new AtomicInteger();
 
     private AtomicInteger eventIndex = new AtomicInteger(0);
+
+    private final ObservableList<GlcdFont> glcdFontList = FXCollections.observableArrayList(GlcdFont.values());
 
     private GlcdDriverEventHandler eventHandler = event -> {
         String name = event.getMessage().name();
@@ -200,10 +209,11 @@ public class GlcdDeveloperController extends Controller {
         //noinspection unchecked
         tvEventLog.getColumns().addAll(eventIndex, eventNameCol, eventDesc, valueHexCol, valueDecCol);
 
+        cbDefaultFont.setItems(glcdFontList);
         tvEventLog.setItems(logEntries);
         btnClearLogs.setOnAction(event -> tvEventLog.getItems().clear());
         btnExportCsv.setOnAction(this::exportOutputToCSV);
-
+        cbDefaultFont.disableProperty().bind(checkDefaultFont.selectedProperty().not());
     }
 
     private void exportOutputToCSV(ActionEvent event) {
@@ -269,6 +279,17 @@ public class GlcdDeveloperController extends Controller {
             try {
                 eventIndex.set(0);
                 logEntries.clear();
+
+                if (checkDefaultFont.isSelected()) {
+                    GlcdFont defaultFont = cbDefaultFont.getSelectionModel().getSelectedItem();
+                    if (defaultFont != null) {
+                        log.info("Setting default font before invocation: {}", defaultFont);
+                        virtualDriver.setFont(defaultFont);
+                    } else {
+                        log.info("No default font specified");
+                    }
+                }
+
                 currentMethod.method.invoke(virtualDriver, currentMethod.toValueArgs());
                 if (cbSendBuffer.isSelected()) {
                     virtualDriver.sendBuffer();
