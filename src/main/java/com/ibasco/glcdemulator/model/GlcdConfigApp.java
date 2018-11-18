@@ -25,14 +25,13 @@
  */
 package com.ibasco.glcdemulator.model;
 
+import static com.ibasco.glcdemulator.ProfileManager.*;
 import com.ibasco.glcdemulator.constants.Common;
 import com.ibasco.glcdemulator.enums.*;
 import com.ibasco.glcdemulator.utils.NetUtils;
 import javafx.beans.property.*;
 
 import java.io.File;
-
-import static com.ibasco.glcdemulator.ProfileManager.*;
 
 public class GlcdConfigApp extends GlcdConfig {
 
@@ -96,12 +95,26 @@ public class GlcdConfigApp extends GlcdConfig {
     private StringProperty serialPortName = new SimpleStringProperty();
 
     private BooleanProperty developerMode = new SimpleBooleanProperty(false);
+
+    private BooleanProperty skipResizeWarning = new SimpleBooleanProperty(false);
     //</editor-fold>
 
     public GlcdConfigApp() {
     }
 
     //<editor-fold desc="Getter/Setters">
+    public boolean isSkipResizeWarning() {
+        return skipResizeWarning.get();
+    }
+
+    public BooleanProperty skipResizeWarningProperty() {
+        return skipResizeWarning;
+    }
+
+    public void setSkipResizeWarning(boolean skipResizeWarning) {
+        this.skipResizeWarning.set(skipResizeWarning);
+    }
+
     public boolean isDeveloperMode() {
         return developerMode.get();
     }

@@ -1121,8 +1121,10 @@ public class GlcdEmulatorController extends Controller {
     private void setupNodeProperties() {
         btnDrawAnimTest.setOnAction(this::handleDrawTestAction);
 
-        spnDisplayWidth.setDisable(true);
-        spnDisplayHeight.setDisable(true);
+        //Disable if not in developer mode
+        spnDisplayWidth.setDisable(!appConfig.isDeveloperMode());
+        spnDisplayHeight.setDisable(!appConfig.isDeveloperMode());
+
 
         cbBusInterface.setItems(busInterfaceList);
         btnFreezeDisplay.setOnAction(event -> {
@@ -1581,8 +1583,12 @@ public class GlcdEmulatorController extends Controller {
             log.debug("Validating display width change");
             int maxWidth = profile.getDisplay().getDisplaySize().getDisplayWidth();
             if (newValue > maxWidth) {
-                log.warn("Display width is greater than the maximum width of the selected display controller (Max Width = {}, Actual Width = {})", maxWidth, newValue);
-                DialogUtil.showWarning("Warning", String.format("The display width you set is greater than the maximum width of the selected display controller. (Max Width = %d Actual Width = %d)", maxWidth, newValue), Context.getPrimaryStage());
+                String msg = String.format("The display width you set is greater than the maximum width of the selected display controller. (Controller: %s, Max Width = %d Actual Width = %d)", profile.getDisplay().getController().name() + "::" + profile.getDisplay().getName(), maxWidth, newValue);
+                log.warn("RESIZE WARNING: {}", msg);
+                if (!appConfig.isSkipResizeWarning()) {
+                    Alert diag = DialogUtil.createAlertDialogWithCheckbox(Alert.AlertType.WARNING, "Warning", "", msg, "Ok, don't bug me next time", appConfig::setSkipResizeWarning, ButtonType.OK);
+                    diag.showAndWait();
+                }
             }
         });
 
