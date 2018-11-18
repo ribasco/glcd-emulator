@@ -63,3 +63,4 @@ hs_err_pid*
 /.idea/
 /.cache/
 /tmplib/
+/src/main/deploy/package/windows/GLCD Emulator.iss
