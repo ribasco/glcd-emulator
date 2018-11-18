@@ -4,6 +4,7 @@ import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.Controller;
 import com.ibasco.glcdemulator.DriverFactory;
 import com.ibasco.glcdemulator.Stages;
+import com.ibasco.glcdemulator.exceptions.ExportCSVException;
 import com.ibasco.glcdemulator.utils.ByteUtils;
 import com.ibasco.glcdemulator.utils.DialogUtil;
 import com.ibasco.glcdemulator.utils.FileUtils;
@@ -29,21 +30,28 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.*;
 import java.net.URL;
-import java.nio.ByteBuffer;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class GlcdDeveloperController extends Controller {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdDeveloperController.class);
+    private static final String DEFAULT_BASE64_VAL = "I2RlZmluZSByYXNwYmVycnlwaV9zbWFsbF93aWR0aCA5NQ0KI2RlZmluZSByYXNwYmVycnlwaV9zbWFsbF9oZWlnaHQgNzQNCnN0YXRpYyB1bnNpZ25lZCBjaGFyIHJhc3BiZXJyeXBpX3NtYWxsX2JpdHNbXSA9IHsNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHg3ZiwgMHgwMCwgMHg4MCwgMHgzZiwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4ZjgsIDB4ZmYsIDB4MDMsIDB4ZjAsIDB4ZmYsIDB4MDcsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDdlLCAweGFiLCAweDBmLCAweDdjLCAweGE1LCAweDFmLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwZiwgMHgwMCwgMHgxZSwgMHgxZSwgMHgwMCwgMHgzYywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDMsIDB4MDAsIDB4MzgsIDB4MDcsIDB4MDAsIDB4MzAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDA3LCAweDAwLCAweDMwLCAweDAzLCAweDAwLCAweDMwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMywgMHgwMSwgMHhlMCwgMHgwMSwgMHgwMCwgMHgzMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDcsIDB4MDQsIDB4ZTAsIDB4MDEsIDB4MDgsIDB4MzAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAzLCAweDE4LCAweGMwLCAweDAxLCAweDA2LCAweDMwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwNiwgMHg2MCwgMHhjMCwgMHg4MSwgMHgwMSwgMHgxOCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MGUsIDB4ODAsIDB4YzEsIDB4YzEsIDB4MDAsIDB4MWMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDBlLCAweDAwLCAweGUzLCAweDMxLCAweDAwLCAweDFjLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgxYywgMHgwMCwgMHhmNiwgMHgxYiwgMHgwMCwgMHgwZSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MTgsIDB4MDAsIDB4ZmMsIDB4MGYsIDB4MDAsIDB4MDYsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDMwLCAweDAwLCAweGZjLCAweDBmLCAweDAwLCAweDAzLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHg3MCwgMHgwMCwgMHhmYywgMHgxZiwgMHg4MCwgMHgwMywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4YzAsIDB4MDAsIDB4ZmYsIDB4M2YsIDB4YzAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweGMwLCAweGM3LCAweGZmLCAweGZmLCAweGY4LCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHhmZiwgMHgwZiwgMHhmYywgMHgzZiwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4YzAsIDB4ODcsIDB4MDMsIDB4ZjAsIDB4ZmMsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweGUwLCAweDgxLCAweDAxLCAweDYwLCAweGUwLCAweDAxLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHg3MCwgMHhjMCwgMHgwMCwgMHhjMCwgMHg4MCwgMHgwMywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MzAsIDB4ZTAsIDB4MDEsIDB4YzAsIDB4MDEsIDB4MDMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDM4LCAweGYwLCAweDAxLCAweGUwLCAweDAzLCAweDA3LCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgxOCwgMHhmOCwgMHgwMywgMHhmMCwgMHgwNywgMHgwNiwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MTgsIDB4ZmMsIDB4M2YsIDB4ZmUsIDB4MGYsIDB4MDYsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDFjLCAweDNmLCAweGZjLCAweDBmLCAweDNlLCAweDBlLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHg5YywgMHgwZiwgMHhmOCwgMHgwMywgMHg3OCwgMHgwZSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4ZmMsIDB4MDMsIDB4ZTAsIDB4MDMsIDB4ZjAsIDB4MGYsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweGZlLCAweDAzLCAweGUwLCAweDAxLCAweGUwLCAweDFmLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHhlZiwgMHgwMSwgMHhlMCwgMHgwMSwgMHhjMCwgMHgzOSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4ODAsIDB4ZTMsIDB4MDAsIDB4YzAsIDB4MDEsIDB4YzAsIDB4NzEsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDgwLCAweGUxLCAweDAwLCAweGMwLCAweDAxLCAweGMwLCAweDYxLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHhjMCwgMHhjMSwgMHgwMCwgMHhjMCwgMHgwMSwgMHg4MCwgMHhlMSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4YzAsIDB4ZTAsIDB4MDAsIDB4ZTAsIDB4MDEsIDB4ODAsIDB4YzEsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweGMwLCAweGUwLCAweDAwLCAweGUwLCAweDAxLCAweDgwLCAweGMxLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHhlMCwgMHhlMCwgMHgwMCwgMHhlMCwgMHgwMywgMHhjMCwgMHhjMSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4ZTAsIDB4ZTAsIDB4MDAsIDB4ZjAsIDB4MDcsIDB4YzAsIDB4YzEsIDB4MDEsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweGMwLCAweGUwLCAweDAxLCAweGY4LCAweDBmLCAweGUwLCAweGMxLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHhjMCwgMHhlMCwgMHgwMywgMHhmYywgMHgxZiwgMHhmMCwgMHhjMSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4YzAsIDB4ZjEsIDB4MGYsIDB4MDcsIDB4ZjgsIDB4ZmYsIDB4ZTMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDgwLCAweGYxLCAweGZmLCAweDAzLCAweGYwLCAweGZmLCAweDYzLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHg4MCwgMHhmYiwgMHhmZiwgMHgwMSwgMHhlMCwgMHgzZiwgMHg3ZSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MWYsIDB4ZmYsIDB4MDAsIDB4YzAsIDB4MGYsIDB4M2MsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDBmLCAweGZjLCAweDAwLCAweGMwLCAweDA3LCAweDNjLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwZSwgMHhmOCwgMHgwMCwgMHg4MCwgMHgwMywgMHgxYywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MGUsIDB4ZjAsIDB4MDAsIDB4ODAsIDB4MDEsIDB4MWMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDBlLCAweGUwLCAweDAwLCAweGMwLCAweDAxLCAweDFjLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwYywgMHhjMCwgMHgwMCwgMHhjMCwgMHgwMCwgMHgwYywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MGMsIDB4YzAsIDB4MDEsIDB4YzAsIDB4MDAsIDB4MGMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDFjLCAweGMwLCAweDAxLCAweDYwLCAweDAwLCAweDBjLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgxOCwgMHg4MCwgMHgwNywgMHg3MCwgMHgwMCwgMHgwNiwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MzgsIDB4ODAsIDB4MGYsIDB4N2MsIDB4MDAsIDB4MDcsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDcwLCAweGMwLCAweGZmLCAweDdmLCAweDgwLCAweDAzLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHhlMCwgMHhjMSwgMHhmZiwgMHhmZiwgMHhlMCwgMHgwMSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4YzAsIDB4ZmYsIDB4MDcsIDB4ZjgsIDB4ZmYsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweGZmLCAweDAxLCAweGMwLCAweDNmLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHhmYywgMHgwMCwgMHhjMCwgMHgwZiwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4ZjgsIDB4MDAsIDB4YzAsIDB4MDcsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweGUwLCAweDAxLCAweGUwLCAweDAxLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHg4MCwgMHgwNywgMHg3MCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MWYsIDB4M2UsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweGZjLCAweDBmLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHhmMCwgMHgwMywgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwIH07DQo=";
 
     @FXML
     private JFXComboBox<GlcdDisplayDetails> cbDisplay;
@@ -69,6 +77,11 @@ public class GlcdDeveloperController extends Controller {
     @FXML
     private Label lblBytesReceived;
 
+    @FXML
+    private JFXButton btnExportCsv;
+
+    private final DateTimeFormatter csvFileNameFormatter = DateTimeFormatter.ofPattern("YYYYMMddkkmmss'_EventLog.csv'");
+
     private ObjectProperty<Method> selectedMethod = new SimpleObjectProperty<>();
 
     private ObjectProperty<GlcdDisplayDetails> selectedDisplay = new SimpleObjectProperty<>();
@@ -81,20 +94,23 @@ public class GlcdDeveloperController extends Controller {
 
     private AtomicInteger numOfBytes = new AtomicInteger();
 
-    private ByteBuffer lastBytesReceived = ByteBuffer.allocate(5000);
+    private AtomicInteger eventIndex = new AtomicInteger(0);
 
     private GlcdDriverEventHandler eventHandler = event -> {
         String name = event.getMessage().name();
         String desc = event.getMessage().getDescription();
         String hexValue = "0x" + ByteUtils.toHexString((byte) event.getValue());
         int decValue = Byte.toUnsignedInt((byte) event.getValue());
-        logEntries.add(new EventLogEntry(name, desc, hexValue, decValue));
+        logEntries.add(new EventLogEntry(eventIndex.getAndIncrement(), name, desc, hexValue, decValue));
         numOfBytes.incrementAndGet();
     };
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
+
+        log.debug("Initializing developer controller");
+        gpParams.getChildren().clear();
 
         ObservableList<GlcdDisplayDetails> displayList = FXCollections.observableArrayList();
         ObservableList<Method> methodList = FXCollections.observableArrayList();
@@ -145,6 +161,8 @@ public class GlcdDeveloperController extends Controller {
         cbDrawOperation.setItems(methodList);
         cbDisplay.setItems(displayList);
 
+        TableColumn<EventLogEntry, Integer> eventIndex = new TableColumn<>("Index");
+        eventIndex.setCellValueFactory(new PropertyValueFactory<>("eventIndex"));
         TableColumn<EventLogEntry, String> eventNameCol = new TableColumn<>("Event");
         eventNameCol.setCellValueFactory(new PropertyValueFactory<>("eventName"));
         TableColumn<EventLogEntry, String> eventDesc = new TableColumn<>("Description");
@@ -155,11 +173,62 @@ public class GlcdDeveloperController extends Controller {
         valueDecCol.setCellValueFactory(new PropertyValueFactory<>("valueDec"));
 
         //noinspection unchecked
-        tvEventLog.getColumns().addAll(eventNameCol, eventDesc, valueHexCol, valueDecCol);
+        tvEventLog.getColumns().addAll(eventIndex, eventNameCol, eventDesc, valueHexCol, valueDecCol);
 
         tvEventLog.setItems(logEntries);
         btnClearLogs.setOnAction(event -> tvEventLog.getItems().clear());
+        btnExportCsv.setOnAction(this::exportOutputToCSV);
 
+    }
+
+    private void exportOutputToCSV(ActionEvent event) {
+        if (logEntries.size() > 0) {
+            File csvFile = exportToCSV("", null);
+            if (csvFile != null) {
+                try {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile, true));
+                    writer.append("Index, Event, Description, Value (HEX), Value (DEC)\n");
+                    for (EventLogEntry entry : logEntries) {
+                        writer.append(String.valueOf(entry.getEventIndex()));
+                        writer.append(", ");
+                        writer.append(entry.getEventName());
+                        writer.append(", ");
+                        writer.append(entry.getEventDescription());
+                        writer.append(", ");
+                        writer.append(entry.getValueHex());
+                        writer.append(", ");
+                        writer.append(String.valueOf(entry.getValueDec()));
+                        writer.append("\n");
+                    }
+                    log.info("Exported event log to CSV file '{}'", csvFile.getAbsolutePath());
+                    writer.flush();
+                } catch (IOException e) {
+                    throw new ExportCSVException(e);
+                }
+            }
+        }
+    }
+
+    private File exportToCSV(String initialDir, Consumer<String> saveLastPathTo) {
+        File file = null;
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Export to CSV");
+
+            fileChooser.setInitialFileName(csvFileNameFormatter.format(ZonedDateTime.now()));
+            if (!StringUtils.isBlank(initialDir)) {
+                fileChooser.setInitialDirectory(new File(initialDir));
+            } else {
+                fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+            }
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "csv"));
+            file = fileChooser.showSaveDialog(Context.getPrimaryStage());
+            return file;
+        } finally {
+            if (file != null && saveLastPathTo != null) {
+                saveLastPathTo.accept(FilenameUtils.getFullPath(file.getAbsolutePath()));
+            }
+        }
     }
 
     private void invokeCurrentMethod(ActionEvent event) {
@@ -173,6 +242,7 @@ public class GlcdDeveloperController extends Controller {
                 log.info("Param = {}, Value = {}, Type = {}", arg.parameter.getName(), arg.value.getValue(), arg.parameter.getType());
             }
             try {
+                eventIndex.set(0);
                 logEntries.clear();
                 currentMethod.method.invoke(virtualDriver, currentMethod.toValueArgs());
                 if (cbSendBuffer.isSelected()) {
@@ -235,6 +305,7 @@ public class GlcdDeveloperController extends Controller {
                 } else if (param.parameter.getType().equals(File.class)) {
                     GridPane gpFileChooser = new GridPane();
                     JFXTextField textField = new JFXTextField("Select File");
+                    textField.setEditable(false);
                     textField.setMinWidth(150);
                     JFXButton button = new JFXButton("...");
                     button.setOnAction(event -> {
@@ -252,6 +323,11 @@ public class GlcdDeveloperController extends Controller {
                     comboBox.setItems(FXCollections.observableArrayList(true, false));
                     methodParam.value.bind(comboBox.getSelectionModel().selectedItemProperty());
                     valueField = comboBox;
+                } else if (param.parameter.getType().equals(byte[].class)) {
+                    JFXTextField textField = new JFXTextField();
+                    textField.setPromptText("Enter base64 encoded string");
+                    methodParam.value.bind(textField.textProperty());
+                    valueField = textField;
                 } else {
                     JFXTextField textField = new JFXTextField();
                     methodParam.value.bind(textField.textProperty());
@@ -341,6 +417,14 @@ public class GlcdDeveloperController extends Controller {
                     val = sourceValue;
                 } else if (param.parameter.getType().equals(boolean.class)) {
                     val = sourceValue;
+                } else if (param.parameter.getType().equals(byte[].class)) {
+                    if (!StringUtils.isBlank((String) sourceValue)) {
+                        String tmp = (String) sourceValue;
+                        val = Base64.getDecoder().decode(tmp);
+                    } else {
+                        log.debug("Base64 value not specified. Using default: {}", DEFAULT_BASE64_VAL);
+                        val = Base64.getDecoder().decode(DEFAULT_BASE64_VAL);
+                    }
                 } else {
                     val = param.value.get();
                 }
@@ -370,16 +454,30 @@ public class GlcdDeveloperController extends Controller {
     }
 
     public class EventLogEntry {
+        private final SimpleIntegerProperty eventIndex;
         private final SimpleStringProperty eventName;
         private final SimpleStringProperty eventDescription;
         private final SimpleStringProperty valueHex;
         private final SimpleIntegerProperty valueDec;
 
-        private EventLogEntry(String eventName, String eventDesc, String valueHex, int valueDec) {
+        private EventLogEntry(int eventIndex, String eventName, String eventDesc, String valueHex, int valueDec) {
+            this.eventIndex = new SimpleIntegerProperty(eventIndex);
             this.eventName = new SimpleStringProperty(eventName);
             this.eventDescription = new SimpleStringProperty(eventDesc);
             this.valueHex = new SimpleStringProperty(valueHex);
             this.valueDec = new SimpleIntegerProperty(valueDec);
+        }
+
+        public int getEventIndex() {
+            return eventIndex.get();
+        }
+
+        public SimpleIntegerProperty eventIndexProperty() {
+            return eventIndex;
+        }
+
+        public void setEventIndex(int eventIndex) {
+            this.eventIndex.set(eventIndex);
         }
 
         public String getEventDescription() {
