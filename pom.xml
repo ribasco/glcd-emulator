@@ -7,7 +7,7 @@
     <groupId>com.ibasco.glcdemulator</groupId>
     <artifactId>glcd-emulator</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.0-alpha</version>
+    <version>0.2.1-alpha-SNAPSHOT</version>
     <inceptionYear>2018</inceptionYear>
     <name>GLCD Emulator</name>
     <url>https://github.com/ribasco/glcd-emulator</url>
