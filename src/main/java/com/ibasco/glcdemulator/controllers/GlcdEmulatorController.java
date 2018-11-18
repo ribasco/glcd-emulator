@@ -1193,7 +1193,7 @@ public class GlcdEmulatorController extends Controller {
         menuCheckUpdates.setOnAction(event -> Context.getInstance().getHostServices().showDocument(Common.RELEASE_URL));
         menuReportIssue.setOnAction(event -> Context.getInstance().getHostServices().showDocument(Common.REPORT_ISSUE_URL));
         menuSaveScreen.setOnAction(event -> saveScreenCapture());
-        menuSaveScreenAs.setOnAction(event -> saveScreenCaptureAs());
+        menuSaveScreenAs.setOnAction(event -> saveScreenCaptureAs(appConfig.getLastSavedImagePath(), appConfig::setLastSavedImagePath));
         menuSaveSettings.setOnAction(event -> saveAppSettings());
         btnReset.setOnAction(this::resetToDefaultSettings);
         btnDonate.setOnAction(event -> Platform.runLater(() -> Context.getInstance().getHostServices().showDocument(Common.DONATE_URL)));
@@ -1960,21 +1960,22 @@ public class GlcdEmulatorController extends Controller {
         }
     }
 
-    private void saveScreenCaptureAs() {
+    private void saveScreenCaptureAs(String initialDir, Consumer<String> saveLastPathTo) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Image");
 
         fileChooser.setInitialFileName(imageFileNameFormatter.format(ZonedDateTime.now()));
-        if (!StringUtils.isBlank(appConfig.getLastSavedImagePath())) {
-            fileChooser.setInitialDirectory(new File(appConfig.getLastSavedImagePath()));
+        if (!StringUtils.isBlank(initialDir)) {
+            fileChooser.setInitialDirectory(new File(initialDir));
         } else {
             fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         }
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG File", "png"));
         File file = fileChooser.showSaveDialog(Context.getPrimaryStage());
         saveScreenCapture(file);
-        if (file != null)
-            appConfig.setLastSavedImagePath(FilenameUtils.getFullPath(file.getAbsolutePath()));
+        if (file != null) {
+            saveLastPathTo.accept(FilenameUtils.getFullPath(file.getAbsolutePath()));
+        }
     }
 
     private void saveScreenCapture(File imageFile) {
@@ -1995,7 +1996,7 @@ public class GlcdEmulatorController extends Controller {
                     log.error("Error encoutnered during screen capture", e);
                 }
             });
-            log.info("Saved screenshot to '{}'", FilenameUtils.getFullPath(imageFile.getAbsolutePath()));
+            log.info("Saved screenshot '{}' to directory '{}'", imageFile.getName(), FilenameUtils.getFullPath(imageFile.getAbsolutePath()));
         }
     }
 }
