@@ -3,6 +3,7 @@
 <?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="599.0" prefWidth="1027.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdDeveloperController">
     <children>
         <SplitPane dividerPositions="0.3170731707317073" prefHeight="502.0" prefWidth="451.0" VBox.vgrow="ALWAYS">
@@ -48,11 +49,11 @@
                     <children>
                         <JFXTabPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <tabs>
-                                <Tab text="Event Log">
+                                <Tab text="Output Buffer Log">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                             <children>
-                                                <SplitPane dividerPositions="0.7195767195767195" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <SplitPane dividerPositions="0.8154121863799283" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                     <items>
                                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
                                                             <children>
@@ -61,9 +62,14 @@
                                                         </AnchorPane>
                                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
                                                             <children>
-                                                                <JFXButton fx:id="btnClearLogs" layoutX="14.0" layoutY="64.0" text="Clear Logs"/>
-                                                                <Label layoutX="14.0" layoutY="14.0" text="Bytes received: "/>
-                                                                <Label fx:id="lblBytesReceived" layoutX="96.0" layoutY="14.0" prefHeight="17.0" prefWidth="63.0" text="Label"/>
+                                                                <JFXButton fx:id="btnClearLogs" layoutX="14.0" layoutY="61.0" prefHeight="25.0" prefWidth="119.0" text="Clear Logs" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0"/>
+                                                                <Label layoutX="14.0" layoutY="14.0" text="Bytes received: ">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="12.0"/>
+                                                                    </font>
+                                                                </Label>
+                                                                <Label fx:id="lblBytesReceived" layoutX="102.0" layoutY="14.0" prefHeight="17.0" prefWidth="63.0" text="Label"/>
+                                                                <JFXButton fx:id="btnExportCsv" layoutX="156.0" layoutY="61.0" text="Export to CSV" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="156.0"/>
                                                             </children>
                                                         </AnchorPane>
                                                     </items>
