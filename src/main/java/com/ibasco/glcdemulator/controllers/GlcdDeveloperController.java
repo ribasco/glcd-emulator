@@ -404,7 +404,7 @@ public class GlcdDeveloperController extends Controller {
             for (MethodParam param : arguments) {
                 Object val;
                 Object sourceValue = param.value.get();
-                log.error("Source value type = {}, Actual value type = {}", param.value.getValue().getClass().getSimpleName(), param.parameter.getType().getSimpleName());
+                log.debug("toValueArgs() => Source value type = {}, Actual value type = {}", param.value.getValue().getClass().getSimpleName(), param.parameter.getType().getSimpleName());
                 if (param.parameter.getType().equals(int.class)) {
                     val = Integer.valueOf((String) sourceValue);
                 } else if (param.parameter.getType().equals(short.class)) {
