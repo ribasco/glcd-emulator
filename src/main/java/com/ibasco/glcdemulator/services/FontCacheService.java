@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: FontCacheService.java
  *
@@ -28,7 +28,6 @@ package com.ibasco.glcdemulator.services;
 import com.google.gson.reflect.TypeToken;
 import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.constants.Common;
-import static com.ibasco.glcdemulator.constants.Common.CACHE_DIR_PATH;
 import com.ibasco.glcdemulator.controls.GlcdScreen;
 import com.ibasco.glcdemulator.enums.PixelShape;
 import com.ibasco.glcdemulator.model.FontCacheEntry;
@@ -52,6 +51,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+
+import static com.ibasco.glcdemulator.constants.Common.CACHE_DIR_PATH;
 
 /**
  * A service that cache's font details (thumbnail previews, width, height etc)

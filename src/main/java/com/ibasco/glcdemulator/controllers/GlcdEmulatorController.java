@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: GlcdEmulatorController.java
  *
@@ -567,17 +567,7 @@ public class GlcdEmulatorController extends Controller {
     }
 
     private void showDeveloperWindow(ActionEvent event) {
-        try {
-            VBox root = ResourceUtil.loadFxmlResource(Views.DEVELOPER_WINDOW);
-            log.info("Got node: {}", root);
-            //log.info("Got controller: {}", developerController);
-            Stage developerStage = Stages.getDeveloperStage();
-            GlcdDeveloperController controller = Controllers.getDeveloperController();
-            log.info("Developer controller available? : {}", controller);
-            developerStage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Stages.getDeveloperStage().showAndWait();
     }
 
     private void setupStatusBar() {
@@ -1499,8 +1489,7 @@ public class GlcdEmulatorController extends Controller {
     }
 
     /**
-     * Register profile bindings. This can be safely called multiple times in case the reference of the profile model
-     * changes
+     * Register profile bindings. This can be safely called multiple times in case the reference of the profile model changes
      *
      * @param profile
      *         The {@link GlcdEmulatorProfile} instance to apply the bindings to

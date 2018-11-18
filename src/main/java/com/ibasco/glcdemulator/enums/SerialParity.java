@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: SerialParity.java
  *
@@ -25,10 +25,11 @@
  */
 package com.ibasco.glcdemulator.enums;
 
-import static com.fazecast.jSerialComm.SerialPort.*;
 import com.ibasco.glcdemulator.utils.EnumValue;
 
 import java.util.Arrays;
+
+import static com.fazecast.jSerialComm.SerialPort.*;
 
 public enum SerialParity implements EnumValue<Integer> {
     NONE(NO_PARITY),

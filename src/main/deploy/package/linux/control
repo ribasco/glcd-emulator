@@ -1,9 +1,8 @@
 Package: glcd-emulator
-Version: 0.1.0-alpha-SNAPSHOT
+Version: 0.1.1-alpha-SNAPSHOT
 Section: misc
 Priority: optional
 Architecture: all
 Depends:
 Maintainer: Rafael Ibasco <ribasco@gmail.com>
 Description: A cross-platform Graphics LCD emulator designed for embedded devices and single board computers
-Distribution: development

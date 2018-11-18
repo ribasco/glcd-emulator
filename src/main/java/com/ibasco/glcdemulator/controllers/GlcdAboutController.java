@@ -1,6 +1,6 @@
 /*-
  * ========================START=================================
- * Organization: Rafael Ibasco
+ * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
  * Filename: GlcdAboutController.java
  *
@@ -29,7 +29,6 @@ import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.Controller;
 import com.ibasco.glcdemulator.Stages;
 import com.ibasco.glcdemulator.constants.Common;
-import static com.ibasco.glcdemulator.utils.ResourceUtil.readFileResource;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextArea;
@@ -38,6 +37,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.ibasco.glcdemulator.utils.ResourceUtil.readFileResource;
 
 public class GlcdAboutController extends Controller {
 
