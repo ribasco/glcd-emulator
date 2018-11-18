@@ -26,8 +26,10 @@
 package com.ibasco.glcdemulator;
 
 import com.ibasco.glcdemulator.constants.Views;
+import com.ibasco.glcdemulator.utils.ResourceUtil;
 import com.jfoenix.controls.JFXDrawersStack;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -52,6 +54,8 @@ public class Stages {
     public static Stage getDeveloperStage() {
         if (developerStage == null) {
             developerStage = StageHelper.createDialog(getPrimaryStage(), "Developer Window", Views.DEVELOPER_WINDOW, Modality.NONE);
+            developerStage.getIcons().clear();
+            developerStage.getIcons().add(new Image(ResourceUtil.getResource("images/developer.png").toExternalForm()));
         }
         return developerStage;
     }
