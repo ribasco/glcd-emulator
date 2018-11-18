@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="599.0" prefWidth="1027.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdDeveloperController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="599.0" prefWidth="1027.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdDeveloperController">
     <children>
         <SplitPane dividerPositions="0.3170731707317073" prefHeight="502.0" prefWidth="451.0" VBox.vgrow="ALWAYS">
             <items>
@@ -16,7 +16,7 @@
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="325.0" prefWidth="449.0">
                                             <children>
-                                                <JFXComboBox fx:id="cbDisplay" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="292.0" promptText="Select Display"/>
+                                                <JFXComboBox fx:id="cbDisplay" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="292.0" promptText="Select Display" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="14.0"/>
                                                 <ScrollPane layoutX="13.0" layoutY="225.0" prefHeight="283.0" prefWidth="294.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="225.0">
                                                     <content>
                                                         <GridPane fx:id="gpParams" hgap="5.0" vgap="5.0">
@@ -59,7 +59,7 @@
                     <children>
                         <JFXTabPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <tabs>
-                                <Tab text="Output Buffer Log">
+                                <Tab text="Output Log">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                             <children>
