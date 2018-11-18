@@ -1583,8 +1583,8 @@ public class GlcdEmulatorController extends Controller {
             log.debug("Validating display width change");
             int maxWidth = profile.getDisplay().getDisplaySize().getDisplayWidth();
             if (newValue > maxWidth) {
-                String msg = String.format("The display width you set is greater than the maximum width of the selected display controller. (Controller: %s, Max Width = %d Actual Width = %d)", profile.getDisplay().getController().name() + "::" + profile.getDisplay().getName(), maxWidth, newValue);
-                log.warn("RESIZE WARNING: {}", msg);
+                String msg = String.format("The display width set is greater than the maximum width of the selected display controller. (Controller: %s, Max Width = %d Actual Width = %d)", profile.getDisplay().getController().name() + "::" + profile.getDisplay().getName(), maxWidth, newValue);
+                log.warn("WIDTH RESIZE WARNING: {}", msg);
                 if (!appConfig.isSkipResizeWarning()) {
                     Alert diag = DialogUtil.createAlertDialogWithCheckbox(Alert.AlertType.WARNING, "Warning", "", msg, "Ok, don't bug me next time", appConfig::setSkipResizeWarning, ButtonType.OK);
                     diag.showAndWait();
@@ -1596,8 +1596,12 @@ public class GlcdEmulatorController extends Controller {
             log.debug("Validating display height change");
             int maxHeight = profile.getDisplay().getDisplaySize().getDisplayHeight();
             if (newValue > maxHeight) {
-                log.warn("Display height is greater than the maximum width of the selected display controller (Max Width = {}, Actual Width = {})", maxHeight, newValue);
-                DialogUtil.showWarning("Warning", String.format("The display height you set is greater than the maximum width of the selected display controller (Max Height = %d Actual Height = %d)", maxHeight, newValue), Context.getPrimaryStage());
+                String msg = String.format("The display height set is greater than the maximum width of the selected display controller. (Controller: %s, Max Width = %d Actual Width = %d)", profile.getDisplay().getController().name() + "::" + profile.getDisplay().getName(), maxHeight, newValue);
+                log.warn("HEIGHT RESIZE WARNING: {}", msg);
+                if (!appConfig.isSkipResizeWarning()) {
+                    Alert diag = DialogUtil.createAlertDialogWithCheckbox(Alert.AlertType.WARNING, "Warning", "", msg, "Ok, don't bug me next time", appConfig::setSkipResizeWarning, ButtonType.OK);
+                    diag.showAndWait();
+                }
             }
         });
 
