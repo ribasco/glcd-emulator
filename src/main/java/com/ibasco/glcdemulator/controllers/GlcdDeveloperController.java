@@ -33,17 +33,20 @@ import com.ibasco.glcdemulator.exceptions.ExportCSVException;
 import com.ibasco.glcdemulator.utils.ByteUtils;
 import com.ibasco.glcdemulator.utils.DialogUtil;
 import com.ibasco.glcdemulator.utils.FileUtils;
+import com.ibasco.ucgdisplay.core.u8g2.U8g2Message;
 import com.ibasco.ucgdisplay.drivers.glcd.*;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusType;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 import com.jfoenix.controls.*;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -112,6 +115,18 @@ public class GlcdDeveloperController extends Controller {
     @FXML
     private JFXComboBox<GlcdFont> cbDefaultFont;
 
+    @FXML
+    private JFXListView<U8g2Message> lvFilters;
+
+    @FXML
+    private JFXComboBox<U8g2Message> cbFilters;
+
+    @FXML
+    private JFXButton btnAddFilter;
+
+    @FXML
+    private ToggleGroup filterType;
+
     private final DateTimeFormatter csvFileNameFormatter = DateTimeFormatter.ofPattern("YYYYMMddkkmmss'_EventLog.csv'");
 
     private ObjectProperty<Method> selectedMethod = new SimpleObjectProperty<>();
@@ -122,11 +137,13 @@ public class GlcdDeveloperController extends Controller {
 
     private GlcdDriver virtualDriver;
 
-    private ObservableList<EventLogEntry> logEntries = FXCollections.observableArrayList();
-
     private AtomicInteger numOfBytes = new AtomicInteger();
 
     private AtomicInteger eventIndex = new AtomicInteger(0);
+
+    private ObservableList<EventLogEntry> logEntries = FXCollections.observableArrayList();
+
+    private FilteredList<EventLogEntry> filteredLogEntries = logEntries.filtered(null);
 
     private final ObservableList<GlcdFont> glcdFontList = FXCollections.observableArrayList(GlcdFont.values());
 
@@ -199,8 +216,10 @@ public class GlcdDeveloperController extends Controller {
         eventIndex.setCellValueFactory(new PropertyValueFactory<>("eventIndex"));
         TableColumn<EventLogEntry, String> eventNameCol = new TableColumn<>("Event");
         eventNameCol.setCellValueFactory(new PropertyValueFactory<>("eventName"));
+        eventNameCol.setPrefWidth(200.0d);
         TableColumn<EventLogEntry, String> eventDesc = new TableColumn<>("Description");
         eventDesc.setCellValueFactory(new PropertyValueFactory<>("eventDescription"));
+        eventDesc.setPrefWidth(200.0d);
         TableColumn<EventLogEntry, String> valueHexCol = new TableColumn<>("Value (Hex)");
         valueHexCol.setCellValueFactory(new PropertyValueFactory<>("valueHex"));
         TableColumn<EventLogEntry, Integer> valueDecCol = new TableColumn<>("Value (Dec)");
@@ -210,10 +229,58 @@ public class GlcdDeveloperController extends Controller {
         tvEventLog.getColumns().addAll(eventIndex, eventNameCol, eventDesc, valueHexCol, valueDecCol);
 
         cbDefaultFont.setItems(glcdFontList);
-        tvEventLog.setItems(logEntries);
-        btnClearLogs.setOnAction(event -> tvEventLog.getItems().clear());
+        tvEventLog.setItems(filteredLogEntries);
+        btnClearLogs.setOnAction(event -> logEntries.clear());
         btnExportCsv.setOnAction(this::exportOutputToCSV);
         cbDefaultFont.disableProperty().bind(checkDefaultFont.selectedProperty().not());
+
+        lvFilters.setItems(FXCollections.observableArrayList());
+        lvFilters.getItems().addListener((InvalidationListener) observable -> updateLogFilters());
+        lvFilters.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        ContextMenu filterMenu = new ContextMenu();
+        MenuItem removeFilterMenu = new MenuItem();
+        MenuItem clearFiltersMenu = new MenuItem();
+        removeFilterMenu.setText("Remove Filter(s)");
+        removeFilterMenu.setOnAction(e -> {
+            for (U8g2Message selectedFilter : lvFilters.getSelectionModel().getSelectedItems()) {
+                log.debug("Removing filter: {}", selectedFilter);
+                lvFilters.getItems().remove(selectedFilter);
+            }
+        });
+
+        clearFiltersMenu.setText("Clear All");
+        clearFiltersMenu.setOnAction(e -> lvFilters.getItems().clear());
+        filterMenu.getItems().add(removeFilterMenu);
+        filterMenu.getItems().add(clearFiltersMenu);
+
+        lvFilters.setContextMenu(filterMenu);
+        btnAddFilter.setOnAction(event -> {
+            U8g2Message selectedMessage = cbFilters.getSelectionModel().getSelectedItem();
+            if (selectedMessage != null && !lvFilters.getItems().contains(selectedMessage))
+                lvFilters.getItems().add(selectedMessage);
+        });
+
+        cbFilters.setItems(FXCollections.observableArrayList(Arrays.stream(U8g2Message.values()).filter(p -> p.getType() == 1).collect(Collectors.toList())));
+
+        cbDisplay.getSelectionModel().select(0);
+
+        filterType.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null)
+                updateLogFilters();
+        });
+    }
+
+    private void updateLogFilters() {
+        log.debug("Updating filters");
+        filteredLogEntries.setPredicate(p -> {
+            if (filterType.getSelectedToggle() != null) {
+                if (filterType.getSelectedToggle().getUserData().equals("include")) {
+                    return lvFilters.getItems().stream().anyMatch(i -> i.name().equals(p.getEventName()));
+                }
+            }
+            return lvFilters.getItems().stream().noneMatch(i -> i.name().equals(p.getEventName()));
+        });
     }
 
     private void exportOutputToCSV(ActionEvent event) {
