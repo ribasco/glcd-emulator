@@ -129,6 +129,15 @@
     -fx-border-width: 2;
 }
 
+.jfx-radio-button {
+    -jfx-selected-color: #6897BB;
+    -jfx-unselected-color: #7a7a7a;
+}
+
+.jfx-radio-button .radio-container:hover {
+    -fx-cursor: hand;
+}
+
 .jfx-check-box:selected .box {
     -fx-border-color: -jfx-checked-color;
 }
@@ -427,4 +436,15 @@
     -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;
     /*    -fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;  8 1 8 1 */
     -fx-padding: 0.333333em 0.083333em 0.666667em 0.083333em; /* 4 1 8 1 */
+}
+
+.jfx-chip-view .jfx-chip > HBox {
+    -fx-font-family: "Roboto Medium";
+    -fx-font-size: 10.0;
+    -fx-background-color: #9d9d9d;
+    -fx-background-radius: 40px;
+    -fx-padding: 5px 8px 5px 12px;
+    -fx-pref-height: 25px;
+    -fx-alignment: center-left;
+    -fx-spacing: 8;
 }
