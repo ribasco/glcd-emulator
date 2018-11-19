@@ -28,6 +28,7 @@ package com.ibasco.glcdemulator.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibasco.glcdemulator.enums.SerialBaudRate;
+import com.ibasco.glcdemulator.exceptions.StaticInitializationException;
 import com.ibasco.glcdemulator.model.FontCacheEntry;
 import com.ibasco.glcdemulator.utils.json.adapters.*;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
@@ -48,15 +49,19 @@ public class JsonUtils {
     private static Gson gson;
 
     static {
-        builder = FxGson.createWithExtras().newBuilder();
-        builder.setPrettyPrinting();
-        //builder.registerTypeAdapter(Color.class, new ColorTypeAdapter());
-        builder.registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter());
-        builder.registerTypeAdapter(FontCacheEntry.class, new FontCacheEntryAdapter());
-        builder.registerTypeAdapter(SerialBaudRate.class, new SerialBaudRateAdapter());
-        builder.registerTypeAdapter(Class.class, new ClassTypeAdapter());
-        builder.registerTypeAdapter(GlcdDisplay.class, new GlcdDisplayAdapter());
-        refreshGson();
+        try {
+            builder = FxGson.createWithExtras().newBuilder();
+            builder.setPrettyPrinting();
+            //builder.registerTypeAdapter(Color.class, new ColorTypeAdapter());
+            builder.registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter());
+            builder.registerTypeAdapter(FontCacheEntry.class, new FontCacheEntryAdapter());
+            builder.registerTypeAdapter(SerialBaudRate.class, new SerialBaudRateAdapter());
+            builder.registerTypeAdapter(Class.class, new ClassTypeAdapter());
+            builder.registerTypeAdapter(GlcdDisplay.class, new GlcdDisplayAdapter());
+            refreshGson();
+        } catch (Exception e) {
+            throw new StaticInitializationException(e);
+        }
     }
 
     public static void refreshGson() {
