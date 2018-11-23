@@ -219,7 +219,7 @@
                                                          </font>
                                                      </Label>
                                                      <JFXComboBox fx:id="cbPixelShape" layoutX="605.0" layoutY="129.0" prefHeight="25.0" prefWidth="213.0" promptText="Pixel Shape"/>
-                                                     <JFXTextField fx:id="tfSelectedEmulator" editable="false" layoutX="843.0" layoutY="33.0" prefHeight="26.0" prefWidth="196.0" text="Emulator"/>
+                                                     <JFXTextField fx:id="tfSelectedDisplay" editable="false" layoutX="843.0" layoutY="33.0" prefHeight="26.0" prefWidth="196.0" text="Emulator"/>
                                                      <JFXButton fx:id="btnSelectEmulator" layoutX="1045.0" layoutY="34.0" prefHeight="25.0" prefWidth="60.0" text="Select"/>
                                                      <Label layoutX="843.0" layoutY="11.0" text="Controller/Bus Interface:">
                                                          <font>

@@ -329,7 +329,7 @@ public class GlcdEmulatorController extends Controller {
     private StackPane stackPaneRoot;
 
     @FXML
-    private JFXTextField tfSelectedEmulator;
+    private JFXTextField tfSelectedDisplay;
 
     @FXML
     private JFXButton btnSelectEmulator;
@@ -895,7 +895,7 @@ public class GlcdEmulatorController extends Controller {
         sizePane.disableProperty().bind(disabledBinding);
         apProfiles.disableProperty().bind(disabledBinding);
         btnReset.disableProperty().bind(disabledBinding);
-        tfSelectedEmulator.disableProperty().bind(disabledBinding);
+        tfSelectedDisplay.disableProperty().bind(disabledBinding);
         btnSelectEmulator.disableProperty().bind(disabledBinding);
         btnClearDisplay.disableProperty().bind(disabledBinding);
         cbBusInterface.disableProperty().bind(disabledBinding);
@@ -1233,6 +1233,8 @@ public class GlcdEmulatorController extends Controller {
                 modifierCtrlPressed.set(false);
             }
         });
+
+
     }
 
     private void setupConnectionTypeBindings() {
@@ -1549,8 +1551,7 @@ public class GlcdEmulatorController extends Controller {
 
         profileBindGroup.registerUnidirectional(busInterfaceList.predicateProperty(), busPredicateBinding);
         profileBindGroup.registerUnidirectional(profile.busInterfaceProperty(), cbBusInterface.getSelectionModel().selectedItemProperty());
-        //TODO: Rename tfSelectedEmulator to tfSelectedDisplay
-        profileBindGroup.registerUnidirectional(tfSelectedEmulator.textProperty(), Bindings.createStringBinding(() -> {
+        profileBindGroup.registerUnidirectional(tfSelectedDisplay.textProperty(), Bindings.createStringBinding(() -> {
             GlcdDisplay display = profile.getDisplay();
             if (display == null) {
                 return "None";
