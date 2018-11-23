@@ -36,10 +36,14 @@ import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.paint.*;
 import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
@@ -116,6 +120,8 @@ public class GlcdScreen extends Canvas {
     private Renderer renderer;
 
     private Counter fpsCounter = new Counter();
+
+    private ContextMenu cMenu = new ContextMenu();
 
     private final class Renderer extends AnimationTimer {
 
@@ -232,6 +238,19 @@ public class GlcdScreen extends Canvas {
                 draw();
             }
         });
+
+        MenuItem miDumpToClipboard = new MenuItem("Dump buffer to clipboard");
+        miDumpToClipboard.setOnAction(eh -> {
+            StringBuilder sb = new StringBuilder();
+            getBuffer().print(sb);
+            log.debug("\n{}", sb.toString());
+            ClipboardContent content = new ClipboardContent();
+            content.putString(sb.toString());
+            Clipboard.getSystemClipboard().setContent(content);
+        });
+        cMenu.getItems().add(miDumpToClipboard);
+
+        setOnContextMenuRequested(e -> cMenu.show(this, e.getScreenX(), e.getScreenY()));
     }
     //</editor-fold>
 
