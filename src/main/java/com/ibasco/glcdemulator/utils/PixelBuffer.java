@@ -30,6 +30,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class PixelBuffer {
 
     private static final Logger log = LoggerFactory.getLogger(PixelBuffer.class);
 
-    private byte buffer[][];
+    private byte[][] buffer;
 
     private ReadOnlyIntegerWrapper width = new ReadOnlyIntegerWrapper();
 
@@ -54,6 +55,8 @@ public class PixelBuffer {
     private ReadOnlyBooleanWrapper invalidated = new ReadOnlyBooleanWrapper();
 
     private boolean fair = true;
+
+    private int xOffset = 0, yOffset = 0;
 
     public PixelBuffer(byte[][] copy) {
         this.buffer = new byte[copy.length][copy[0].length];
@@ -104,9 +107,9 @@ public class PixelBuffer {
      * Write pixel data into the internal buffer
      *
      * @param x
-     *         The x-coordinate of the pixel in the buffer
+     *         The x-coordinate of a pixel in the buffer
      * @param y
-     *         The y-coordinate of the pixel in the buffer
+     *         The y-coordinate of a pixel in the buffer
      * @param state
      *         If value is > 0, pixel will be set to ON state, if <= 0 the state will be OFF
      */
@@ -114,20 +117,36 @@ public class PixelBuffer {
         write(x, y, state > 0);
     }
 
-    //TODO: Implement
     public void write(PixelBuffer buffer) {
         copyBuffer(buffer.getBuffer(), this.buffer);
     }
 
     /**
-     * Writes an 8-bit value to the buffer. The cursor will automatically be incremented by 8.
+     * Writes a 8-bit value to the buffer. The cursor will automatically be incremented by 8.
      *
      * @param data
-     *         A byte of data (8-bit) to be written
+     *         8-bit data to be written
      */
     public void write(byte data) {
+        buffer[yOffset][xOffset++] = data;
+        if (xOffset >= buffer[yOffset].length) {
+            yOffset++;
+            xOffset = 0;
+        }
+        markInvalid();
     }
 
+    public void reset() {
+        this.xOffset = 0;
+        this.yOffset = 0;
+    }
+
+    /**
+     * Writes a 16-bit value to the buffer. Cursor is automatically adjusted.
+     *
+     * @param data
+     *         16-bit data to be written
+     */
     public void write(short data) {
 
     }
@@ -196,6 +215,29 @@ public class PixelBuffer {
         }
         invalidated.set(false);
         return BitUtils.readBit(buffer[y][bufferX], x);
+    }
+
+    public void print(StringBuilder sb) {
+        sb.append(StringUtils.repeat('-', 114));
+        sb.append("\n");
+        sb.append(StringUtils.repeat(' ', 2));
+        for (int x0 = 0; x0 < buffer[0].length; x0++) {
+            sb.append(StringUtils.repeat(' ', 3));
+            sb.append(StringUtils.leftPad(String.valueOf(x0), 4));
+        }
+        sb.append("\n");
+        sb.append(StringUtils.repeat('-', 114));
+        sb.append("\n");
+        for (int y = 0; y < buffer.length; y++) {
+            sb.append(StringUtils.rightPad(String.valueOf(y), 3));
+            sb.append("| ");
+            for (int x = 0; x < buffer[y].length; x++) {
+                sb.append("0x");
+                sb.append(StringUtils.rightPad(ByteUtils.toHexString(buffer[y][x]), 4));
+                sb.append(" ");
+            }
+            sb.append("\n");
+        }
     }
 
     /**
@@ -339,10 +381,10 @@ public class PixelBuffer {
      *         The height (in pixels)
      */
     private void checkDimensions(Integer width, Integer height) {
-        if (width != null && ((width % 8) != 0)) {
+        if (width != null && ((width % 2) != 0)) {
             throw new InvalidPixelDimensions(width, height);
         }
-        if (height != null && ((height % 8) != 0))
+        if (height != null && ((height % 2) != 0))
             throw new InvalidPixelDimensions(width, height);
     }
 
