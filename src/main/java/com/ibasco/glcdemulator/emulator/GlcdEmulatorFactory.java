@@ -27,6 +27,7 @@ package com.ibasco.glcdemulator.emulator;
 
 import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.annotations.Emulator;
+import static com.ibasco.glcdemulator.emulator.BufferStrategyFactory.createBufferStrategy;
 import com.ibasco.glcdemulator.exceptions.EmulatorFactoryException;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
@@ -69,8 +70,14 @@ public class GlcdEmulatorFactory {
                     display.getDisplaySize().getDisplayHeight()
             );
         }
+
         emulator.setBusInterface(busInterface);
         emulator.setBuffer(buffer);
+        BufferStrategy bufferStrategy = createBufferStrategy(emulator.getClass());
+        bufferStrategy.setBuffer(buffer);
+        bufferStrategy.initialize();
+        emulator.setBufferStrategy(bufferStrategy);
+
         return emulator;
     }
 

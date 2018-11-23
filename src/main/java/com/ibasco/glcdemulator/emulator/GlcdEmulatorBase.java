@@ -41,6 +41,8 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
 
     private ObjectProperty<GlcdBusInterface> busInterface = new SimpleObjectProperty<>();
 
+    private BufferStrategy bufferStrategy;
+
     @Override
     public final PixelBuffer getBuffer() {
         return buffer.get();
@@ -59,5 +61,15 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
     @Override
     public final GlcdBusInterface getBusInterface() {
         return this.busInterface.get();
+    }
+
+    @Override
+    public BufferStrategy getBufferStrategy() {
+        return bufferStrategy;
+    }
+
+    @Override
+    public void setBufferStrategy(BufferStrategy bufferStrategy) {
+        this.bufferStrategy = bufferStrategy;
     }
 }

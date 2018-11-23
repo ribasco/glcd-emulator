@@ -26,6 +26,7 @@
 package com.ibasco.glcdemulator.emulator.st7920;
 
 import com.ibasco.glcdemulator.annotations.Emulator;
+import com.ibasco.glcdemulator.emulator.GlcdBufferStrategy;
 import com.ibasco.glcdemulator.emulator.GlcdEmulatorBase;
 import com.ibasco.glcdemulator.emulator.st7920.instructions.DdramSet;
 import com.ibasco.glcdemulator.exceptions.EmulatorProcessException;
@@ -36,10 +37,9 @@ import com.ibasco.ucgdisplay.core.u8g2.U8g2Message;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * ST7920 GLCD Emulator. Current implementation only supports spi/parallel interface (8-bit). Note that 4-bit parallel
@@ -56,7 +56,8 @@ import static org.slf4j.LoggerFactory.getLogger;
                 GlcdBusInterface.PARALLEL_6800,
                 GlcdBusInterface.PARALLEL_8080
         },
-        defaultBus = GlcdBusInterface.PARALLEL_8080
+        defaultBus = GlcdBusInterface.PARALLEL_8080,
+        bufferStrategy = GlcdBufferStrategy.SIMPLE_BUFFERING
 )
 public class ST7920Emulator extends GlcdEmulatorBase {
     private static final Logger log = getLogger(ST7920Emulator.class);
@@ -167,22 +168,22 @@ public class ST7920Emulator extends GlcdEmulatorBase {
                     }
                     break;
                 case DISPLAY_CLEAR:
-                    //not yet implemented
+                    //not implemented
                     break;
                 case ENTRY_MODE_SET:
                     //not yet implemented
                     break;
                 case HOME:
-                    //not yet implemented
+                    //not implemented
                     break;
                 case DISPLAY_CURSOR_CONTROL:
-                    //not yet implemented
+                    //not implemented
                     break;
                 case FUNCTION_SET:
-                    //not yet implemented
+                    //not implemented
                     break;
                 case DISPLAY_CONTROL:
-                    //not yet implemented
+                    //not implemented
                     break;
                 default:
                     break;

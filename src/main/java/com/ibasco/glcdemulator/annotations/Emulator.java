@@ -25,6 +25,7 @@
  */
 package com.ibasco.glcdemulator.annotations;
 
+import com.ibasco.glcdemulator.emulator.GlcdBufferStrategy;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 
@@ -58,4 +59,13 @@ public @interface Emulator {
      * Returns the default bus interface if nothing has been explicitly specified to the emulator instance
      */
     GlcdBusInterface defaultBus();
+
+    /**
+     * The buffering strategy determines the following:
+     * <ol>
+     * <li>How the incoming data should be read and processed</li>
+     * <li>How the processed data should be written to the {@link com.ibasco.glcdemulator.utils.PixelBuffer}</li>
+     * </ol>
+     */
+    GlcdBufferStrategy bufferStrategy() default GlcdBufferStrategy.PAGED_BUFFERING;
 }
