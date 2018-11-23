@@ -48,6 +48,8 @@ public class DriverFactory {
 
     private static final Logger log = LoggerFactory.getLogger(DriverFactory.class);
 
+    private static final int DUMMY_I2C_ADDRESS = 0x10;
+
     /**
      * Creates a virtual driver with the specified bus interface
      *
@@ -108,7 +110,7 @@ public class DriverFactory {
 
         //use a dummy i2c address
         if (busInterface.name().contains("I2C")) {
-            config.setDeviceAddress(0x10);
+            config.setDeviceAddress(DUMMY_I2C_ADDRESS);
         }
 
         return new GlcdDriver(config, true, handler);
