@@ -175,3 +175,9 @@
     -fx-font-family: "Consolas";
 }
 
+.jfx-snackbar-content {
+    -fx-background-color: #1f1f1f;
+    -fx-font-family: Consolas, "Courier New", Monospaced;
+    -fx-opacity: 0.8;
+    -fx-font-size: 16px;
+}
