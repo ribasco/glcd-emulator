@@ -29,10 +29,15 @@ import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.Controller;
 import com.ibasco.glcdemulator.DriverFactory;
 import com.ibasco.glcdemulator.Stages;
+import com.ibasco.glcdemulator.controls.GlcdScreen;
+import com.ibasco.glcdemulator.emulator.BufferStrategy;
+import com.ibasco.glcdemulator.emulator.BufferStrategyFactory;
+import com.ibasco.glcdemulator.emulator.GlcdBufferStrategy;
 import com.ibasco.glcdemulator.exceptions.ExportCSVException;
 import com.ibasco.glcdemulator.utils.ByteUtils;
 import com.ibasco.glcdemulator.utils.DialogUtil;
 import com.ibasco.glcdemulator.utils.FileUtils;
+import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.core.u8g2.U8g2Message;
 import com.ibasco.ucgdisplay.drivers.glcd.*;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
@@ -44,6 +49,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -54,12 +60,17 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,11 +87,17 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GlcdDeveloperController extends Controller {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdDeveloperController.class);
     private static final String DEFAULT_BASE64_VAL = "I2RlZmluZSByYXNwYmVycnlwaV9zbWFsbF93aWR0aCA5NQ0KI2RlZmluZSByYXNwYmVycnlwaV9zbWFsbF9oZWlnaHQgNzQNCnN0YXRpYyB1bnNpZ25lZCBjaGFyIHJhc3BiZXJyeXBpX3NtYWxsX2JpdHNbXSA9IHsNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHg3ZiwgMHgwMCwgMHg4MCwgMHgzZiwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4ZjgsIDB4ZmYsIDB4MDMsIDB4ZjAsIDB4ZmYsIDB4MDcsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDdlLCAweGFiLCAweDBmLCAweDdjLCAweGE1LCAweDFmLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwZiwgMHgwMCwgMHgxZSwgMHgxZSwgMHgwMCwgMHgzYywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDMsIDB4MDAsIDB4MzgsIDB4MDcsIDB4MDAsIDB4MzAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDA3LCAweDAwLCAweDMwLCAweDAzLCAweDAwLCAweDMwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMywgMHgwMSwgMHhlMCwgMHgwMSwgMHgwMCwgMHgzMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDcsIDB4MDQsIDB4ZTAsIDB4MDEsIDB4MDgsIDB4MzAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAzLCAweDE4LCAweGMwLCAweDAxLCAweDA2LCAweDMwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwNiwgMHg2MCwgMHhjMCwgMHg4MSwgMHgwMSwgMHgxOCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MGUsIDB4ODAsIDB4YzEsIDB4YzEsIDB4MDAsIDB4MWMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDBlLCAweDAwLCAweGUzLCAweDMxLCAweDAwLCAweDFjLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgxYywgMHgwMCwgMHhmNiwgMHgxYiwgMHgwMCwgMHgwZSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MTgsIDB4MDAsIDB4ZmMsIDB4MGYsIDB4MDAsIDB4MDYsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDMwLCAweDAwLCAweGZjLCAweDBmLCAweDAwLCAweDAzLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHg3MCwgMHgwMCwgMHhmYywgMHgxZiwgMHg4MCwgMHgwMywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4YzAsIDB4MDAsIDB4ZmYsIDB4M2YsIDB4YzAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweGMwLCAweGM3LCAweGZmLCAweGZmLCAweGY4LCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHhmZiwgMHgwZiwgMHhmYywgMHgzZiwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4YzAsIDB4ODcsIDB4MDMsIDB4ZjAsIDB4ZmMsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweGUwLCAweDgxLCAweDAxLCAweDYwLCAweGUwLCAweDAxLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHg3MCwgMHhjMCwgMHgwMCwgMHhjMCwgMHg4MCwgMHgwMywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MzAsIDB4ZTAsIDB4MDEsIDB4YzAsIDB4MDEsIDB4MDMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDM4LCAweGYwLCAweDAxLCAweGUwLCAweDAzLCAweDA3LCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgxOCwgMHhmOCwgMHgwMywgMHhmMCwgMHgwNywgMHgwNiwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MTgsIDB4ZmMsIDB4M2YsIDB4ZmUsIDB4MGYsIDB4MDYsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDFjLCAweDNmLCAweGZjLCAweDBmLCAweDNlLCAweDBlLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHg5YywgMHgwZiwgMHhmOCwgMHgwMywgMHg3OCwgMHgwZSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4ZmMsIDB4MDMsIDB4ZTAsIDB4MDMsIDB4ZjAsIDB4MGYsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweGZlLCAweDAzLCAweGUwLCAweDAxLCAweGUwLCAweDFmLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHhlZiwgMHgwMSwgMHhlMCwgMHgwMSwgMHhjMCwgMHgzOSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4ODAsIDB4ZTMsIDB4MDAsIDB4YzAsIDB4MDEsIDB4YzAsIDB4NzEsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDgwLCAweGUxLCAweDAwLCAweGMwLCAweDAxLCAweGMwLCAweDYxLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHhjMCwgMHhjMSwgMHgwMCwgMHhjMCwgMHgwMSwgMHg4MCwgMHhlMSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4YzAsIDB4ZTAsIDB4MDAsIDB4ZTAsIDB4MDEsIDB4ODAsIDB4YzEsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweGMwLCAweGUwLCAweDAwLCAweGUwLCAweDAxLCAweDgwLCAweGMxLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHhlMCwgMHhlMCwgMHgwMCwgMHhlMCwgMHgwMywgMHhjMCwgMHhjMSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4ZTAsIDB4ZTAsIDB4MDAsIDB4ZjAsIDB4MDcsIDB4YzAsIDB4YzEsIDB4MDEsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweGMwLCAweGUwLCAweDAxLCAweGY4LCAweDBmLCAweGUwLCAweGMxLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHhjMCwgMHhlMCwgMHgwMywgMHhmYywgMHgxZiwgMHhmMCwgMHhjMSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4YzAsIDB4ZjEsIDB4MGYsIDB4MDcsIDB4ZjgsIDB4ZmYsIDB4ZTMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDgwLCAweGYxLCAweGZmLCAweDAzLCAweGYwLCAweGZmLCAweDYzLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHg4MCwgMHhmYiwgMHhmZiwgMHgwMSwgMHhlMCwgMHgzZiwgMHg3ZSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MWYsIDB4ZmYsIDB4MDAsIDB4YzAsIDB4MGYsIDB4M2MsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDBmLCAweGZjLCAweDAwLCAweGMwLCAweDA3LCAweDNjLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwZSwgMHhmOCwgMHgwMCwgMHg4MCwgMHgwMywgMHgxYywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MGUsIDB4ZjAsIDB4MDAsIDB4ODAsIDB4MDEsIDB4MWMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDBlLCAweGUwLCAweDAwLCAweGMwLCAweDAxLCAweDFjLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwYywgMHhjMCwgMHgwMCwgMHhjMCwgMHgwMCwgMHgwYywgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MGMsIDB4YzAsIDB4MDEsIDB4YzAsIDB4MDAsIDB4MGMsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDFjLCAweGMwLCAweDAxLCAweDYwLCAweDAwLCAweDBjLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgxOCwgMHg4MCwgMHgwNywgMHg3MCwgMHgwMCwgMHgwNiwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MzgsIDB4ODAsIDB4MGYsIDB4N2MsIDB4MDAsIDB4MDcsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDcwLCAweGMwLCAweGZmLCAweDdmLCAweDgwLCAweDAzLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHhlMCwgMHhjMSwgMHhmZiwgMHhmZiwgMHhlMCwgMHgwMSwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4YzAsIDB4ZmYsIDB4MDcsIDB4ZjgsIDB4ZmYsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweGZmLCAweDAxLCAweGMwLCAweDNmLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHhmYywgMHgwMCwgMHhjMCwgMHgwZiwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4ZjgsIDB4MDAsIDB4YzAsIDB4MDcsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweGUwLCAweDAxLCAweGUwLCAweDAxLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHg4MCwgMHgwNywgMHg3MCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MWYsIDB4M2UsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweGZjLCAweDBmLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHhmMCwgMHgwMywgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLA0KICAgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwgMHgwMCwNCiAgIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsIDB4MDAsDQogICAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwLCAweDAwIH07DQo=";
+    private static final Set<Class<?>> primitiveNumbers = Stream.of(int.class, long.class, float.class, double.class, byte.class, short.class).collect(Collectors.toSet());
+
+    //<editor-fold desc="UI Controls">
+    @FXML
+    private VBox vbRoot;
 
     @FXML
     private JFXComboBox<GlcdDisplayDetails> cbDisplay;
@@ -127,6 +144,21 @@ public class GlcdDeveloperController extends Controller {
     @FXML
     private ToggleGroup filterType;
 
+    @FXML
+    private JFXCheckBox checkAutoGen;
+
+    @FXML
+    private GlcdScreen screenOutput;
+
+    @FXML
+    private JFXCheckBox checkUseBufferStrategy;
+
+    @FXML
+    private JFXComboBox<GlcdBufferStrategy> cbBufferStrategy;
+
+    private JFXSnackbar snackbar;
+    //</editor-fold>
+
     private final DateTimeFormatter csvFileNameFormatter = DateTimeFormatter.ofPattern("YYYYMMddkkmmss'_EventLog.csv'");
 
     private ObjectProperty<Method> selectedMethod = new SimpleObjectProperty<>();
@@ -147,6 +179,12 @@ public class GlcdDeveloperController extends Controller {
 
     private final ObservableList<GlcdFont> glcdFontList = FXCollections.observableArrayList(GlcdFont.values());
 
+    private PixelBuffer frameBuffer;
+
+    private ObservableList<GlcdBufferStrategy> bufferStrategyList = FXCollections.observableArrayList(GlcdBufferStrategy.values());
+
+    private BufferStrategy bufferStrategy;
+
     private GlcdDriverEventHandler eventHandler = event -> {
         String name = event.getMessage().name();
         String desc = event.getMessage().getDescription();
@@ -159,6 +197,9 @@ public class GlcdDeveloperController extends Controller {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
+        snackbar = new JFXSnackbar(vbRoot);
+
+        cbBufferStrategy.setItems(bufferStrategyList);
 
         log.debug("Initializing developer controller");
         gpParams.getChildren().clear();
@@ -174,10 +215,7 @@ public class GlcdDeveloperController extends Controller {
         gpParams.getColumnConstraints().add(0, alignLabel);
         gpParams.getColumnConstraints().add(1, alignLabel);
 
-        cbDisplay.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            log.debug("Initializing virtual driver...");
-            virtualDriver = DriverFactory.createVirtual(newValue.display, newValue.busInterface, eventHandler);
-        });
+        cbDisplay.getSelectionModel().selectedItemProperty().addListener(this::onDisplayChange);
 
         btnInvoke.setOnAction(this::invokeCurrentMethod);
         cbDrawOperation.setCellFactory(new Callback<ListView<Method>, ListCell<Method>>() {
@@ -269,6 +307,83 @@ public class GlcdDeveloperController extends Controller {
             if (newValue != null)
                 updateLogFilters();
         });
+
+        cbDefaultFont.getSelectionModel().select(0);
+
+        ContextMenu eventLogMenu = new ContextMenu();
+        MenuItem miCopyValuesHex = new MenuItem("Copy HEX value(s)");
+        miCopyValuesHex.setUserData("hex");
+        miCopyValuesHex.setOnAction(this::copySelectedValues);
+        MenuItem miCopyValuesDec = new MenuItem("Copy DEC value(s)");
+        miCopyValuesDec.setOnAction(this::copySelectedValues);
+        miCopyValuesDec.setUserData("dec");
+        MenuItem miCountBytes = new MenuItem("Count");
+        miCountBytes.setOnAction(event -> {
+            DialogUtil.showInfo("Total selected bytes: " + tvEventLog.getSelectionModel().getSelectedItems().size(), "");
+        });
+
+        eventLogMenu.getItems().addAll(miCopyValuesHex, miCopyValuesDec, miCountBytes);
+
+        tvEventLog.setContextMenu(eventLogMenu);
+        tvEventLog.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        screenOutput.setInactivePixelColor(Color.WHITE);
+        screenOutput.setActivePixelColor(Color.WHITE);
+        screenOutput.setBacklightColor(Color.BLACK);
+        screenOutput.setPixelSize(3.10d);
+    }
+
+    private void onDisplayChange(ObservableValue observable, GlcdDisplayDetails oldValue, GlcdDisplayDetails newValue) {
+        GlcdDisplay display = newValue.display;
+
+        log.debug("Initializing virtual driver...");
+        int displayWidth = display.getDisplaySize().getDisplayWidth();
+        int displayHeight = display.getDisplaySize().getDisplayHeight();
+
+        virtualDriver = DriverFactory.createVirtual(display, newValue.busInterface, eventHandler);
+        log.debug("Frame buffer dimensions updated (Width = {}, Height = {})", displayWidth, displayHeight);
+
+        if (frameBuffer == null) {
+            frameBuffer = new PixelBuffer(displayWidth, displayHeight);
+        } else {
+            frameBuffer.resize(displayWidth, displayHeight);
+        }
+
+        refreshBufferStrategy();
+
+        screenOutput.setBuffer(frameBuffer);
+        if (screenOutput.isRunning())
+            screenOutput.start();
+    }
+
+    private void refreshBufferStrategy() {
+        if (checkUseBufferStrategy.isSelected()) {
+            log.debug("Using custom buffer strategy: {}", cbBufferStrategy.getSelectionModel().getSelectedItem());
+            bufferStrategy = BufferStrategyFactory.createBufferStrategy(cbBufferStrategy.getSelectionModel().getSelectedItem());
+        } else {
+            log.debug("Using default buffer strategy: {}", GlcdBufferStrategy.PAGED_BUFFERING);
+            bufferStrategy = BufferStrategyFactory.createBufferStrategy(GlcdBufferStrategy.PAGED_BUFFERING);
+        }
+        bufferStrategy.setBuffer(frameBuffer);
+        bufferStrategy.initialize();
+    }
+
+    private void copySelectedValues(ActionEvent event) {
+        if (tvEventLog.getSelectionModel().getSelectedItems().size() > 0) {
+            String valueType = StringUtils.defaultString((String) ((MenuItem) event.getSource()).getUserData(), "hex");
+
+            List<String> data = new ArrayList<>();
+            for (EventLogEntry entry : tvEventLog.getSelectionModel().getSelectedItems()) {
+                if (valueType.equals("hex")) {
+                    data.add(entry.getValueHex());
+                } else if (valueType.equals("dec")) {
+                    data.add(String.valueOf(entry.getValueDec()));
+                }
+            }
+            ClipboardContent content = new ClipboardContent();
+            content.putString(String.join(", ", data));
+            Clipboard.getSystemClipboard().setContent(content);
+        }
     }
 
     private void updateLogFilters() {
@@ -357,13 +472,17 @@ public class GlcdDeveloperController extends Controller {
                     }
                 }
 
+                refreshBufferStrategy();
+
+                virtualDriver.clearBuffer();
                 Object retval = currentMethod.method.invoke(virtualDriver, currentMethod.toValueArgs());
 
                 if (cbSendBuffer.isSelected()) {
                     virtualDriver.sendBuffer();
                 }
 
-                DialogUtil.showInfo("Success", "Method invoked successfully" + ((retval != null) ? " (Return Value: " + String.valueOf(retval) + ")" : ""));
+                refreshOutput(virtualDriver.getBuffer());
+                snackbar.show("Method invoked successfully" + ((retval != null) ? " (Return Value: " + String.valueOf(retval) + ")" : ""), 5000);
                 lblBytesReceived.setText(String.valueOf(numOfBytes.getAndSet(0)));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 log.error("Invocation error", e);
@@ -379,6 +498,16 @@ public class GlcdDeveloperController extends Controller {
                 }
                 DialogUtil.showError(e.getClass().getSimpleName(), message, Stages.getDeveloperStage());
             }
+        }
+    }
+
+    private void refreshOutput(byte[] buffer) {
+        log.info("Refreshing framebuffer with {} bytes of data", buffer.length);
+        screenOutput.start();
+        frameBuffer.reset();
+        bufferStrategy.reset();
+        for (byte data : buffer) {
+            bufferStrategy.processByte(data);
         }
     }
 
@@ -400,6 +529,9 @@ public class GlcdDeveloperController extends Controller {
 
         try {
             int argIndex = 0;
+
+            boolean autogen = checkAutoGen.isSelected();
+
             for (MethodParam param : details.arguments) {
                 log.debug("\tParam = {}, Type: {}", param.parameter.getName(), param.parameter.getType());
                 gpParams.add(new Label(param.parameter.getName() + " (" + param.parameter.getType().getSimpleName() + ")"), 0, row);
@@ -407,7 +539,9 @@ public class GlcdDeveloperController extends Controller {
                 Node valueField;
                 MethodParam methodParam = details.arguments.get(argIndex++);
 
-                if (param.parameter.getType().isEnum()) {
+                Class<?> paramType = param.parameter.getType();
+
+                if (paramType.isEnum()) {
                     JFXComboBox comboBox = new JFXComboBox();
                     methodParam.value.bind(comboBox.getSelectionModel().selectedItemProperty());
                     Field enumField = param.parameter.getType().getDeclaredField("$VALUES");
@@ -415,8 +549,9 @@ public class GlcdDeveloperController extends Controller {
                     Enum[] e = (Enum[]) enumField.get(null);
                     //noinspection unchecked
                     comboBox.setItems(FXCollections.observableArrayList(e));
+                    comboBox.getSelectionModel().select(RandomUtils.nextInt(0, comboBox.getItems().size() - 1));
                     valueField = comboBox;
-                } else if (param.parameter.getType().equals(File.class)) {
+                } else if (paramType.equals(File.class)) {
                     GridPane gpFileChooser = new GridPane();
                     JFXTextField textField = new JFXTextField("Select File");
                     textField.setEditable(false);
@@ -432,12 +567,13 @@ public class GlcdDeveloperController extends Controller {
                     gpFileChooser.add(textField, 0, 0);
                     gpFileChooser.add(button, 1, 0);
                     valueField = gpFileChooser;
-                } else if (param.parameter.getType().equals(boolean.class)) {
+                } else if (paramType.equals(boolean.class)) {
                     JFXComboBox<Boolean> comboBox = new JFXComboBox<>();
                     comboBox.setItems(FXCollections.observableArrayList(true, false));
                     methodParam.value.bind(comboBox.getSelectionModel().selectedItemProperty());
+                    comboBox.getSelectionModel().select(RandomUtils.nextInt(0, comboBox.getItems().size() - 1));
                     valueField = comboBox;
-                } else if (param.parameter.getType().equals(byte[].class)) {
+                } else if (paramType.equals(byte[].class)) {
                     JFXTextField textField = new JFXTextField();
                     textField.setPromptText("Enter base64 encoded string");
                     methodParam.value.bind(textField.textProperty());
@@ -445,6 +581,15 @@ public class GlcdDeveloperController extends Controller {
                 } else {
                     JFXTextField textField = new JFXTextField();
                     methodParam.value.bind(textField.textProperty());
+
+                    if (autogen) {
+                        if (isNumericType(paramType)) {
+                            textField.setText(String.valueOf(RandomUtils.nextInt(1, 100)));
+                        } else if (paramType.equals(String.class)) {
+                            textField.setText("test string");
+                        }
+                    }
+
                     valueField = textField;
                 }
 
@@ -456,6 +601,14 @@ public class GlcdDeveloperController extends Controller {
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static boolean isNumericType(Class<?> cls) {
+        if (cls.isPrimitive()) {
+            return primitiveNumbers.contains(cls);
+        } else {
+            return Number.class.isAssignableFrom(cls);
         }
     }
 
