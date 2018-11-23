@@ -381,10 +381,10 @@ public class PixelBuffer {
      *         The height (in pixels)
      */
     private void checkDimensions(Integer width, Integer height) {
-        if (width != null && ((width % 2) != 0)) {
+        if (width != null && ((width % 8) != 0)) {
             throw new InvalidPixelDimensions(width, height);
         }
-        if (height != null && ((height % 2) != 0))
+        if (height != null && ((height % 8) != 0))
             throw new InvalidPixelDimensions(width, height);
     }
 
