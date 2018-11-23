@@ -55,4 +55,14 @@ public class ByteUtils {
             sb.append(" ");
         }
     }
+
+    public static byte reverse(byte x) {
+        byte b = 0;
+        for (int i = 0; i < 8; ++i) {
+            b <<= 1;
+            b |= (x & 1);
+            x >>= 1;
+        }
+        return b;
+    }
 }
