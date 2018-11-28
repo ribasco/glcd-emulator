@@ -50,7 +50,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Rafael Ibasco
  */
+@SuppressWarnings("Duplicates")
 public class ScannerService extends Service<ObservableList<GlcdDisplay>> {
+
+    public static final ClassInfoList.ClassInfoFilter FILTER_ANNOTATED_ONLY = f -> !f.isAbstract() && f.hasAnnotation(Emulator.class.getName());
+
+    public static final ClassInfoList.ClassInfoFilter FILTER_NONE = f -> !f.isAbstract();
 
     private static final Logger log = LoggerFactory.getLogger(ScannerService.class);
 
@@ -59,6 +64,36 @@ public class ScannerService extends Service<ObservableList<GlcdDisplay>> {
     private final AtomicBoolean forceRefresh = new AtomicBoolean(false);
 
     private static final String WHITELIST_PACKAGE = "com.ibasco";
+
+    private ClassInfoList.ClassInfoFilter filter = FILTER_NONE;
+
+    public final Task<ObservableList<GlcdDisplay>> TASK_SCAN_BY_AVAILABLE_EMULATOR = new Task<ObservableList<GlcdDisplay>>() {
+        @Override
+        protected ObservableList<GlcdDisplay> call() throws Exception {
+            if (!cache.isEmpty() && !forceRefresh.get()) {
+                log.debug("Returning cached entries");
+                return cache;
+            }
+            try (ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages(WHITELIST_PACKAGE).scan()) {
+                ClassInfoList classInfo = scanResult.getClassesImplementing(GlcdEmulator.class.getName()).filter(filter);
+                List<Class<GlcdEmulator>> result = classInfo.loadClasses(GlcdEmulator.class);
+
+                if (!result.isEmpty()) {
+                    cache.clear();
+                    for (Class<GlcdEmulator> emulatorClass : result) {
+                        GlcdControllerType type = emulatorClass.getAnnotation(Emulator.class).controller();
+                        List<GlcdDisplay> displayList = GlcdUtil.findDisplay(d -> d.getController().equals(type));
+                        if (displayList != null && !displayList.isEmpty())
+                            cache.addAll(displayList);
+                    }
+                }
+                log.debug("Refreshed {} cached item(s)", cache.size());
+            } finally {
+                Platform.runLater(() -> forceRefresh.set(false));
+            }
+            return cache;
+        }
+    };
 
     public ScannerService() {
         setExecutor(Context.getTaskExecutor());
@@ -72,29 +107,21 @@ public class ScannerService extends Service<ObservableList<GlcdDisplay>> {
         this.forceRefresh.set(forceRefresh);
     }
 
+    public void setFilter(ClassInfoList.ClassInfoFilter filter) {
+        this.filter = filter;
+    }
+
     @Override
     protected Task<ObservableList<GlcdDisplay>> createTask() {
         return new Task<ObservableList<GlcdDisplay>>() {
             @Override
-            protected ObservableList<GlcdDisplay> call() {
+            protected ObservableList<GlcdDisplay> call() throws Exception {
                 if (!cache.isEmpty() && !forceRefresh.get()) {
-                    log.debug("Returning cached entries");
+                    log.debug("Returning cached entries (Total: {})", cache.size());
                     return cache;
                 }
-                try (ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages(WHITELIST_PACKAGE).scan()) {
-                    ClassInfoList classInfo = scanResult.getClassesImplementing(GlcdEmulator.class.getName()).filter(f -> !f.isAbstract() && f.hasAnnotation(Emulator.class.getName()));
-                    List<Class<GlcdEmulator>> result = classInfo.loadClasses(GlcdEmulator.class);
-
-                    if (!result.isEmpty()) {
-                        cache.clear();
-                        for (Class<GlcdEmulator> emulatorClass : result) {
-                            GlcdControllerType type = emulatorClass.getAnnotation(Emulator.class).controller();
-                            List<GlcdDisplay> displayList = GlcdUtil.findDisplay(d -> d.getController().equals(type));
-                            if (displayList != null && !displayList.isEmpty())
-                                cache.addAll(displayList);
-                        }
-                    }
-                    log.debug("Refreshed {} cached item(s)", cache.size());
+                try {
+                    cache.addAll(GlcdUtil.getDisplayList());
                 } finally {
                     Platform.runLater(() -> forceRefresh.set(false));
                 }
