@@ -96,10 +96,7 @@ public class DriverFactory {
     public static GlcdDriver createVirtual(GlcdDisplay display, GlcdBusInterface busInterface, GlcdDriverEventHandler handler) {
 
         if (busInterface == null)
-            throw new IllegalStateException("Bus interface not specified");
-
-        if (handler == null)
-            throw new IllegalStateException("No data processor assigned for display '" + display.getName() + "'");
+            throw new IllegalArgumentException("Bus interface cannot be null");
 
         GlcdConfig config = GlcdConfigBuilder
                 .create()
