@@ -82,18 +82,17 @@ public class GlcdEmulatorFactory {
     }
 
     /**
-     * Scans for classes in the classpath which match against the provided {@link GlcdControllerType}
+     * Scans for classes within the project classpath matching the provided {@link GlcdControllerType}
      *
      * @param type
      *         The {@link GlcdControllerType} to scan
      *
      * @return An instance of {@link GlcdEmulator} or null if nothing has been found
      */
+    @SuppressWarnings("Duplicates")
     public static GlcdEmulator createFrom(GlcdControllerType type) {
         try (ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages(Context.class.getPackage().getName()).scan()) {
-            ClassInfoList classInfo = scanResult
-                    .getClassesImplementing(GlcdEmulator.class.getName())
-                    .filter(f -> !f.isAbstract() && f.hasAnnotation(Emulator.class.getName()));
+            ClassInfoList classInfo = scanResult.getClassesImplementing(GlcdEmulator.class.getName()).filter(f -> !f.isAbstract() && f.hasAnnotation(Emulator.class.getName()));
             List<Class<GlcdEmulator>> result = classInfo.loadClasses(GlcdEmulator.class);
             if (result.size() > 0) {
                 for (Class<GlcdEmulator> emulatorClass : result) {
