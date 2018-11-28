@@ -61,6 +61,7 @@ public class GlcdUtil {
         return getDisplayList().stream().filter(filter).collect(Collectors.toList());
     }
 
+    @SuppressWarnings("Duplicates")
     public static Class<? extends GlcdEmulator> findEmulatorClass(GlcdDisplay display) {
         if (display == null)
             throw new IllegalArgumentException("Display argument cannot be null");
