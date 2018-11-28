@@ -25,23 +25,23 @@
  */
 package com.ibasco.glcdemulator.exceptions;
 
-public class EmulatorServiceException extends RuntimeException {
-    public EmulatorServiceException() {
+public class DisplayServiceException extends RuntimeException {
+    public DisplayServiceException() {
     }
 
-    public EmulatorServiceException(String message) {
+    public DisplayServiceException(String message) {
         super(message);
     }
 
-    public EmulatorServiceException(String message, Throwable cause) {
+    public DisplayServiceException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public EmulatorServiceException(Throwable cause) {
+    public DisplayServiceException(Throwable cause) {
         super(cause);
     }
 
-    public EmulatorServiceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public DisplayServiceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }
