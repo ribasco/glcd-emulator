@@ -26,16 +26,28 @@
 package com.ibasco.glcdemulator.emulator;
 
 public enum GlcdBufferStrategy {
-    PAGED_BUFFERING(PagedBufferingStrategy.class),
-    SIMPLE_BUFFERING(SimpleBufferingStrategy.class);
+    PAGED_BUFFERING(PagedBufferingStrategy.class, "Paged"),
+    SIMPLE_BUFFERING(SimpleBufferingStrategy.class, "Basic");
 
-    private Class<? extends BufferStrategy> getStrategyClass;
+    private Class<? extends BufferStrategy> strategyClass;
 
-    GlcdBufferStrategy(Class<? extends BufferStrategy> cls) {
-        this.getStrategyClass = cls;
+    private String name;
+
+    GlcdBufferStrategy(Class<? extends BufferStrategy> cls, String name) {
+        this.strategyClass = cls;
+        this.name = name;
     }
 
-    Class<? extends BufferStrategy> getStrategyClass() {
-        return getStrategyClass;
+    public String getName() {
+        return name;
+    }
+
+    public Class<? extends BufferStrategy> getStrategyClass() {
+        return strategyClass;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }
