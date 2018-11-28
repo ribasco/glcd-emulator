@@ -13,312 +13,313 @@
 <?import javafx.scene.text.*?>
 <?import org.controlsfx.control.StatusBar?>
 <VBox fx:id="vbRoot" minHeight="726.0" minWidth="1119.0" prefHeight="726.0" prefWidth="1119.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdEmulatorController">
-   <children>
-       <MenuBar fx:id="mbMain" VBox.vgrow="ALWAYS">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
+    <children>
+        <MenuBar fx:id="mbMain" VBox.vgrow="ALWAYS">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem fx:id="menuEmulatorControl" mnemonicParsing="false" text="Start Emulator"/>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="menuSaveSettings" mnemonicParsing="false" text="Save Settings">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="menuSaveScreen" mnemonicParsing="false" text="Save Screen">
+                            <accelerator>
+                                <KeyCodeCombination alt="ANY" code="F5" control="ANY" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="menuSaveScreenAs" mnemonicParsing="false" text="Save Screen As">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="F12" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="menuExit" mnemonicParsing="false" text="Exit">
+                            <accelerator>
+                                <KeyCodeCombination alt="ANY" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="View">
+                    <items>
+                        <CheckMenuItem fx:id="menuAlwaysOnTop" mnemonicParsing="false" text="Always on Top"/>
+                        <CheckMenuItem fx:id="menuShowToolbar" mnemonicParsing="false" text="Show Toolbar">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="H" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </CheckMenuItem>
+                        <MenuItem fx:id="menuFitScreenToWindow" mnemonicParsing="false" text="Fit Window to Screen">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="T" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="menuOpenFontBrowser" mnemonicParsing="false" text="Font Browser"/>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <CheckMenuItem fx:id="menuSettings" mnemonicParsing="false" text="Settings"/>
+                        <CheckMenuItem fx:id="menuPinActivity" disable="true" mnemonicParsing="false" text="Activity"/>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <Menu mnemonicParsing="false" text="Themes">
+                            <items>
+                                <RadioMenuItem fx:id="menuThemeDefault" mnemonicParsing="false" text="Default" userData="menuThemeDefault">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="menuThemes"/>
+                                    </toggleGroup>
+                                </RadioMenuItem>
+                                <RadioMenuItem fx:id="menuThemeDark" mnemonicParsing="false" text="Dark" toggleGroup="$menuThemes" userData="menuThemeDark"/>
+                            </items>
+                        </Menu>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem fx:id="menuCheckUpdates" mnemonicParsing="false" text="Check for Updates">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="menuReportIssue" mnemonicParsing="false" text="Report Issue"/>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="menuAbout" mnemonicParsing="false" text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <ToolBar fx:id="tbMain" prefHeight="26.0" prefWidth="1119.0" styleClass="toolbar" VBox.vgrow="ALWAYS">
             <items>
-                <MenuItem fx:id="menuEmulatorControl" mnemonicParsing="false" text="Start Emulator"/>
-                <SeparatorMenuItem mnemonicParsing="false"/>
-                  <MenuItem fx:id="menuSaveSettings" mnemonicParsing="false" text="Save Settings">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator>
-                  </MenuItem>
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="menuSaveScreen" mnemonicParsing="false" text="Save Screen">
-                      <accelerator>
-                          <KeyCodeCombination alt="ANY" code="F5" control="ANY" meta="UP" shift="UP" shortcut="UP" />
-                      </accelerator>
-                  </MenuItem>
-                  <MenuItem fx:id="menuSaveScreenAs" mnemonicParsing="false" text="Save Screen As">
-                      <accelerator>
-                          <KeyCodeCombination alt="UP" code="F12" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                      </accelerator>
-                  </MenuItem>
-                  <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem fx:id="menuExit" mnemonicParsing="false" text="Exit">
-                     <accelerator>
-                        <KeyCodeCombination alt="ANY" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator>
-              </MenuItem>
+                <JFXButton fx:id="btnSaveSettings" mnemonicParsing="false" prefHeight="30.0" prefWidth="92.0" text="Save" textAlignment="CENTER" wrapText="true">
+                    <graphic>
+                        <MaterialDesignIconView glyphName="CONTENT_SAVE" size="20"/>
+                    </graphic>
+                </JFXButton>
+                <JFXButton fx:id="btnFitScreenToWindow" mnemonicParsing="false" prefHeight="30.0" prefWidth="123.0" text="Fit Window" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                    <graphic>
+                        <MaterialDesignIconView glyphName="WINDOW_MAXIMIZE" size="20"/>
+                    </graphic>
+                </JFXButton>
+                <JFXButton fx:id="btnShowFontBrowser" prefHeight="31.0" prefWidth="100.0" text="Fonts">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="FONT" size="20"/>
+                    </graphic>
+                </JFXButton>
+                <JFXButton fx:id="btnDeveloper" prefHeight="31.0" prefWidth="114.0" text="Developer">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="CODE" size="20"/>
+                    </graphic>
+                </JFXButton>
+                <JFXButton fx:id="btnDonate" mnemonicParsing="false" prefHeight="29.0" prefWidth="102.0" text="Donate" visible="false">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="PAYPAL" size="16"/>
+                    </graphic>
+                </JFXButton>
+                <Pane minWidth="-Infinity" prefHeight="31.0" prefWidth="110.0" HBox.hgrow="ALWAYS"/>
+                <JFXToggleButton fx:id="tbListen" accessibleHelp="Toggle to start listening for remote connections" mnemonicParsing="false" prefHeight="29.0" prefWidth="156.0" styleClass="service-toggle" text="Start" toggleColor="#24cd15" toggleLineColor="#88b969" unToggleColor="#544242" unToggleLineColor="#a18f8f"/>
+                <JFXToggleButton fx:id="btnShowSettings" mnemonicParsing="false" prefHeight="29.0" prefWidth="156.0" text="Settings" textAlignment="CENTER">
+                    <graphic>
+                        <MaterialDesignIconView glyphName="SETTINGS" size="20"/>
+                    </graphic>
+                </JFXToggleButton>
+                <JFXToggleButton fx:id="btnShowPinActivity" disable="true" mnemonicParsing="false" prefHeight="29.0" prefWidth="156.0" text="Activity" textAlignment="CENTER" visible="false">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="MAP_PIN" size="20"/>
+                    </graphic>
+                </JFXToggleButton>
             </items>
-          </Menu>
-            <Menu mnemonicParsing="false" text="View">
-              <items>
-                  <CheckMenuItem fx:id="menuAlwaysOnTop" mnemonicParsing="false" text="Always on Top" />
-                  <CheckMenuItem fx:id="menuShowToolbar" mnemonicParsing="false" text="Show Toolbar">
-                      <accelerator>
-                          <KeyCodeCombination alt="UP" code="H" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
-                      </accelerator>
-                  </CheckMenuItem>
-                  <MenuItem fx:id="menuFitScreenToWindow" mnemonicParsing="false" text="Fit Window to Screen">
-                      <accelerator>
-                          <KeyCodeCombination alt="UP" code="T" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
-                      </accelerator>
-                  </MenuItem>
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem fx:id="menuOpenFontBrowser" mnemonicParsing="false" text="Font Browser" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <CheckMenuItem fx:id="menuSettings" mnemonicParsing="false" text="Settings" />
-                  <CheckMenuItem fx:id="menuPinActivity" disable="true" mnemonicParsing="false" text="Activity"/>
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <Menu mnemonicParsing="false" text="Themes">
-                     <items>
-                        <RadioMenuItem fx:id="menuThemeDefault" mnemonicParsing="false" text="Default" userData="menuThemeDefault">
-                           <toggleGroup>
-                              <ToggleGroup fx:id="menuThemes" />
-                           </toggleGroup>
-                        </RadioMenuItem>
-                        <RadioMenuItem fx:id="menuThemeDark" mnemonicParsing="false" text="Dark" toggleGroup="$menuThemes" userData="menuThemeDark" />
-                     </items>
-                  </Menu>
-              </items>
-            </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-                  <MenuItem fx:id="menuCheckUpdates" mnemonicParsing="false" text="Check for Updates">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator>
-                  </MenuItem>
-                <MenuItem fx:id="menuReportIssue" mnemonicParsing="false" text="Report Issue"/>
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem fx:id="menuAbout" mnemonicParsing="false" text="About"/>
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-       <ToolBar fx:id="tbMain" prefHeight="26.0" prefWidth="1119.0" styleClass="toolbar" VBox.vgrow="ALWAYS">
-        <items>
-            <JFXButton fx:id="btnSaveSettings" mnemonicParsing="false" prefHeight="30.0" prefWidth="92.0" text="Save" textAlignment="CENTER" wrapText="true">
-               <graphic>
-                  <MaterialDesignIconView glyphName="CONTENT_SAVE" size="20" />
-               </graphic>
-            </JFXButton>
-            <JFXButton fx:id="btnFitScreenToWindow" mnemonicParsing="false" prefHeight="30.0" prefWidth="123.0" text="Fit Window" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
-               <graphic>
-                   <MaterialDesignIconView glyphName="WINDOW_MAXIMIZE" size="20"/>
-               </graphic>
-            </JFXButton>
-            <JFXButton fx:id="btnShowFontBrowser" prefHeight="31.0" prefWidth="100.0" text="Fonts">
-               <graphic>
-                   <FontAwesomeIconView glyphName="FONT" size="20"/>
-               </graphic>
-            </JFXButton>
-            <JFXButton fx:id="btnDeveloper" prefHeight="31.0" prefWidth="114.0" text="Developer">
-                <graphic>
-                    <FontAwesomeIconView glyphName="CODE" size="20"/>
-                </graphic>
-            </JFXButton>
-            <JFXButton fx:id="btnDonate" mnemonicParsing="false" prefHeight="29.0" prefWidth="102.0" text="Donate" visible="false">
-               <graphic>
-                   <FontAwesomeIconView glyphName="PAYPAL" size="16"/>
-               </graphic>
-            </JFXButton>
-            <Pane minWidth="-Infinity" prefHeight="31.0" prefWidth="110.0" HBox.hgrow="ALWAYS"/>
-            <JFXToggleButton fx:id="tbListen" accessibleHelp="Toggle to start listening for remote connections" mnemonicParsing="false" prefHeight="29.0" prefWidth="156.0" styleClass="service-toggle" text="Start" toggleColor="#24cd15" toggleLineColor="#88b969" unToggleColor="#544242" unToggleLineColor="#a18f8f"/>
-            <JFXToggleButton fx:id="btnShowSettings" mnemonicParsing="false" prefHeight="29.0" prefWidth="156.0" text="Settings" textAlignment="CENTER">
-               <graphic>
-                  <MaterialDesignIconView glyphName="SETTINGS" size="20" />
-               </graphic>
-            </JFXToggleButton>
-            <JFXToggleButton fx:id="btnShowPinActivity" disable="true" mnemonicParsing="false" prefHeight="29.0" prefWidth="156.0" text="Activity" textAlignment="CENTER" visible="false">
-                <graphic>
-                    <FontAwesomeIconView glyphName="MAP_PIN" size="20"/>
-                </graphic>
-            </JFXToggleButton>
-        </items>
-      </ToolBar>
-      <AnchorPane fx:id="apGlcd" prefHeight="631.0" prefWidth="1119.0" VBox.vgrow="ALWAYS">
-         <children>
-             <StackPane fx:id="stackPaneRoot" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                 <children>
-                     <BorderPane fx:id="bpGlcd" prefHeight="200.0" prefWidth="200.0">
-                         <top>
-                             <HBox fx:id="hbPins" alignment="CENTER" prefHeight="49.0" prefWidth="950.0" BorderPane.alignment="CENTER"/>
-                         </top>
-                         <center>
-                             <ScrollPane fx:id="scpGlcd" prefHeight="385.0" prefWidth="950.0" BorderPane.alignment="CENTER">
-                                 <content>
-                                     <HBox fx:id="hbGlcd" alignment="CENTER" prefHeight="317.0" prefWidth="379.0">
-                                         <children>
-                                             <GlcdScreen fx:id="glcdScreen" height="317.0" width="636.0"/>
-                                         </children>
-                                     </HBox>
-                                 </content>
-                             </ScrollPane>
-                         </center>
-                         <bottom>
-                             <JFXTabPane fx:id="tpSettings" prefHeight="225.0" prefWidth="1119.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-                                 <tabs>
-                                     <Tab closable="false" text="Emulator">
-                                         <content>
-                                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="1119.0">
-                                                 <children>
-                                                     <JFXColorPicker fx:id="cpInactivePixel" layoutX="15.0" layoutY="34.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Inactive Pixel Color"/>
-                                                     <JFXColorPicker fx:id="cpActivePixel" layoutX="16.0" layoutY="90.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Active Pixel Color"/>
-                                                     <Label layoutX="16.0" layoutY="66.0" text="Active Pixel: ">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <Pane fx:id="sizePane" layoutX="606.0" layoutY="40.0" prefHeight="39.0" prefWidth="214.0">
-                                                         <children>
-                                                             <Label layoutX="100.0" layoutY="11.0" text="x"/>
-                                                             <Spinner fx:id="spnDisplayWidth" editable="true" layoutY="7.0" prefHeight="25.0" prefWidth="90.0"/>
-                                                             <Spinner fx:id="spnDisplayHeight" editable="true" layoutX="116.0" layoutY="7.0" prefHeight="25.0" prefWidth="90.0"/>
-                                                         </children>
-                                                     </Pane>
-                                                     <Separator layoutX="202.0" layoutY="12.0" orientation="VERTICAL" prefHeight="156.0" prefWidth="6.0"/>
-                                                     <Separator layoutX="216.0" layoutY="87.0" prefHeight="6.0" prefWidth="348.0"/>
-                                                     <Label layoutX="216.0" layoutY="11.0" text="Pixel Size:">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <JFXSlider fx:id="slPixelSize" blockIncrement="1.0" layoutX="216.0" layoutY="34.0" majorTickUnit="10.0" max="50.0" minorTickCount="5" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" AnchorPane.leftAnchor="216.0"/>
-                                                     <Label layoutX="605.0" layoutY="11.0" text="Display Size (Width x Height)">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <Label layoutX="16.0" layoutY="124.0" text="Backlight: ">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <JFXColorPicker fx:id="cpBacklight" layoutX="16.0" layoutY="151.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Backlight Color"/>
-                                                     <Label layoutX="12.0" layoutY="11.0" text="Inactive Pixel: ">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <JFXSlider fx:id="slContrast" blockIncrement="0.5" layoutX="216.0" layoutY="122.0" majorTickUnit="20.0" minorTickCount="5" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="50.0"/>
-                                                     <Label layoutX="216.0" layoutY="103.0" text="Contrast:">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <Separator layoutX="588.0" layoutY="11.0" orientation="VERTICAL" prefHeight="183.0" prefWidth="6.0"/>
-                                                     <JFXSlider fx:id="slPixelSpacing" blockIncrement="0.1" layoutX="400.0" layoutY="34.0" majorTickUnit="1.0" max="10.0" minorTickCount="1" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="1.0"/>
-                                                     <Label layoutX="400.0" layoutY="11.0" text="Pixel Spacing:">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <JFXSlider fx:id="slMargin" layoutX="400.0" layoutY="122.0" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true"/>
-                                                     <Label layoutX="400.0" layoutY="103.0" text="Margin:">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <Label layoutX="605.0" layoutY="103.0" text="Pixel Shape:">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <JFXComboBox fx:id="cbPixelShape" layoutX="605.0" layoutY="129.0" prefHeight="25.0" prefWidth="213.0" promptText="Pixel Shape"/>
-                                                     <JFXTextField fx:id="tfSelectedDisplay" editable="false" layoutX="843.0" layoutY="33.0" prefHeight="26.0" prefWidth="196.0" text="Emulator"/>
-                                                     <JFXButton fx:id="btnSelectEmulator" layoutX="1045.0" layoutY="34.0" prefHeight="25.0" prefWidth="60.0" text="Select"/>
-                                                     <Label layoutX="843.0" layoutY="11.0" text="Controller/Bus Interface:">
-                                                         <font>
-                                                             <Font name="System Bold" size="12.0"/>
-                                                         </font>
-                                                     </Label>
-                                                     <JFXComboBox fx:id="cbBusInterface" layoutX="845.0" layoutY="74.0" prefHeight="26.0" prefWidth="260.0" promptText="Bus Interface"/>
-                                                     <JFXButton fx:id="btnDrawAnimTest" layoutX="843.0" layoutY="116.0" prefHeight="25.0" prefWidth="131.0" text="Start Draw Test"/>
-                                                     <JFXButton fx:id="btnClearDisplay" layoutX="987.0" layoutY="116.0" prefHeight="25.0" prefWidth="117.0" text="Clear Display"/>
-                                                     <JFXButton fx:id="btnFreezeDisplay" layoutX="843.0" layoutY="151.0" prefHeight="25.0" prefWidth="131.0" text="Freeze Display"/>
-                                                     <JFXButton fx:id="btnReset" layoutX="987.0" layoutY="151.0" prefHeight="25.0" prefWidth="117.0" text="Reset Settings"/>
-                                                 </children>
-                                             </AnchorPane>
-                                         </content>
-                                     </Tab>
-                                     <Tab closable="false" text="Profiles">
-                                         <content>
-                                             <AnchorPane fx:id="apProfiles" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                                 <children>
-                                                     <GridPane AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                         <columnConstraints>
-                                                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
-                                                         </columnConstraints>
-                                                         <rowConstraints>
-                                                             <RowConstraints maxHeight="165.0" minHeight="10.0" prefHeight="155.0" vgrow="SOMETIMES"/>
-                                                             <RowConstraints maxHeight="21.0" minHeight="9.0" prefHeight="19.0" vgrow="SOMETIMES"/>
-                                                         </rowConstraints>
-                                                         <children>
-                                                             <TableView fx:id="tvProfiles" prefHeight="152.0" prefWidth="1152.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-                                                                 <columns>
-                                                                     <TableColumn prefWidth="75.0" text="C1"/>
-                                                                     <TableColumn prefWidth="75.0" text="C2"/>
-                                                                 </columns>
-                                                             </TableView>
-                                                             <JFXTextField fx:id="tfProfileFilter" prefHeight="25.0" prefWidth="100.0" promptText="Filter" GridPane.rowIndex="1"/>
-                                                         </children>
-                                                     </GridPane>
-                                                 </children>
-                                             </AnchorPane>
-                                         </content>
-                                     </Tab>
-                                     <Tab closable="false" text="Misc">
-                                         <content>
-                                             <StackPane fx:id="dialogStackMisc">
-                                                 <children>
-                                                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                                         <children>
-                                                             <JFXCheckBox fx:id="cbConfirmExit" accessibleText="Confirm on Exit" layoutX="14.0" layoutY="21.0" mnemonicParsing="false" text="Confirm on Exit"/>
-                                                             <JFXCheckBox fx:id="cbAutoSaveSettings" accessibleText="Remember settings on exit" layoutX="14.0" layoutY="52.0" mnemonicParsing="false" text="Remember settings on exit"/>
-                                                             <JFXTextField fx:id="tfScreenshotPath" accessibleText="Screenshot Directory Path" layoutX="728.0" layoutY="21.0" prefHeight="25.0" prefWidth="334.0" promptText="Screenshot Directory Path"/>
-                                                             <JFXButton fx:id="btnOpenScreenshotPath" layoutX="1065.0" layoutY="21.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" text="..."/>
-                                                             <JFXTextField fx:id="tfProfileDirPath" accessibleText="Profile Directory Path" layoutX="728.0" layoutY="52.0" prefHeight="25.0" prefWidth="334.0" promptText="Profile Directory Path"/>
-                                                             <JFXButton fx:id="btnOpenProfileDirPath" layoutX="1065.0" layoutY="52.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" text="..."/>
-                                                             <JFXCheckBox fx:id="cbFitWindowToScreen" accessibleHelp="Automatically fit the window with the glcd screen canvas" accessibleText="Fit window to screen" layoutX="14.0" layoutY="81.0" mnemonicParsing="false" text="Fit window to screen"/>
-                                                             <Separator layoutX="207.0" layoutY="14.0" orientation="VERTICAL" prefHeight="138.0" prefWidth="4.0"/>
-                                                             <JFXCheckBox fx:id="cbRunEmulatorStartup" layoutX="14.0" layoutY="111.0" text="Run emulator on startup"/>
-                                                             <Separator layoutX="700.0" layoutY="11.0" orientation="VERTICAL" prefHeight="158.0" prefWidth="9.0"/>
-                                                             <Pane fx:id="pConnType" layoutX="225.0" layoutY="49.0" prefHeight="126.0" prefWidth="466.0"/>
-                                                             <JFXRadioButton fx:id="rbConnTypeTcp" layoutX="352.0" layoutY="25.0" prefWidth="60.0" text="TCP">
-                                                                 <toggleGroup>
-                                                                     <ToggleGroup fx:id="connType"/>
-                                                                 </toggleGroup>
-                                                             </JFXRadioButton>
-                                                             <JFXRadioButton fx:id="rbConnTypeSerial" layoutX="424.0" layoutY="25.0" prefWidth="60.0" text="Serial" toggleGroup="$connType"/>
-                                                             <Label layoutX="225.0" layoutY="25.0" text="Connection Type:">
-                                                                 <font>
-                                                                     <Font name="System Bold" size="12.0"/>
-                                                                 </font>
-                                                             </Label>
-                                                         </children>
-                                                     </AnchorPane>
-                                                 </children>
-                                             </StackPane>
-                                         </content>
-                                     </Tab>
-                                     <Tab closable="false" text="Log">
-                                         <content>
-                                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                                 <children>
-                                                     <JFXTextArea fx:id="taLog" editable="false" layoutX="96.0" layoutY="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                         <font>
-                                                             <Font name="Monospaced Regular" size="11.0"/>
-                                                         </font>
-                                                     </JFXTextArea>
-                                                 </children>
-                                             </AnchorPane>
-                                         </content>
-                                     </Tab>
-                                 </tabs>
-                                 <BorderPane.margin>
-                                     <Insets/>
-                                 </BorderPane.margin>
-                             </JFXTabPane>
-                         </bottom>
-                     </BorderPane>
-                 </children>
-             </StackPane>
-         </children>
-      </AnchorPane>
-       <StatusBar fx:id="statusBar" prefHeight="8.0" prefWidth="1119.0" text="" VBox.vgrow="NEVER"/>
-   </children>
+        </ToolBar>
+        <AnchorPane fx:id="apGlcd" prefHeight="631.0" prefWidth="1119.0" VBox.vgrow="ALWAYS">
+            <children>
+                <StackPane fx:id="stackPaneRoot" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <children>
+                        <BorderPane fx:id="bpGlcd" prefHeight="200.0" prefWidth="200.0">
+                            <top>
+                                <HBox fx:id="hbPins" alignment="CENTER" prefHeight="49.0" prefWidth="950.0" BorderPane.alignment="CENTER"/>
+                            </top>
+                            <center>
+                                <ScrollPane fx:id="scpGlcd" prefHeight="385.0" prefWidth="950.0" BorderPane.alignment="CENTER">
+                                    <content>
+                                        <HBox fx:id="hbGlcd" alignment="CENTER" prefHeight="317.0" prefWidth="379.0">
+                                            <children>
+                                                <GlcdScreen fx:id="glcdScreen" height="317.0" width="636.0"/>
+                                            </children>
+                                        </HBox>
+                                    </content>
+                                </ScrollPane>
+                            </center>
+                            <bottom>
+                                <JFXTabPane fx:id="tpSettings" prefHeight="225.0" prefWidth="1119.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+                                    <tabs>
+                                        <Tab closable="false" text="Emulator">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="1119.0">
+                                                    <children>
+                                                        <JFXColorPicker fx:id="cpInactivePixel" layoutX="15.0" layoutY="34.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Inactive Pixel Color"/>
+                                                        <JFXColorPicker fx:id="cpActivePixel" layoutX="16.0" layoutY="90.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Active Pixel Color"/>
+                                                        <Label layoutX="16.0" layoutY="66.0" text="Active Pixel: ">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <Pane fx:id="sizePane" layoutX="606.0" layoutY="40.0" prefHeight="39.0" prefWidth="214.0">
+                                                            <children>
+                                                                <Label layoutX="100.0" layoutY="11.0" text="x"/>
+                                                                <Spinner fx:id="spnDisplayWidth" editable="true" layoutY="7.0" prefHeight="25.0" prefWidth="90.0"/>
+                                                                <Spinner fx:id="spnDisplayHeight" editable="true" layoutX="116.0" layoutY="7.0" prefHeight="25.0" prefWidth="90.0"/>
+                                                            </children>
+                                                        </Pane>
+                                                        <Separator layoutX="202.0" layoutY="12.0" orientation="VERTICAL" prefHeight="156.0" prefWidth="6.0"/>
+                                                        <Separator layoutX="216.0" layoutY="87.0" prefHeight="6.0" prefWidth="348.0"/>
+                                                        <Label layoutX="216.0" layoutY="11.0" text="Pixel Size:">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <JFXSlider fx:id="slPixelSize" blockIncrement="1.0" layoutX="216.0" layoutY="34.0" majorTickUnit="10.0" max="50.0" minorTickCount="5" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" AnchorPane.leftAnchor="216.0"/>
+                                                        <Label layoutX="605.0" layoutY="11.0" text="Display Size (Width x Height)">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <Label layoutX="16.0" layoutY="124.0" text="Backlight: ">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <JFXColorPicker fx:id="cpBacklight" layoutX="16.0" layoutY="151.0" prefHeight="25.0" prefWidth="168.0" promptText="LCD Backlight Color"/>
+                                                        <Label layoutX="12.0" layoutY="11.0" text="Inactive Pixel: ">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <JFXSlider fx:id="slContrast" blockIncrement="0.5" layoutX="216.0" layoutY="122.0" majorTickUnit="20.0" minorTickCount="5" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="50.0"/>
+                                                        <Label layoutX="216.0" layoutY="103.0" text="Contrast:">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <Separator layoutX="588.0" layoutY="11.0" orientation="VERTICAL" prefHeight="183.0" prefWidth="6.0"/>
+                                                        <JFXSlider fx:id="slPixelSpacing" blockIncrement="0.1" layoutX="400.0" layoutY="34.0" majorTickUnit="1.0" max="10.0" minorTickCount="1" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true" value="1.0"/>
+                                                        <Label layoutX="400.0" layoutY="11.0" text="Pixel Spacing:">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <JFXSlider fx:id="slMargin" layoutX="400.0" layoutY="122.0" prefHeight="51.0" prefWidth="178.0" showTickLabels="true" showTickMarks="true"/>
+                                                        <Label layoutX="400.0" layoutY="103.0" text="Margin:">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <Label layoutX="606.0" layoutY="92.0" text="Pixel Shape:">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <JFXComboBox fx:id="cbPixelShape" layoutX="607.0" layoutY="116.0" prefHeight="25.0" prefWidth="213.0" promptText="Pixel Shape"/>
+                                                        <JFXTextField fx:id="tfSelectedDisplay" editable="false" layoutX="843.0" layoutY="33.0" prefHeight="26.0" prefWidth="196.0" text="Emulator"/>
+                                                        <JFXButton fx:id="btnSelectEmulator" layoutX="1045.0" layoutY="34.0" prefHeight="25.0" prefWidth="60.0" text="Select"/>
+                                                        <Label layoutX="843.0" layoutY="11.0" text="Controller/Bus Interface:">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0"/>
+                                                            </font>
+                                                        </Label>
+                                                        <JFXComboBox fx:id="cbBusInterface" layoutX="843.0" layoutY="74.0" prefHeight="26.0" prefWidth="148.0" promptText="Bus Interface"/>
+                                                        <JFXButton fx:id="btnDrawAnimTest" layoutX="843.0" layoutY="116.0" prefHeight="25.0" prefWidth="131.0" text="Start Draw Test"/>
+                                                        <JFXButton fx:id="btnClearDisplay" layoutX="987.0" layoutY="116.0" prefHeight="25.0" prefWidth="117.0" text="Clear Display"/>
+                                                        <JFXButton fx:id="btnFreezeDisplay" layoutX="843.0" layoutY="151.0" prefHeight="25.0" prefWidth="131.0" text="Freeze Display"/>
+                                                        <JFXButton fx:id="btnReset" layoutX="987.0" layoutY="151.0" prefHeight="25.0" prefWidth="117.0" text="Reset Settings"/>
+                                                        <JFXComboBox fx:id="cbServiceMode" layoutX="1005.0" layoutY="74.0" prefHeight="26.0" prefWidth="102.0" promptText="Service Mode"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+                                        <Tab closable="false" text="Profiles">
+                                            <content>
+                                                <AnchorPane fx:id="apProfiles" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                    <children>
+                                                        <GridPane AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                            <columnConstraints>
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                                                            </columnConstraints>
+                                                            <rowConstraints>
+                                                                <RowConstraints maxHeight="165.0" minHeight="10.0" prefHeight="155.0" vgrow="SOMETIMES"/>
+                                                                <RowConstraints maxHeight="21.0" minHeight="9.0" prefHeight="19.0" vgrow="SOMETIMES"/>
+                                                            </rowConstraints>
+                                                            <children>
+                                                                <TableView fx:id="tvProfiles" prefHeight="152.0" prefWidth="1152.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                                                                    <columns>
+                                                                        <TableColumn prefWidth="75.0" text="C1"/>
+                                                                        <TableColumn prefWidth="75.0" text="C2"/>
+                                                                    </columns>
+                                                                </TableView>
+                                                                <JFXTextField fx:id="tfProfileFilter" prefHeight="25.0" prefWidth="100.0" promptText="Filter" GridPane.rowIndex="1"/>
+                                                            </children>
+                                                        </GridPane>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+                                        <Tab closable="false" text="Misc">
+                                            <content>
+                                                <StackPane fx:id="dialogStackMisc">
+                                                    <children>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                            <children>
+                                                                <JFXCheckBox fx:id="cbConfirmExit" accessibleText="Confirm on Exit" layoutX="14.0" layoutY="21.0" mnemonicParsing="false" text="Confirm on Exit"/>
+                                                                <JFXCheckBox fx:id="cbAutoSaveSettings" accessibleText="Remember settings on exit" layoutX="14.0" layoutY="52.0" mnemonicParsing="false" text="Remember settings on exit"/>
+                                                                <JFXTextField fx:id="tfScreenshotPath" accessibleText="Screenshot Directory Path" layoutX="728.0" layoutY="21.0" prefHeight="25.0" prefWidth="334.0" promptText="Screenshot Directory Path"/>
+                                                                <JFXButton fx:id="btnOpenScreenshotPath" layoutX="1065.0" layoutY="21.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" text="..."/>
+                                                                <JFXTextField fx:id="tfProfileDirPath" accessibleText="Profile Directory Path" layoutX="728.0" layoutY="52.0" prefHeight="25.0" prefWidth="334.0" promptText="Profile Directory Path"/>
+                                                                <JFXButton fx:id="btnOpenProfileDirPath" layoutX="1065.0" layoutY="52.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" text="..."/>
+                                                                <JFXCheckBox fx:id="cbFitWindowToScreen" accessibleHelp="Automatically fit the window with the glcd screen canvas" accessibleText="Fit window to screen" layoutX="14.0" layoutY="81.0" mnemonicParsing="false" text="Fit window to screen"/>
+                                                                <Separator layoutX="207.0" layoutY="14.0" orientation="VERTICAL" prefHeight="138.0" prefWidth="4.0"/>
+                                                                <JFXCheckBox fx:id="cbRunEmulatorStartup" layoutX="14.0" layoutY="111.0" text="Run emulator on startup"/>
+                                                                <Separator layoutX="700.0" layoutY="11.0" orientation="VERTICAL" prefHeight="158.0" prefWidth="9.0"/>
+                                                                <Pane fx:id="pConnType" layoutX="225.0" layoutY="49.0" prefHeight="126.0" prefWidth="466.0"/>
+                                                                <JFXRadioButton fx:id="rbConnTypeTcp" layoutX="352.0" layoutY="25.0" prefWidth="60.0" text="TCP">
+                                                                    <toggleGroup>
+                                                                        <ToggleGroup fx:id="connType"/>
+                                                                    </toggleGroup>
+                                                                </JFXRadioButton>
+                                                                <JFXRadioButton fx:id="rbConnTypeSerial" layoutX="424.0" layoutY="25.0" prefWidth="60.0" text="Serial" toggleGroup="$connType"/>
+                                                                <Label layoutX="225.0" layoutY="25.0" text="Connection Type:">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="12.0"/>
+                                                                    </font>
+                                                                </Label>
+                                                            </children>
+                                                        </AnchorPane>
+                                                    </children>
+                                                </StackPane>
+                                            </content>
+                                        </Tab>
+                                        <Tab closable="false" text="Log">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                    <children>
+                                                        <JFXTextArea fx:id="taLog" editable="false" layoutX="96.0" layoutY="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                            <font>
+                                                                <Font name="Monospaced Regular" size="11.0"/>
+                                                            </font>
+                                                        </JFXTextArea>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+                                    </tabs>
+                                    <BorderPane.margin>
+                                        <Insets/>
+                                    </BorderPane.margin>
+                                </JFXTabPane>
+                            </bottom>
+                        </BorderPane>
+                    </children>
+                </StackPane>
+            </children>
+        </AnchorPane>
+        <StatusBar fx:id="statusBar" prefHeight="8.0" prefWidth="1119.0" text="" VBox.vgrow="NEVER"/>
+    </children>
 </VBox>
