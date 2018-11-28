@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: EmulatorListenerTask.java
+ * Filename: DisplayListenerTask.java
  *
  * ---------------------------------------------------------
  * %%
@@ -26,6 +26,8 @@
 package com.ibasco.glcdemulator.net;
 
 import com.ibasco.glcdemulator.emulator.GlcdEmulator;
+import com.ibasco.glcdemulator.enums.ServiceMode;
+import com.ibasco.glcdemulator.services.DisplayService;
 import com.ibasco.glcdemulator.utils.Counter;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.core.u8g2.U8g2ByteEvent;
@@ -43,13 +45,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Base class for all listener tasks managed by the {@link com.ibasco.glcdemulator.services.EmulatorService}
+ * Base class for all listener tasks managed by the {@link DisplayService}
  *
  * @author Rafael Ibasco
  */
-abstract public class EmulatorListenerTask extends Task<Void> {
+abstract public class DisplayListenerTask extends Task<Void> {
 
-    private static final Logger log = LoggerFactory.getLogger(EmulatorListenerTask.class);
+    private static final Logger log = LoggerFactory.getLogger(DisplayListenerTask.class);
 
     private static final int MSG_START = 0xFE;
 
@@ -77,18 +79,32 @@ abstract public class EmulatorListenerTask extends Task<Void> {
 
     private final ReadOnlyIntegerWrapper frameSize = new ReadOnlyIntegerWrapper(0);
 
+    private final ObjectProperty<ServiceMode> serviceMode = new SimpleObjectProperty<>();
+
     private boolean collectData = false;
 
     private int collectSize = -1;
 
     private ByteBuffer buffer = ByteBuffer.allocate(256).order(ByteOrder.LITTLE_ENDIAN);
 
-    public EmulatorListenerTask(GlcdEmulator emulator) {
+    public DisplayListenerTask(GlcdEmulator emulator) {
         this.emulator.set(emulator);
     }
 
     protected int getFrameSize() {
         return frameSize.get();
+    }
+
+    protected ServiceMode getServiceMode() {
+        return serviceMode.get();
+    }
+
+    public ObjectProperty<ServiceMode> serviceModeProperty() {
+        return serviceMode;
+    }
+
+    protected void setServiceMode(ServiceMode serviceMode) {
+        this.serviceMode.set(serviceMode);
     }
 
     public ReadOnlyIntegerProperty frameSizeProperty() {
@@ -165,7 +181,7 @@ abstract public class EmulatorListenerTask extends Task<Void> {
             GlcdEmulator emulator = getEmulator();
 
             if (emulator == null)
-                throw new IllegalStateException("No controller has been set");
+                throw new IllegalStateException("Emulator not provided");
 
             int value = Byte.toUnsignedInt(data);
 

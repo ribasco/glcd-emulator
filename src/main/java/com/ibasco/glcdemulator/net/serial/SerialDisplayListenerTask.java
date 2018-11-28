@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: SerialEmulatorListenerTask.java
+ * Filename: SerialDisplayListenerTask.java
  *
  * ---------------------------------------------------------
  * %%
@@ -31,7 +31,7 @@ import com.ibasco.glcdemulator.enums.SerialBaudRate;
 import com.ibasco.glcdemulator.enums.SerialFlowControl;
 import com.ibasco.glcdemulator.enums.SerialParity;
 import com.ibasco.glcdemulator.enums.SerialStopBits;
-import com.ibasco.glcdemulator.net.EmulatorListenerTask;
+import com.ibasco.glcdemulator.net.DisplayListenerTask;
 import com.ibasco.glcdemulator.net.ListenerOptions;
 import com.ibasco.glcdemulator.services.SerialPortService;
 import org.slf4j.Logger;
@@ -45,8 +45,8 @@ import java.io.IOException;
  *
  * @author Rafael Ibasco
  */
-public class SerialEmulatorListenerTask extends EmulatorListenerTask {
-    private static final Logger log = LoggerFactory.getLogger(SerialEmulatorListenerTask.class);
+public class SerialDisplayListenerTask extends DisplayListenerTask {
+    private static final Logger log = LoggerFactory.getLogger(SerialDisplayListenerTask.class);
 
     private int baudRate = SerialBaudRate.RATE_9600.toValue();
 
@@ -60,7 +60,7 @@ public class SerialEmulatorListenerTask extends EmulatorListenerTask {
 
     private SerialPort serialPort;
 
-    public SerialEmulatorListenerTask(GlcdEmulator emulator) {
+    public SerialDisplayListenerTask(GlcdEmulator emulator) {
         super(emulator);
     }
 
