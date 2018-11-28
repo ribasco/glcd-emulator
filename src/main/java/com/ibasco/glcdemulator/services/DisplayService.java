@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: EmulatorService.java
+ * Filename: DisplayService.java
  *
  * ---------------------------------------------------------
  * %%
@@ -29,8 +29,9 @@ import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.emulator.GlcdEmulator;
 import com.ibasco.glcdemulator.emulator.GlcdEmulatorFactory;
 import com.ibasco.glcdemulator.enums.ConnectionType;
-import com.ibasco.glcdemulator.exceptions.EmulatorServiceException;
-import com.ibasco.glcdemulator.net.EmulatorListenerTask;
+import com.ibasco.glcdemulator.enums.ServiceMode;
+import com.ibasco.glcdemulator.exceptions.CreateListenerTaskException;
+import com.ibasco.glcdemulator.net.DisplayListenerTask;
 import com.ibasco.glcdemulator.net.ListenerOptions;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
@@ -39,19 +40,15 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * A background service that listens on the network for emulator instructions and processes it accordingly.
+ * A background service that listens on a transport interface and process display related instructions.
  *
  * @author Rafael Ibasco
  */
-public class EmulatorService extends Service<Void> {
-
-    private static final Logger log = LoggerFactory.getLogger(EmulatorService.class);
+public class DisplayService extends Service<Void> {
 
     //<editor-fold desc="Service Properties">
     private ObjectProperty<GlcdDisplay> display = new SimpleObjectProperty<>();
@@ -66,14 +63,30 @@ public class EmulatorService extends Service<Void> {
 
     private ObjectProperty<ListenerOptions> connectionOptions = new SimpleObjectProperty<>();
 
-    private ReadOnlyObjectWrapper<EmulatorListenerTask> emulatorTask = new ReadOnlyObjectWrapper<>();
+    private ReadOnlyObjectWrapper<DisplayListenerTask> emulatorTask = new ReadOnlyObjectWrapper<>();
+
+    private ObjectProperty<ServiceMode> serviceMode = new SimpleObjectProperty<>();
     //</editor-fold>
 
-    public EmulatorService() {
+    //<editor-fold desc="Constructor">
+    public DisplayService() {
         setExecutor(Context.getTaskExecutor());
     }
+    //</editor-fold>
 
     //<editor-fold desc="Service Getter/Setter Properties">
+    public ServiceMode getServiceMode() {
+        return serviceMode.get();
+    }
+
+    public ObjectProperty<ServiceMode> serviceModeProperty() {
+        return serviceMode;
+    }
+
+    public void setServiceMode(ServiceMode serviceMode) {
+        this.serviceMode.set(serviceMode);
+    }
+
     public PixelBuffer getPixelBuffer() {
         return pixelBuffer.get();
     }
@@ -110,11 +123,11 @@ public class EmulatorService extends Service<Void> {
         this.busInterface.set(busInterface);
     }
 
-    public EmulatorListenerTask getEmulatorTask() {
+    public DisplayListenerTask getEmulatorTask() {
         return emulatorTask.get();
     }
 
-    public ReadOnlyObjectProperty<EmulatorListenerTask> emulatorTaskProperty() {
+    public ReadOnlyObjectProperty<DisplayListenerTask> emulatorTaskProperty() {
         return emulatorTask.getReadOnlyProperty();
     }
 
@@ -165,14 +178,14 @@ public class EmulatorService extends Service<Void> {
      * @param connectionType
      *         The {@link ConnectionType} of this emulator
      *
-     * @return A {@link EmulatorListenerTask}
+     * @return A {@link DisplayListenerTask}
      */
-    private EmulatorListenerTask createListenerTask(ConnectionType connectionType) {
+    private DisplayListenerTask createListenerTask(ConnectionType connectionType) {
         try {
-            Class<? extends EmulatorListenerTask> listenerClass = connectionType.getListenerClass();
+            Class<? extends DisplayListenerTask> listenerClass = connectionType.getListenerClass();
             return listenerClass.getConstructor(GlcdEmulator.class).newInstance(createEmulator());
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new EmulatorServiceException("Error occured while instatiating listener class", e);
+            throw new CreateListenerTaskException("Error occured while instatiating listener class", e);
         }
     }
 
@@ -182,7 +195,7 @@ public class EmulatorService extends Service<Void> {
             throw new IllegalStateException("No listener task has been specified");
         if (connectionOptions.get() == null)
             throw new IllegalStateException("No connection options specified");
-        EmulatorListenerTask task = createListenerTask(connectionType.get());
+        DisplayListenerTask task = createListenerTask(connectionType.get());
         emulatorTask.set(task);
         task.listenerOptionsProperty().bind(connectionOptions);
         clientConnected.bindBidirectional(task.connectedProperty());
