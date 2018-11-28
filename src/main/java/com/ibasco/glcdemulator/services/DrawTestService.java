@@ -120,7 +120,7 @@ public class DrawTestService extends Service<Void> {
 
                     driver.clearBuffer();
                     int y = (driver.getHeight() / 2) + (driver.getAscent() / 2);
-                    String sampleText = "X = " + String.valueOf(++xPos) + ", Y = " + String.valueOf(y) + "";
+                    String sampleText = "X = " + ++xPos + ", Y = " + y + "";
                     int textWidth = driver.getMaxCharWidth() * sampleText.length();
                     driver.drawString(xPos, y, sampleText);
                     driver.sendBuffer();
