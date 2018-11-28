@@ -41,6 +41,8 @@ public class FontRenderer {
 
     private GlcdEmulator emulator;
 
+    private final Object mutext = new Object();
+
     private GlcdDriver driver;
 
     public class FontInfo {
@@ -73,20 +75,12 @@ public class FontRenderer {
         }
     }
 
-    private final Object mutext = new Object();
-
     private static class InstanceHolder {
         private static FontRenderer INSTANCE = new FontRenderer();
     }
 
     private FontRenderer() {
-        /*GlcdConfig config = new GlcdConfig();
-        config.setDisplay(Glcd.ST7920.D_128x64);
-        config.setBusInterface(GlcdBusInterface.SPI_HW_4WIRE_ST7920);
-        config.setRotation(GlcdRotation.ROTATION_NONE);*/
-
-        //emulator = new ST7920Emulator();
-        driver = DriverFactory.createVirtual(Glcd.ST7920.D_128x64, GlcdBusInterface.SPI_HW_4WIRE_ST7920);//new GlcdDriver(config, true, emulator);
+        driver = DriverFactory.createVirtual(Glcd.ST7920.D_128x64, GlcdBusInterface.SPI_HW_4WIRE_ST7920);
         emulator = driver.getDriverEventHandler();
         driver.setFont(GlcdFont.FONT_7X13B_TR); //default font
     }
