@@ -76,7 +76,7 @@ class GlcdDriverFactoryTest {
         when(mockedBuffer.getWidth()).thenReturn(128);
         when(mockedBuffer.getHeight()).thenReturn(64);
         when(GlcdEmulatorFactory.createFrom(any(GlcdDisplay.class), eq(GlcdBusInterface.PARALLEL_8080), eq(mockedBuffer))).thenReturn(mockedEmulator);
-        when(U8g2Graphics.setup(anyString(), anyInt(), anyInt(), anyInt(), anyInt(), any(), eq(true))).thenReturn(1L);
+        when(U8g2Graphics.setup(anyString(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyString(), anyString(), any(byte[].class), eq(true))).thenReturn(1L);
 
         GlcdDriver driver = DriverFactory.createVirtual(GlcdControllerType.ST7920, GlcdBusInterface.PARALLEL_8080, mockedBuffer);
 
