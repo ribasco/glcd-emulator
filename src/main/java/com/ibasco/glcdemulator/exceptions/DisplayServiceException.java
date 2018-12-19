@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: EmulatorServiceException.java
+ * Filename: DisplayServiceException.java
  *
  * ---------------------------------------------------------
  * %%
