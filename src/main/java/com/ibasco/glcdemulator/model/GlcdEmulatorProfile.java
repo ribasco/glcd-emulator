@@ -27,7 +27,6 @@ package com.ibasco.glcdemulator.model;
 
 import com.ibasco.glcdemulator.annotations.Auditable;
 import com.ibasco.glcdemulator.enums.PixelShape;
-import com.ibasco.glcdemulator.enums.ServiceMode;
 import com.ibasco.ucgdisplay.drivers.glcd.Glcd;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
@@ -70,8 +69,6 @@ public class GlcdEmulatorProfile extends GlcdConfig {
 
     private ObjectProperty<PixelShape> lcdPixelShape = new SimpleObjectProperty<>(PixelShape.RECTANGLE);
 
-    private ObjectProperty<ServiceMode> serviceMode = new SimpleObjectProperty<>(ServiceMode.SIMULATION);
-
     public GlcdEmulatorProfile() {
         this("default");
     }
@@ -98,19 +95,6 @@ public class GlcdEmulatorProfile extends GlcdConfig {
         setLcdPixelShape(source.lcdPixelShape.get());
         setDisplay(source.getDisplay());
         setBusInterface(source.getBusInterface());
-        setServiceMode(source.getServiceMode());
-    }
-
-    public ServiceMode getServiceMode() {
-        return serviceMode.get();
-    }
-
-    public ObjectProperty<ServiceMode> serviceModeProperty() {
-        return serviceMode;
-    }
-
-    public void setServiceMode(ServiceMode serviceMode) {
-        this.serviceMode.set(serviceMode);
     }
 
     public GlcdBusInterface getBusInterface() {
