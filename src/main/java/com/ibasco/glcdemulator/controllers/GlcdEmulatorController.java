@@ -1113,8 +1113,11 @@ public class GlcdEmulatorController extends Controller {
         ObjectBinding<GlcdBusInterface> busInterfaceBinding = Bindings.createObjectBinding(() -> {
             GlcdBusInterface busInterface = profile.getBusInterface();
             if (busInterface == null) {
-                log.info("Bus interface is null, returning default");
-                busInterface = GlcdBusInterface.PARALLEL_8080;
+                busInterface = profile.getDisplay().getBusInterfaces().stream().findFirst().orElse(null);
+                if (busInterface != null)
+                    log.info("Bus interface is null, returning default: {}", busInterface.name());
+                else
+                    log.warn("Bus interface not found for display: {}", profile.getDisplay().getName());
             }
             return busInterface;
         }, profile.busInterfaceProperty());
@@ -1170,7 +1173,12 @@ public class GlcdEmulatorController extends Controller {
             emulatorBrowserDialog.show();
         });
 
-        btnSaveSettings.setOnAction(event -> saveAppSettings());
+        btnSaveSettings.setOnAction(event -> {
+            List<GlcdEmulatorProfile> modifiedProfiles = profileGetModified();
+            if (!modifiedProfiles.isEmpty())
+                profileSaveAll(modifiedProfiles);
+            saveAppSettings();
+        });
         btnShowFontBrowser.setOnAction(this::openFontBrowserAction);
         appConfig.toolbarVisibleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -1226,8 +1234,8 @@ public class GlcdEmulatorController extends Controller {
             }
         });
 
-        setupIntegerSpinner(spnDisplayWidth, 8, 256, 8);
-        setupIntegerSpinner(spnDisplayHeight, 8, 256, 8);
+        setupIntegerSpinner(spnDisplayWidth, 8, 400, 8);
+        setupIntegerSpinner(spnDisplayHeight, 8, 400, 8);
         setupProfileTable();
 
         appConfig.autoFitWindowToScreenProperty().addListener((observable, oldValue, newValue) -> {
