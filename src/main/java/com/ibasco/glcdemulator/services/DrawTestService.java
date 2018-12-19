@@ -123,13 +123,15 @@ public class DrawTestService extends Service<Void> {
             refreshDriver();
         }
 
+        bufferLayout.reset();
+
         return new Task<Void>() {
             private int xPos = 0;
 
             @Override
             protected Void call() throws Exception {
                 buffer.get().clear();
-                log.info("START: Draw test (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
+                log.info("START: Draw test (Display = {}, Bus = {}, Buffer Layout = {})", display.get().getName(), busInterface.get(), bufferLayout.getClass().getSimpleName());
 
                 while (!isCancelled()) {
                     driver.setFont(GlcdFont.FONT_10X20_ME);
@@ -142,7 +144,8 @@ public class DrawTestService extends Service<Void> {
                     driver.setFontMode(1);
                     driver.drawString(xPos++, y, sampleText);
                     driver.sendBuffer();
-                    processBuffer(driver);
+
+                    updateDisplayBuffer();
 
                     if (xPos > (driver.getWidth() + textWidth))
                         xPos = 0;
@@ -155,7 +158,7 @@ public class DrawTestService extends Service<Void> {
         };
     }
 
-    private void processBuffer(GlcdDriver driver) {
+    private void updateDisplayBuffer() {
         if (bufferLayout == null)
             throw new IllegalStateException("Buffer layout is null");
         byte[] buffer = driver.getBuffer();
