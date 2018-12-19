@@ -1106,10 +1106,22 @@ public class GlcdEmulatorController extends Controller {
 
     private void setupDrawTestService() {
         GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
+
         drawTestService = new DrawTestService();
         drawTestService.bufferProperty().bind(displayBuffer);
-        drawTestService.busInterfaceProperty().bind(profile.busInterfaceProperty());
+
+        ObjectBinding<GlcdBusInterface> busInterfaceBinding = Bindings.createObjectBinding(() -> {
+            GlcdBusInterface busInterface = profile.getBusInterface();
+            if (busInterface == null) {
+                log.info("Bus interface is null, returning default");
+                busInterface = GlcdBusInterface.PARALLEL_8080;
+            }
+            return busInterface;
+        }, profile.busInterfaceProperty());
+
+        drawTestService.busInterfaceProperty().bind(busInterfaceBinding);
         drawTestService.displayProperty().bind(profile.displayProperty());
+
         btnDrawAnimTest.textProperty().bind(Bindings.createStringBinding(() -> {
             if (drawTestService.isRunning()) {
                 return "Stop Draw Test";

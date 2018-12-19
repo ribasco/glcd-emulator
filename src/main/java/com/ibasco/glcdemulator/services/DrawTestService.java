@@ -27,8 +27,10 @@ package com.ibasco.glcdemulator.services;
 
 import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.DriverFactory;
-import com.ibasco.glcdemulator.emulator.GlcdEmulator;
+import com.ibasco.glcdemulator.emulator.BufferLayout;
+import com.ibasco.glcdemulator.emulator.BufferLayoutFactory;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
+import com.ibasco.glcdemulator.utils.ResourceUtil;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriver;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriverEventHandler;
@@ -41,6 +43,9 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DrawTestService extends Service<Void> {
@@ -72,9 +77,13 @@ public class DrawTestService extends Service<Void> {
         }
     };
 
+    private BufferLayout bufferLayout;
+
     public DrawTestService() {
         setExecutor(Context.getTaskExecutor());
     }
+
+    private File javaLogoFile;
 
     @Override
     public void start() {
@@ -94,6 +103,16 @@ public class DrawTestService extends Service<Void> {
         if (buffer.get() == null)
             throw new IllegalStateException("Buffer is not specified");
         driver = DriverFactory.createVirtual(display.get(), busInterface.get(), (GlcdDriverEventHandler) null);
+        bufferLayout = BufferLayoutFactory.createBufferLayout(getDisplay(), getBuffer());
+        try {
+            URL url = ResourceUtil.getResource("images/java-logo-small.xbm");//Context.class.getClassLoader().getResource("images/java-logo.xbm");
+            if (url != null)
+                javaLogoFile = new File(url.toURI());
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException("Unable to load logo file");
+        }
+        bufferLayout.initialize();
+        bufferLayout.reset();
     }
 
     @Override
@@ -104,36 +123,44 @@ public class DrawTestService extends Service<Void> {
             refreshDriver();
         }
 
-        GlcdEmulator emulator = driver.getDriverEventHandler();
-        emulator.reset();
-
         return new Task<Void>() {
-
             private int xPos = 0;
 
             @Override
             protected Void call() throws Exception {
                 buffer.get().clear();
                 log.info("START: Draw test (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
-                GlcdEmulator emulator = driver.getDriverEventHandler();
-                emulator.reset();
+
                 while (!isCancelled()) {
                     driver.setFont(GlcdFont.FONT_10X20_ME);
                     driver.clearBuffer();
+                    driver.drawXBM(0, 10, 32, 32, javaLogoFile);
+
                     int y = (driver.getHeight() / 2) + (driver.getAscent() / 2);
-                    String sampleText = "X = " + ++xPos + ", Y = " + y + "";
+                    String sampleText = "This is a test";
                     int textWidth = driver.getMaxCharWidth() * sampleText.length();
-                    driver.drawString(xPos, y, sampleText);
+                    driver.setFontMode(1);
+                    driver.drawString(xPos++, y, sampleText);
                     driver.sendBuffer();
+                    processBuffer(driver);
 
                     if (xPos > (driver.getWidth() + textWidth))
                         xPos = 0;
+
                     Thread.sleep(10);
                 }
                 log.info("STOP: Draw test (Display = {}, Bus = {})", display.get().getName(), busInterface.get());
                 return null;
             }
         };
+    }
+
+    private void processBuffer(GlcdDriver driver) {
+        if (bufferLayout == null)
+            throw new IllegalStateException("Buffer layout is null");
+        byte[] buffer = driver.getBuffer();
+        for (byte d : buffer)
+            bufferLayout.processByte(d);
     }
 
     public GlcdDisplay getDisplay() {
