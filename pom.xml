@@ -288,6 +288,23 @@
 
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                    <configuration>
+                        <compilerArgs>
+                            <!--<arg>&#45;&#45;add-modules</arg>-->
+                            <!--<arg>&#45;&#45;module-path="C:\Users\raffy\.m2\repository\org\openjfx\javafx-base\11.0.1\javafx-base-11.0.1-win.jar";"C:\Users\raffy\.m2\repository\org\openjfx\javafx-graphics\11.0.1\javafx-graphics-11.0.1-win.jar";"C:\Users\raffy\.m2\repository\org\openjfx\javafx-controls\11.0.1\javafx-controls-11.0.1-win.jar"</arg>-->
+                            <!--<arg>&#45;&#45;add-modules=javafx.controls</arg>-->
+                            <!--<arg>&#45;&#45;add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED</arg>
+                            <arg>&#45;&#45;add-exports=javafx.base/com.sun.javafx.reflect=ALL-UNNAMED</arg>
+                            <arg>&#45;&#45;add-exports=javafx.base/com.sun.javafx.beans=ALL-UNNAMED</arg>
+                            <arg>&#45;&#45;add-exports=javafx.graphics/com.sun.glass.utils=ALL-UNNAMED</arg>
+                            <arg>&#45;&#45;add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED</arg>-->
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
                 <!-- Resources Plugin : Update README properties -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -430,6 +447,10 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
             <!-- JavaFX Plugin (IMPORTANT: this needs to run before Assembly) -->
             <plugin>
                 <groupId>com.zenjava</groupId>
@@ -517,6 +538,36 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.github.javaparser</groupId>
+                <artifactId>javaparser-core</artifactId>
+                <version>3.8.2</version>
+            </dependency>
+            <!--<dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-swing</artifactId>
+                <version>11.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-base</artifactId>
+                <version>11.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-graphics</artifactId>
+                <version>11.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-fxml</artifactId>
+                <version>11.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>11.0.1</version>
+            </dependency>-->
             <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
             <dependency>
                 <groupId>commons-cli</groupId>
@@ -667,6 +718,30 @@
     </dependencyManagement>
 
     <dependencies>
+        <!--<dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
@@ -762,6 +837,11 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ibasco.ucgdisplay</groupId>
+            <artifactId>ucgd-native-graphics</artifactId>
+            <version>1.3.1-alpha-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

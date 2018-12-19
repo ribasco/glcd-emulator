@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: BufferStrategyFactory.java
+ * Filename: HorizontalBufferLayout.java
  *
  * ---------------------------------------------------------
  * %%
@@ -25,23 +25,26 @@
  */
 package com.ibasco.glcdemulator.emulator;
 
-import com.ibasco.glcdemulator.annotations.Emulator;
-import com.ibasco.glcdemulator.exceptions.BufferStrategyFactoryException;
+import com.ibasco.glcdemulator.utils.ByteUtils;
+import com.ibasco.glcdemulator.utils.PixelBuffer;
 
-public class BufferStrategyFactory {
-    public static BufferStrategy createBufferStrategy(Class<? extends GlcdEmulator> emulatorClass) {
-        GlcdBufferStrategy bufferStrategy = emulatorClass.getAnnotation(Emulator.class).bufferStrategy();
-        return createBufferStrategy(bufferStrategy);
+public class HorizontalBufferLayout extends BufferLayout {
+    @Override
+    public void processByte(byte data) {
+        PixelBuffer buffer = getBuffer();
+        buffer.write(ByteUtils.reverse(data));
+        if (buffer.remaining() == 0) {
+            buffer.reset();
+        }
     }
 
-    public static BufferStrategy createBufferStrategy(GlcdBufferStrategy strategy) {
-        Class<? extends BufferStrategy> clsBufferStrategy = strategy.getStrategyClass();
-        BufferStrategy bufferStrategyInstance;
-        try {
-            bufferStrategyInstance = clsBufferStrategy.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new BufferStrategyFactoryException(e);
-        }
-        return bufferStrategyInstance;
+    @Override
+    public void reset() {
+        getBuffer().reset();
+    }
+
+    @Override
+    public void initialize() {
+
     }
 }

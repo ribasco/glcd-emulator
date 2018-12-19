@@ -67,20 +67,20 @@ public interface GlcdEmulator extends GlcdDriverEventHandler {
      * Sets the buffer strategy to be used by this emulator
      *
      * @param strategy
-     *         The {@link BufferStrategy} instance
+     *         The {@link BufferLayout} instance
      */
-    void setBufferStrategy(BufferStrategy strategy);
+    void setBufferLayout(BufferLayout strategy);
 
     /**
-     * @return Returns the underlying {@link BufferStrategy} of this emulator
+     * @return Returns the underlying {@link BufferLayout} of this emulator
      */
-    BufferStrategy getBufferStrategy();
+    BufferLayout getBufferLayout();
 
     /**
      * Reset internal properties back to their initial state.
      */
     default void reset() {
-        if (getBufferStrategy() != null)
-            getBufferStrategy().reset();
+        if (getBufferLayout() != null)
+            getBufferLayout().reset();
     }
 }

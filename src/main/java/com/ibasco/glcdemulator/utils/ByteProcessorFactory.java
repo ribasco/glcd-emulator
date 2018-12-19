@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: GlcdBufferStrategy.java
+ * Filename: ByteProcessorFactory.java
  *
  * ---------------------------------------------------------
  * %%
@@ -23,31 +23,26 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * =========================END==================================
  */
-package com.ibasco.glcdemulator.emulator;
+package com.ibasco.glcdemulator.utils;
 
-public enum GlcdBufferStrategy {
-    PAGED_BUFFERING(PagedBufferingStrategy.class, "Paged"),
-    SIMPLE_BUFFERING(SimpleBufferingStrategy.class, "Basic");
+import com.ibasco.glcdemulator.enums.ServiceMode;
 
-    private Class<? extends BufferStrategy> strategyClass;
-
-    private String name;
-
-    GlcdBufferStrategy(Class<? extends BufferStrategy> cls, String name) {
-        this.strategyClass = cls;
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Class<? extends BufferStrategy> getStrategyClass() {
-        return strategyClass;
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
+/**
+ * Factory class for {@link GlcdByteProcessor}
+ *
+ * @author Rafael Ibasco
+ */
+public class ByteProcessorFactory {
+    public static GlcdByteProcessor create(ServiceMode serviceMode) {
+        GlcdByteProcessor processor = null;
+        switch (serviceMode) {
+            case SIMULATED:
+                processor = new GlcdBufferProcessor();
+                break;
+            case EMULATED:
+                processor = new GlcdInstructionProcessor();
+                break;
+        }
+        return processor;
     }
 }

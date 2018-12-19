@@ -30,9 +30,9 @@ import com.ibasco.glcdemulator.Controller;
 import com.ibasco.glcdemulator.DriverFactory;
 import com.ibasco.glcdemulator.Stages;
 import com.ibasco.glcdemulator.controls.GlcdScreen;
-import com.ibasco.glcdemulator.emulator.BufferStrategy;
-import com.ibasco.glcdemulator.emulator.BufferStrategyFactory;
-import com.ibasco.glcdemulator.emulator.GlcdBufferStrategy;
+import com.ibasco.glcdemulator.emulator.BufferLayout;
+import com.ibasco.glcdemulator.emulator.BufferLayoutFactory;
+import com.ibasco.glcdemulator.emulator.GlcdBufferLayout;
 import com.ibasco.glcdemulator.exceptions.ExportCSVException;
 import com.ibasco.glcdemulator.utils.ByteUtils;
 import com.ibasco.glcdemulator.utils.DialogUtil;
@@ -154,7 +154,7 @@ public class GlcdDeveloperController extends Controller {
     private JFXCheckBox checkUseBufferStrategy;
 
     @FXML
-    private JFXComboBox<GlcdBufferStrategy> cbBufferStrategy;
+    private JFXComboBox<GlcdBufferLayout> cbBufferStrategy;
 
     private JFXSnackbar snackbar;
     //</editor-fold>
@@ -181,9 +181,9 @@ public class GlcdDeveloperController extends Controller {
 
     private PixelBuffer frameBuffer;
 
-    private ObservableList<GlcdBufferStrategy> bufferStrategyList = FXCollections.observableArrayList(GlcdBufferStrategy.values());
+    private ObservableList<GlcdBufferLayout> bufferStrategyList = FXCollections.observableArrayList(GlcdBufferLayout.values());
 
-    private BufferStrategy bufferStrategy;
+    private BufferLayout bufferLayout;
 
     private GlcdDriverEventHandler eventHandler = event -> {
         String name = event.getMessage().name();
@@ -359,13 +359,13 @@ public class GlcdDeveloperController extends Controller {
     private void refreshBufferStrategy() {
         if (checkUseBufferStrategy.isSelected()) {
             log.debug("Using custom buffer strategy: {}", cbBufferStrategy.getSelectionModel().getSelectedItem());
-            bufferStrategy = BufferStrategyFactory.createBufferStrategy(cbBufferStrategy.getSelectionModel().getSelectedItem());
+            bufferLayout = BufferLayoutFactory.createBufferLayout(cbBufferStrategy.getSelectionModel().getSelectedItem());
         } else {
-            log.debug("Using default buffer strategy: {}", GlcdBufferStrategy.PAGED_BUFFERING);
-            bufferStrategy = BufferStrategyFactory.createBufferStrategy(GlcdBufferStrategy.PAGED_BUFFERING);
+            log.debug("Using default buffer strategy: {}", GlcdBufferLayout.VERTICAL);
+            bufferLayout = BufferLayoutFactory.createBufferLayout(GlcdBufferLayout.VERTICAL);
         }
-        bufferStrategy.setBuffer(frameBuffer);
-        bufferStrategy.initialize();
+        bufferLayout.setBuffer(frameBuffer);
+        bufferLayout.initialize();
     }
 
     private void copySelectedValues(ActionEvent event) {
@@ -426,6 +426,7 @@ public class GlcdDeveloperController extends Controller {
         }
     }
 
+    @SuppressWarnings("Duplicates")
     private File exportToCSV(String initialDir, Consumer<String> saveLastPathTo) {
         File file = null;
         try {
@@ -505,9 +506,9 @@ public class GlcdDeveloperController extends Controller {
         log.info("Refreshing framebuffer with {} bytes of data", buffer.length);
         screenOutput.start();
         frameBuffer.reset();
-        bufferStrategy.reset();
+        bufferLayout.reset();
         for (byte data : buffer) {
-            bufferStrategy.processByte(data);
+            bufferLayout.processByte(data);
         }
     }
 

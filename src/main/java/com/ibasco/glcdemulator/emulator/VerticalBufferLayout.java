@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: PagedBufferingStrategy.java
+ * Filename: VerticalBufferLayout.java
  *
  * ---------------------------------------------------------
  * %%
@@ -35,9 +35,9 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PagedBufferingStrategy extends BufferStrategyBase {
+public class VerticalBufferLayout extends BufferLayout {
 
-    private static final Logger log = LoggerFactory.getLogger(PagedBufferingStrategy.class);
+    private static final Logger log = LoggerFactory.getLogger(VerticalBufferLayout.class);
 
     private int xOffset = 0;
 
@@ -112,7 +112,6 @@ public class PagedBufferingStrategy extends BufferStrategyBase {
                 while (pageBuffer.hasRemaining()) {
                     byte segment = pageBuffer.get();
                     int state = BitUtils.readBit(segment, pos);
-                    //log.debug("\t(Page={}, Pos={}) Writing to buffer: x={}, y={}", pageIndex, pos, xOffset, yOffset);
                     buffer.write(xOffset++, yOffset, state);
                 }
                 pageBuffer.rewind();

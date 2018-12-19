@@ -26,7 +26,7 @@
 package com.ibasco.glcdemulator.emulator.ssd1306;
 
 import com.ibasco.glcdemulator.annotations.Emulator;
-import com.ibasco.glcdemulator.emulator.GlcdBufferStrategy;
+import com.ibasco.glcdemulator.emulator.GlcdBufferLayout;
 import com.ibasco.glcdemulator.emulator.PagedBufferEmulator;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
@@ -41,7 +41,7 @@ import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
                 GlcdBusInterface.PARALLEL_8080
         },
         defaultBus = GlcdBusInterface.PARALLEL_8080,
-        bufferStrategy = GlcdBufferStrategy.PAGED_BUFFERING
+        bufferLayout = GlcdBufferLayout.VERTICAL
 )
 public class SSD1306Emulator extends PagedBufferEmulator {
 

@@ -33,8 +33,6 @@ import com.ibasco.ucgdisplay.drivers.glcd.*;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdRotation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -45,8 +43,6 @@ import java.util.function.Predicate;
  * @author Rafael Ibasco
  */
 public class DriverFactory {
-
-    private static final Logger log = LoggerFactory.getLogger(DriverFactory.class);
 
     private static final int DUMMY_I2C_ADDRESS = 0x10;
 
@@ -94,7 +90,6 @@ public class DriverFactory {
     }
 
     public static GlcdDriver createVirtual(GlcdDisplay display, GlcdBusInterface busInterface, GlcdDriverEventHandler handler) {
-
         if (busInterface == null)
             throw new IllegalArgumentException("Bus interface cannot be null");
 

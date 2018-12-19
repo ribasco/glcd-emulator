@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: SimpleBufferingStrategy.java
+ * Filename: GlcdBufferLayout.java
  *
  * ---------------------------------------------------------
  * %%
@@ -25,16 +25,34 @@
  */
 package com.ibasco.glcdemulator.emulator;
 
-import com.ibasco.glcdemulator.utils.ByteUtils;
+/**
+ * Enumeration for Buffer layout types
+ *
+ * @author Rafael Luis Ibasco
+ */
+public enum GlcdBufferLayout {
+    VERTICAL(VerticalBufferLayout.class, "Vertical"),
+    HORIZONTAL(HorizontalBufferLayout.class, "Horizontal");
 
-public class SimpleBufferingStrategy extends BufferStrategyBase {
-    @Override
-    public void processByte(byte data) {
-        getBuffer().write(ByteUtils.reverse(data));
+    private Class<? extends BufferLayout> layoutClass;
+
+    private String name;
+
+    GlcdBufferLayout(Class<? extends BufferLayout> cls, String name) {
+        this.layoutClass = cls;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Class<? extends BufferLayout> getLayoutClass() {
+        return layoutClass;
     }
 
     @Override
-    public void reset() {
-        getBuffer().reset();
+    public String toString() {
+        return this.name;
     }
 }

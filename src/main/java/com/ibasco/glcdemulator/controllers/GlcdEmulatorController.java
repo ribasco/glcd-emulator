@@ -381,9 +381,6 @@ public class GlcdEmulatorController extends Controller {
 
     @FXML
     private JFXButton btnDeveloper;
-
-    @FXML
-    private JFXComboBox<ServiceMode> cbServiceMode;
     //</editor-fold>
 
     private final DateTimeFormatter imageFileNameFormatter = DateTimeFormatter.ofPattern("YYYYMMddkkmmss'_GlcdCapture'");
@@ -413,8 +410,6 @@ public class GlcdEmulatorController extends Controller {
     private DisplayService displayService;
 
     private DrawTestService drawTestService;
-
-    private final ObservableList<ServiceMode> serviceModeList = FXCollections.observableArrayList(ServiceMode.values());
 
     private final FilteredList<GlcdBusInterface> busInterfaceList = FXCollections.observableArrayList(GlcdBusInterface.values()).filtered(p -> true);
 
@@ -517,7 +512,7 @@ public class GlcdEmulatorController extends Controller {
                         return;
                     }
                 }
-                stopEmulatorService();
+                stopDisplayService();
             }
         }
     };
@@ -566,7 +561,7 @@ public class GlcdEmulatorController extends Controller {
         Context.getPrimaryStage().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseFilter);
 
         if (appConfig.isRunEmulatorAtStartup()) {
-            startEmulatorService();
+            startDisplayService();
         }
     }
 
@@ -631,11 +626,11 @@ public class GlcdEmulatorController extends Controller {
         connectionDetails.textProperty().bind(connectionDetailsBinding);
 
         //Only bind if a task is available
-        displayService.emulatorTaskProperty().addListener((observable, oldTask, newTask) -> {
+        displayService.displayTaskProperty().addListener((observable, oldTask, newTask) -> {
             if (newTask != null) {
-                emulatorFps.textProperty().bind(Bindings.format("FPS: %d", newTask.fpsCountProperty()));
-                emulatorBps.textProperty().bind(Bindings.format("%.2f KB/s", newTask.bpsCountProperty().divide(1024.0f)));
-                emulatorFrameSize.textProperty().bind(Bindings.format("Frame Size: %d B", newTask.frameSizeProperty()));
+                emulatorFps.textProperty().bind(Bindings.format("FPS: %d", displayService.getStatistics().fpsCounterProperty()));
+                emulatorBps.textProperty().bind(Bindings.format("%.2f KB/s", displayService.getStatistics().bpsCountProperty().divide(1024.0f)));
+                emulatorFrameSize.textProperty().bind(Bindings.format("Frame Size: %d B", displayService.getStatistics().frameSizeProperty()));
             }
         });
 
@@ -902,7 +897,7 @@ public class GlcdEmulatorController extends Controller {
         tfSelectedDisplay.disableProperty().bind(disabledBinding);
         btnSelectEmulator.disableProperty().bind(disabledBinding);
         btnClearDisplay.disableProperty().bind(disabledBinding);
-        cbBusInterface.disableProperty().bind(disabledBinding);
+        cbBusInterface.disableProperty().bind(disabledBinding.or(appConfig.serviceModeProperty().isEqualTo(ServiceMode.SIMULATED)));
         pConnType.disableProperty().bind(disabledBinding);
         rbConnTypeSerial.disableProperty().bind(disabledBinding);
         rbConnTypeTcp.disableProperty().bind(disabledBinding);
@@ -920,8 +915,9 @@ public class GlcdEmulatorController extends Controller {
         displayService = new DisplayService();
         displayService.displayProperty().bindBidirectional(profile.displayProperty());
         displayService.busInterfaceProperty().bindBidirectional(profile.busInterfaceProperty());
-        displayService.pixelBufferProperty().bindBidirectional(this.displayBuffer);
-        displayService.serviceModeProperty().bindBidirectional(profile.serviceModeProperty());
+        displayService.bufferProperty().bindBidirectional(this.displayBuffer);
+        displayService.serviceModeProperty().bindBidirectional(appConfig.serviceModeProperty());
+        displayService.setByteProcessor(ByteProcessorFactory.create(appConfig.getServiceMode()));
         menuEmulatorControl.textProperty().bind(Bindings.createStringBinding(() -> {
             menuEmulatorControl.setUserData(displayService.isRunning());
             if (displayService.isRunning()) {
@@ -940,9 +936,9 @@ public class GlcdEmulatorController extends Controller {
                         return;
                     }
                 }
-                stopEmulatorService();
+                stopDisplayService();
             } else {
-                startEmulatorService();
+                startDisplayService();
             }
         });
 
@@ -965,11 +961,11 @@ public class GlcdEmulatorController extends Controller {
         ToggleButton button = (ToggleButton) event.getSource();
         if (button.isSelected()) {
             if (!displayService.isRunning()) {
-                startEmulatorService();
+                startDisplayService();
             }
         } else {
             if (displayService.isRunning()) {
-                stopEmulatorService();
+                stopDisplayService();
             }
         }
     }
@@ -989,7 +985,7 @@ public class GlcdEmulatorController extends Controller {
     /**
      * Starts the emulator listen service
      */
-    private void startEmulatorService() {
+    private void startDisplayService() {
         ObservableList<Stage> stages = StageHelper.getStages();
         for (Stage s : stages) {
             if ("U8G2 Font Browser".equals(s.getTitle()) && s.isShowing()) {
@@ -1015,7 +1011,7 @@ public class GlcdEmulatorController extends Controller {
     /**
      * Stops the emulator listen service
      */
-    private boolean stopEmulatorService() {
+    private boolean stopDisplayService() {
         return displayService.cancel();
     }
 
@@ -1035,10 +1031,10 @@ public class GlcdEmulatorController extends Controller {
             Parent node = ResourceUtil.loadFxmlResource(Views.EMULATOR_BROWSE, GlcdEmulatorController.this);
 
             JFXDialogLayout content = new JFXDialogLayout();
-            content.setHeading(new Label("Select the controller emulator for current profile"));
+            content.setHeading(new Label("Select the display controller for the current profile"));
             content.setBody(node);
-            content.setPrefWidth(474);
-            content.setPrefHeight(250);
+            content.setPrefWidth(500);
+            content.setPrefHeight(400);
             JFXButton btnSelect = new JFXButton("Select");
             JFXButton btnCancel = new JFXButton("Cancel");
             JFXButton btnRefresh = new JFXButton("Refresh");
@@ -1126,7 +1122,6 @@ public class GlcdEmulatorController extends Controller {
      * Configure node properties, static entries, event handlers, action handlers etc.
      */
     private void setupNodeProperties() {
-        cbServiceMode.setItems(serviceModeList);
         btnDrawAnimTest.setOnAction(this::handleDrawTestAction);
 
         //Disable if not in developer mode
@@ -1468,8 +1463,8 @@ public class GlcdEmulatorController extends Controller {
         appBindGroup.registerUnidirectional(tvProfiles.itemsProperty(), getContext().getProfileManager().filteredProfilesProperty());
         appBindGroup.registerUnidirectional(getContext().getProfileManager().filterProperty(), createFilterObjectBinding());
 
+        //appBindGroup.registerBidirectional(cbServiceMode.valueProperty(), appConfig.serviceModeProperty());
         appBindGroup.registerBidirectional(displayService.connectionTypeProperty(), appConfig.connectionTypeProperty());
-
         appBindGroup.registerBidirectional(menuShowToolbar.selectedProperty(), appConfig.toolbarVisibleProperty());
         appBindGroup.registerBidirectional(menuAlwaysOnTop.selectedProperty(), appConfig.alwaysOnTopProperty());
         appBindGroup.registerBidirectional(tfProfileDirPath.textProperty(), appConfig.profileDirPathProperty());
@@ -1570,7 +1565,6 @@ public class GlcdEmulatorController extends Controller {
         }, profile.displayProperty()));
 
         //Bidirectional Bindings
-        profileBindGroup.registerBidirectional(cbServiceMode.valueProperty(), profile.serviceModeProperty());
         profileBindGroup.registerBidirectional(glcdScreen.activePixelColorProperty(), profile.lcdActivePixelColorProperty());
         profileBindGroup.registerBidirectional(glcdScreen.inactivePixelColorProperty(), profile.lcdInactivePixelColorProperty());
         profileBindGroup.registerBidirectional(glcdScreen.backlightColorProperty(), profile.lcdBacklightColorProperty());

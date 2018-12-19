@@ -60,6 +60,10 @@ public class Counter {
         return lastCount.get();
     }
 
+    public int getCurrentCount() {
+        return counter.get();
+    }
+
     public ReadOnlyIntegerProperty lastCountProperty() {
         return lastCount.getReadOnlyProperty();
     }

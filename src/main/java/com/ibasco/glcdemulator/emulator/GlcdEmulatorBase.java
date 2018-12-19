@@ -41,7 +41,7 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
 
     private ObjectProperty<GlcdBusInterface> busInterface = new SimpleObjectProperty<>();
 
-    private BufferStrategy bufferStrategy;
+    private BufferLayout bufferStrategy;
 
     @Override
     public final PixelBuffer getBuffer() {
@@ -64,12 +64,12 @@ abstract public class GlcdEmulatorBase implements GlcdEmulator {
     }
 
     @Override
-    public BufferStrategy getBufferStrategy() {
+    public BufferLayout getBufferLayout() {
         return bufferStrategy;
     }
 
     @Override
-    public void setBufferStrategy(BufferStrategy bufferStrategy) {
+    public void setBufferLayout(BufferLayout bufferStrategy) {
         this.bufferStrategy = bufferStrategy;
     }
 }

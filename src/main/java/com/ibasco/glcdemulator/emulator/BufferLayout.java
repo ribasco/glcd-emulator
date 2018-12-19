@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: BufferStrategy.java
+ * Filename: BufferLayout.java
  *
  * ---------------------------------------------------------
  * %%
@@ -27,22 +27,21 @@ package com.ibasco.glcdemulator.emulator;
 
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 
-public interface BufferStrategy {
-    void processByte(byte data);
+abstract public class BufferLayout {
 
-    void setBuffer(PixelBuffer buffer);
+    private PixelBuffer buffer;
 
-    PixelBuffer getBuffer();
+    abstract public void processByte(byte data);
 
-    /**
-     * Called once during instantiation
-     */
-    default void initialize() {
+    abstract public void reset();
 
+    abstract public void initialize();
+
+    public void setBuffer(PixelBuffer buffer) {
+        this.buffer = buffer;
     }
 
-    /**
-     * Reset properties
-     */
-    void reset();
+    public PixelBuffer getBuffer() {
+        return this.buffer;
+    }
 }

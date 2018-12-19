@@ -31,8 +31,8 @@ package com.ibasco.glcdemulator.enums;
  * @author Rafael Ibasco
  */
 public enum ServiceMode {
-    EMULATION("Emulation"),
-    SIMULATION("Simulation");
+    EMULATED("Emulated"),
+    SIMULATED("Simulated");
 
     private String name;
 

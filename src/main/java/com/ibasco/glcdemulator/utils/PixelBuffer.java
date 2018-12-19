@@ -136,6 +136,32 @@ public class PixelBuffer {
         markInvalid();
     }
 
+    public int size() {
+        return buffer[0].length * buffer.length;
+    }
+
+    /**
+     * @return The number of bytes remaining in the buffer
+     */
+    public int remaining() {
+        return size() - position();
+    }
+
+    /**
+     * @return The current position of the buffer. This can also be considered as the number of bytes written to the buffer
+     */
+    public int position() {
+        return xOffset + ((width.get() / 8) * yOffset);
+    }
+
+    public int xPosition() {
+        return xOffset;
+    }
+
+    public int yPosition() {
+        return yOffset;
+    }
+
     public void reset() {
         this.xOffset = 0;
         this.yOffset = 0;
@@ -414,10 +440,5 @@ public class PixelBuffer {
 
     protected void invalidated() {
 
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
     }
 }

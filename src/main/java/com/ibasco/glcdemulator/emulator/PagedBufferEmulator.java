@@ -38,7 +38,7 @@ abstract public class PagedBufferEmulator extends GlcdEmulatorBase {
                 break;
             case U8X8_MSG_BYTE_SEND:
                 if (GlcdRegisterSelect.DATA.equals(dataCommand)) {
-                    getBufferStrategy().processByte((byte) event.getValue());
+                    getBufferLayout().processByte((byte) event.getValue());
                 }
                 //note: command instructions are ignored
                 break;

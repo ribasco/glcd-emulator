@@ -27,7 +27,7 @@ package com.ibasco.glcdemulator.emulator;
 
 import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.annotations.Emulator;
-import static com.ibasco.glcdemulator.emulator.BufferStrategyFactory.createBufferStrategy;
+import static com.ibasco.glcdemulator.emulator.BufferLayoutFactory.createBufferLayout;
 import com.ibasco.glcdemulator.exceptions.EmulatorFactoryException;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
@@ -39,6 +39,7 @@ import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
@@ -73,10 +74,10 @@ public class GlcdEmulatorFactory {
 
         emulator.setBusInterface(busInterface);
         emulator.setBuffer(buffer);
-        BufferStrategy bufferStrategy = createBufferStrategy(emulator.getClass());
-        bufferStrategy.setBuffer(buffer);
-        bufferStrategy.initialize();
-        emulator.setBufferStrategy(bufferStrategy);
+        BufferLayout bufferLayout = createBufferLayout(emulator.getClass());
+        bufferLayout.setBuffer(buffer);
+        bufferLayout.initialize();
+        emulator.setBufferLayout(bufferLayout);
 
         return emulator;
     }
@@ -107,8 +108,8 @@ public class GlcdEmulatorFactory {
 
     public static GlcdEmulator createFrom(Class<? extends GlcdEmulator> emulatorClass) {
         try {
-            return emulatorClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return emulatorClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new EmulatorFactoryException("Unable to instantiate emulator '" + emulatorClass + "'", e);
         }
     }

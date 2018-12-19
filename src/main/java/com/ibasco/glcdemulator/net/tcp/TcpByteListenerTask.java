@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: TcpDisplayListenerTask.java
+ * Filename: TcpByteListenerTask.java
  *
  * ---------------------------------------------------------
  * %%
@@ -25,9 +25,8 @@
  */
 package com.ibasco.glcdemulator.net.tcp;
 
-import com.ibasco.glcdemulator.emulator.GlcdEmulator;
 import com.ibasco.glcdemulator.exceptions.InvalidOptionException;
-import com.ibasco.glcdemulator.net.DisplayListenerTask;
+import com.ibasco.glcdemulator.net.ByteListenerTask;
 import com.ibasco.glcdemulator.net.ListenerOptions;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -46,17 +45,13 @@ import java.util.Iterator;
 import java.util.Set;
 
 @SuppressWarnings("Duplicates")
-public class TcpDisplayListenerTask extends DisplayListenerTask {
+public class TcpByteListenerTask extends ByteListenerTask {
 
-    private static final Logger log = LoggerFactory.getLogger(TcpDisplayListenerTask.class);
+    private static final Logger log = LoggerFactory.getLogger(TcpByteListenerTask.class);
 
     private Selector selector;
     private ServerSocketChannel socketChannel;
     private InetSocketAddress listenAddress;
-
-    public TcpDisplayListenerTask(GlcdEmulator emulator) {
-        super(emulator);
-    }
 
     @Override
     protected void configure(ListenerOptions options) throws Exception {

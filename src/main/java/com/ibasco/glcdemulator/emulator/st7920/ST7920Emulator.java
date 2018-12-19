@@ -26,7 +26,7 @@
 package com.ibasco.glcdemulator.emulator.st7920;
 
 import com.ibasco.glcdemulator.annotations.Emulator;
-import com.ibasco.glcdemulator.emulator.GlcdBufferStrategy;
+import com.ibasco.glcdemulator.emulator.GlcdBufferLayout;
 import com.ibasco.glcdemulator.emulator.GlcdEmulatorBase;
 import com.ibasco.glcdemulator.emulator.st7920.instructions.DdramSet;
 import com.ibasco.glcdemulator.exceptions.EmulatorProcessException;
@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                 GlcdBusInterface.PARALLEL_8080
         },
         defaultBus = GlcdBusInterface.PARALLEL_8080,
-        bufferStrategy = GlcdBufferStrategy.SIMPLE_BUFFERING
+        bufferLayout = GlcdBufferLayout.HORIZONTAL
 )
 public class ST7920Emulator extends GlcdEmulatorBase {
     private static final Logger log = getLogger(ST7920Emulator.class);

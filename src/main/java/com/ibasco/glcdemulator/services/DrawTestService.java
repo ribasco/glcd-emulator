@@ -31,6 +31,7 @@ import com.ibasco.glcdemulator.emulator.GlcdEmulator;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriver;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriverEventHandler;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
 import javafx.beans.property.ObjectProperty;
@@ -87,11 +88,12 @@ public class DrawTestService extends Service<Void> {
     private void refreshDriver() {
         if (display.get() == null)
             throw new IllegalStateException("Controller cannot be null");
-        if (busInterface.get() == null)
-            throw new IllegalStateException("Bus interface is not specified");
+        if (busInterface.get() == null) {
+            setBusInterface(GlcdBusInterface.PARALLEL_8080);
+        }
         if (buffer.get() == null)
             throw new IllegalStateException("Buffer is not specified");
-        driver = DriverFactory.createVirtual(display.get(), busInterface.get(), buffer.get());
+        driver = DriverFactory.createVirtual(display.get(), busInterface.get(), (GlcdDriverEventHandler) null);
     }
 
     @Override
@@ -117,7 +119,6 @@ public class DrawTestService extends Service<Void> {
                 emulator.reset();
                 while (!isCancelled()) {
                     driver.setFont(GlcdFont.FONT_10X20_ME);
-
                     driver.clearBuffer();
                     int y = (driver.getHeight() / 2) + (driver.getAscent() / 2);
                     String sampleText = "X = " + ++xPos + ", Y = " + y + "";

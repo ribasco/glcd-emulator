@@ -2,7 +2,7 @@
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Emulator
- * Filename: SerialDisplayListenerTask.java
+ * Filename: SerialByteListenerTask.java
  *
  * ---------------------------------------------------------
  * %%
@@ -26,14 +26,14 @@
 package com.ibasco.glcdemulator.net.serial;
 
 import com.fazecast.jSerialComm.SerialPort;
-import com.ibasco.glcdemulator.emulator.GlcdEmulator;
 import com.ibasco.glcdemulator.enums.SerialBaudRate;
 import com.ibasco.glcdemulator.enums.SerialFlowControl;
 import com.ibasco.glcdemulator.enums.SerialParity;
 import com.ibasco.glcdemulator.enums.SerialStopBits;
-import com.ibasco.glcdemulator.net.DisplayListenerTask;
+import com.ibasco.glcdemulator.net.ByteListenerTask;
 import com.ibasco.glcdemulator.net.ListenerOptions;
 import com.ibasco.glcdemulator.services.SerialPortService;
+import com.ibasco.glcdemulator.utils.PixelBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +45,8 @@ import java.io.IOException;
  *
  * @author Rafael Ibasco
  */
-public class SerialDisplayListenerTask extends DisplayListenerTask {
-    private static final Logger log = LoggerFactory.getLogger(SerialDisplayListenerTask.class);
+public class SerialByteListenerTask extends ByteListenerTask {
+    private static final Logger log = LoggerFactory.getLogger(SerialByteListenerTask.class);
 
     private int baudRate = SerialBaudRate.RATE_9600.toValue();
 
@@ -59,10 +59,6 @@ public class SerialDisplayListenerTask extends DisplayListenerTask {
     private int dataBits = 8;
 
     private SerialPort serialPort;
-
-    public SerialDisplayListenerTask(GlcdEmulator emulator) {
-        super(emulator);
-    }
 
     @Override
     protected void configure(ListenerOptions options) {
@@ -102,6 +98,12 @@ public class SerialDisplayListenerTask extends DisplayListenerTask {
     @Override
     protected String getName() {
         return "SERIAL-LISTENER";
+    }
+
+    @Override
+    protected int calculateBufferSize() {
+        PixelBuffer displayBuffer = getBuffer();
+        return (((displayBuffer.getWidth() * displayBuffer.getHeight()) / 8) * 2) * 2;
     }
 
     @Override

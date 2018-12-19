@@ -25,25 +25,25 @@
  */
 package com.ibasco.glcdemulator.enums;
 
-import com.ibasco.glcdemulator.net.DisplayListenerTask;
-import com.ibasco.glcdemulator.net.serial.SerialDisplayListenerTask;
-import com.ibasco.glcdemulator.net.tcp.TcpDisplayListenerTask;
+import com.ibasco.glcdemulator.net.ByteListenerTask;
+import com.ibasco.glcdemulator.net.serial.SerialByteListenerTask;
+import com.ibasco.glcdemulator.net.tcp.TcpByteListenerTask;
 
 public enum ConnectionType {
-    SERIAL("Serial", "Serial Connection", SerialDisplayListenerTask.class),
-    TCP("TCP", "TCP Connection", TcpDisplayListenerTask.class);
+    SERIAL("Serial", "Serial Connection", SerialByteListenerTask.class),
+    TCP("TCP", "TCP Connection", TcpByteListenerTask.class);
 
     private final String name;
     private final String description;
-    private Class<? extends DisplayListenerTask> listenerClass;
+    private Class<? extends ByteListenerTask> listenerClass;
 
-    ConnectionType(String name, String description, Class<? extends DisplayListenerTask> listenerClass) {
+    ConnectionType(String name, String description, Class<? extends ByteListenerTask> listenerClass) {
         this.name = name;
         this.description = description;
         this.listenerClass = listenerClass;
     }
 
-    public Class<? extends DisplayListenerTask> getListenerClass() {
+    public Class<? extends ByteListenerTask> getListenerClass() {
         return listenerClass;
     }
 
