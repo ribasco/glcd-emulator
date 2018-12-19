@@ -152,7 +152,7 @@
                             <bottom>
                                 <JFXTabPane fx:id="tpSettings" prefHeight="225.0" prefWidth="1119.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
                                     <tabs>
-                                        <Tab closable="false" text="Emulator">
+                                        <Tab closable="false" text="Display">
                                             <content>
                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="1119.0">
                                                     <children>
@@ -226,12 +226,11 @@
                                                                 <Font name="System Bold" size="12.0"/>
                                                             </font>
                                                         </Label>
-                                                        <JFXComboBox fx:id="cbBusInterface" layoutX="843.0" layoutY="74.0" prefHeight="26.0" prefWidth="148.0" promptText="Bus Interface"/>
+                                                        <JFXComboBox fx:id="cbBusInterface" layoutX="846.0" layoutY="74.0" prefHeight="26.0" prefWidth="260.0" promptText="Bus Interface"/>
                                                         <JFXButton fx:id="btnDrawAnimTest" layoutX="843.0" layoutY="116.0" prefHeight="25.0" prefWidth="131.0" text="Start Draw Test"/>
                                                         <JFXButton fx:id="btnClearDisplay" layoutX="987.0" layoutY="116.0" prefHeight="25.0" prefWidth="117.0" text="Clear Display"/>
                                                         <JFXButton fx:id="btnFreezeDisplay" layoutX="843.0" layoutY="151.0" prefHeight="25.0" prefWidth="131.0" text="Freeze Display"/>
                                                         <JFXButton fx:id="btnReset" layoutX="987.0" layoutY="151.0" prefHeight="25.0" prefWidth="117.0" text="Reset Settings"/>
-                                                        <JFXComboBox fx:id="cbServiceMode" layoutX="1005.0" layoutY="74.0" prefHeight="26.0" prefWidth="102.0" promptText="Service Mode"/>
                                                     </children>
                                                 </AnchorPane>
                                             </content>
