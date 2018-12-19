@@ -97,12 +97,26 @@ public class GlcdConfigApp extends GlcdConfig {
     private BooleanProperty developerMode = new SimpleBooleanProperty(false);
 
     private BooleanProperty skipResizeWarning = new SimpleBooleanProperty(false);
+
+    private ObjectProperty<ServiceMode> serviceMode = new SimpleObjectProperty<>(ServiceMode.SIMULATED);
     //</editor-fold>
 
     public GlcdConfigApp() {
     }
 
     //<editor-fold desc="Getter/Setters">
+    public ServiceMode getServiceMode() {
+        return serviceMode.get();
+    }
+
+    public ObjectProperty<ServiceMode> serviceModeProperty() {
+        return serviceMode;
+    }
+
+    public void setServiceMode(ServiceMode serviceMode) {
+        this.serviceMode.set(serviceMode);
+    }
+
     public boolean isSkipResizeWarning() {
         return skipResizeWarning.get();
     }
