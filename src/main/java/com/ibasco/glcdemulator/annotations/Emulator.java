@@ -25,7 +25,7 @@
  */
 package com.ibasco.glcdemulator.annotations;
 
-import com.ibasco.glcdemulator.emulator.GlcdBufferLayout;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBufferType;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 
@@ -67,5 +67,5 @@ public @interface Emulator {
      * <li>How the processed data should be written to the {@link com.ibasco.glcdemulator.utils.PixelBuffer}</li>
      * </ol>
      */
-    GlcdBufferLayout bufferLayout() default GlcdBufferLayout.VERTICAL;
+    GlcdBufferType bufferLayout() default GlcdBufferType.VERTICAL;
 }

@@ -103,7 +103,7 @@ public class DrawTestService extends Service<Void> {
         if (buffer.get() == null)
             throw new IllegalStateException("Buffer is not specified");
         driver = DriverFactory.createVirtual(display.get(), busInterface.get(), (GlcdDriverEventHandler) null);
-        bufferLayout = BufferLayoutFactory.createBufferLayout(getDisplay(), getBuffer());
+
         try {
             URL url = ResourceUtil.getResource("images/java-logo-small.xbm");//Context.class.getClassLoader().getResource("images/java-logo.xbm");
             if (url != null)
@@ -111,8 +111,6 @@ public class DrawTestService extends Service<Void> {
         } catch (URISyntaxException e) {
             throw new IllegalStateException("Unable to load logo file");
         }
-        bufferLayout.initialize();
-        bufferLayout.reset();
     }
 
     @Override
@@ -123,6 +121,9 @@ public class DrawTestService extends Service<Void> {
             refreshDriver();
         }
 
+        log.info("Creating display task");
+        bufferLayout = BufferLayoutFactory.createBufferLayout(getDisplay(), getBuffer());
+        bufferLayout.initialize();
         bufferLayout.reset();
 
         return new Task<Void>() {
@@ -131,7 +132,7 @@ public class DrawTestService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
                 buffer.get().clear();
-                log.info("START: Draw test (Display = {}, Bus = {}, Buffer Layout = {})", display.get().getName(), busInterface.get(), bufferLayout.getClass().getSimpleName());
+                log.info("START: Draw test (Display = {} :: {}, Bus = {}, Buffer Layout = {})", display.get().getController().name(), display.get().getName(), busInterface.get(), bufferLayout.getClass().getSimpleName());
 
                 while (!isCancelled()) {
                     driver.setFont(GlcdFont.FONT_10X20_ME);

@@ -32,7 +32,6 @@ import com.ibasco.glcdemulator.Stages;
 import com.ibasco.glcdemulator.controls.GlcdScreen;
 import com.ibasco.glcdemulator.emulator.BufferLayout;
 import com.ibasco.glcdemulator.emulator.BufferLayoutFactory;
-import com.ibasco.glcdemulator.emulator.GlcdBufferLayout;
 import com.ibasco.glcdemulator.exceptions.ExportCSVException;
 import com.ibasco.glcdemulator.utils.ByteUtils;
 import com.ibasco.glcdemulator.utils.DialogUtil;
@@ -40,6 +39,7 @@ import com.ibasco.glcdemulator.utils.FileUtils;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.core.u8g2.U8g2Message;
 import com.ibasco.ucgdisplay.drivers.glcd.*;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBufferType;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusType;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
@@ -154,7 +154,7 @@ public class GlcdDeveloperController extends Controller {
     private JFXCheckBox checkUseBufferStrategy;
 
     @FXML
-    private JFXComboBox<GlcdBufferLayout> cbBufferStrategy;
+    private JFXComboBox<GlcdBufferType> cbBufferStrategy;
 
     private JFXSnackbar snackbar;
     //</editor-fold>
@@ -181,7 +181,7 @@ public class GlcdDeveloperController extends Controller {
 
     private PixelBuffer frameBuffer;
 
-    private ObservableList<GlcdBufferLayout> bufferStrategyList = FXCollections.observableArrayList(GlcdBufferLayout.values());
+    private ObservableList<GlcdBufferType> bufferStrategyList = FXCollections.observableArrayList(GlcdBufferType.values());
 
     private BufferLayout bufferLayout;
 
@@ -361,8 +361,8 @@ public class GlcdDeveloperController extends Controller {
             log.debug("Using custom buffer strategy: {}", cbBufferStrategy.getSelectionModel().getSelectedItem());
             bufferLayout = BufferLayoutFactory.createBufferLayout(cbBufferStrategy.getSelectionModel().getSelectedItem());
         } else {
-            log.debug("Using default buffer strategy: {}", GlcdBufferLayout.VERTICAL);
-            bufferLayout = BufferLayoutFactory.createBufferLayout(GlcdBufferLayout.VERTICAL);
+            log.debug("Using default buffer strategy: {}", GlcdBufferType.VERTICAL);
+            bufferLayout = BufferLayoutFactory.createBufferLayout(GlcdBufferType.VERTICAL);
         }
         bufferLayout.setBuffer(frameBuffer);
         bufferLayout.initialize();

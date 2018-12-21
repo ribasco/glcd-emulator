@@ -1051,13 +1051,14 @@ public class GlcdEmulatorController extends Controller {
 
             btnCancel.setOnAction(e -> emulatorBrowseDialog.close());
             btnSelect.setOnAction(ev -> {
+                GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
                 GlcdDisplay selectedDisplay = lvEmulators.getSelectionModel().getSelectedItem();
                 String displayController = selectedDisplay.getController().name() + " - " + selectedDisplay.getName();
                 log.info("Selected display controller: {}", displayController);
-                getContext().getProfileManager().getActiveProfile().setDisplay(selectedDisplay);
+                profile.setDisplay(selectedDisplay);
                 log.info("Updating display with/height properties based on '{}'", displayController);
-                getContext().getProfileManager().getActiveProfile().setDisplaySizeWidth(selectedDisplay.getDisplaySize().getDisplayWidth());
-                getContext().getProfileManager().getActiveProfile().setDisplaySizeHeight(selectedDisplay.getDisplaySize().getDisplayHeight());
+                profile.setDisplaySizeWidth(selectedDisplay.getDisplaySize().getDisplayWidth());
+                profile.setDisplaySizeHeight(selectedDisplay.getDisplaySize().getDisplayHeight());
                 fitWindowToScreen();
                 emulatorBrowseDialog.close();
             });
@@ -1106,9 +1107,7 @@ public class GlcdEmulatorController extends Controller {
 
     private void setupDrawTestService() {
         GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
-
         drawTestService = new DrawTestService();
-        drawTestService.bufferProperty().bind(displayBuffer);
 
         ObjectBinding<GlcdBusInterface> busInterfaceBinding = Bindings.createObjectBinding(() -> {
             GlcdBusInterface busInterface = profile.getBusInterface();
@@ -1122,15 +1121,17 @@ public class GlcdEmulatorController extends Controller {
             return busInterface;
         }, profile.busInterfaceProperty());
 
-        drawTestService.busInterfaceProperty().bind(busInterfaceBinding);
-        drawTestService.displayProperty().bind(profile.displayProperty());
-
-        btnDrawAnimTest.textProperty().bind(Bindings.createStringBinding(() -> {
+        StringBinding textBinding = Bindings.createStringBinding(() -> {
             if (drawTestService.isRunning()) {
                 return "Stop Draw Test";
             }
             return "Start Draw Test";
-        }, drawTestService.runningProperty()));
+        }, drawTestService.runningProperty());
+
+        drawTestService.bufferProperty().bind(displayBuffer);
+        drawTestService.busInterfaceProperty().bind(busInterfaceBinding);
+        drawTestService.displayProperty().bind(profile.displayProperty());
+        btnDrawAnimTest.textProperty().bind(textBinding);
     }
 
     /**
@@ -1462,7 +1463,8 @@ public class GlcdEmulatorController extends Controller {
             newProfile.setId(activeProfile.getId());
             newProfile.setFile(activeProfile.getFile());
             newProfile.setName(activeProfile.getName());
-            profileManager.getProfiles().remove(activeProfile);
+
+            profileManager.delete(activeProfile);
             profileManager.setActiveProfile(newProfile);
             profileManager.getProfiles().add(newProfile);
             activateProfile(newProfile);

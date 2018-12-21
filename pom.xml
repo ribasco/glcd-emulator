@@ -577,7 +577,7 @@
             <dependency>
                 <groupId>com.ibasco.ucgdisplay</groupId>
                 <artifactId>ucgd-drivers-glcd</artifactId>
-                <version>[1.2.2-alpha,)</version>
+                <version>[1.3.0,)</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
             <dependency>
@@ -840,8 +840,7 @@
         </dependency>
         <dependency>
             <groupId>com.ibasco.ucgdisplay</groupId>
-            <artifactId>ucgd-native-graphics</artifactId>
-            <version>1.3.1-alpha-SNAPSHOT</version>
+            <artifactId>ucgd-drivers-glcd</artifactId>
         </dependency>
     </dependencies>
 </project>

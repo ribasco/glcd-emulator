@@ -30,13 +30,11 @@ import com.ibasco.glcdemulator.exceptions.BufferLayoutLoadException;
 import com.ibasco.glcdemulator.exceptions.BufferStrategyFactoryException;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
-import org.apache.commons.lang3.StringUtils;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBufferType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Properties;
 
 /**
  * @author Rafael Ibasco
@@ -44,17 +42,13 @@ import java.util.Properties;
 public class BufferLayoutFactory {
     public static final Logger log = LoggerFactory.getLogger(BufferLayoutFactory.class);
 
-    private static final String LAYOUT_FILE = "bufferLayout.properties";
-
-    private static Properties layoutProperties;
-
     public static BufferLayout createBufferLayout(Class<? extends GlcdEmulator> emulatorClass) {
-        GlcdBufferLayout bufferStrategy = emulatorClass.getAnnotation(Emulator.class).bufferLayout();
+        GlcdBufferType bufferStrategy = emulatorClass.getAnnotation(Emulator.class).bufferLayout();
         return createBufferLayout(bufferStrategy);
     }
 
-    public static BufferLayout createBufferLayout(GlcdBufferLayout layout) {
-        Class<? extends BufferLayout> clsBufferStrategy = layout.getLayoutClass();
+    public static BufferLayout createBufferLayout(GlcdBufferType type) {
+        Class<? extends BufferLayout> clsBufferStrategy = retrieveLayoutClass(type);
         BufferLayout bufferStrategyInstance;
         try {
             bufferStrategyInstance = clsBufferStrategy.newInstance();
@@ -65,23 +59,24 @@ public class BufferLayoutFactory {
     }
 
     public static BufferLayout createBufferLayout(GlcdDisplay display, PixelBuffer buffer) {
-        log.debug("Buffer layout display = {}", display.getController().name());
-        Properties layoutMapping = getLayoutProperties();
-        GlcdBufferLayout layout;
-        if (layoutMapping == null) {
-            layout = GlcdBufferLayout.VERTICAL;
-        } else {
-            String layoutName = layoutMapping.getProperty(display.getController().name());
-            if (StringUtils.isBlank(layoutName)) {
-                log.warn("No buffer layout mapping found for display controller '{}'. Using default.", display.getController().name());
-                layout = GlcdBufferLayout.VERTICAL;
-            } else {
-                layout = GlcdBufferLayout.valueOf(layoutName.toUpperCase());
-            }
-        }
-        BufferLayout bLayout = createInstance(layout.getLayoutClass());
+        log.debug("Buffer type/layout = {}", display.getBufferType());
+        Class<? extends BufferLayout> layoutClass = retrieveLayoutClass(display.getBufferType());
+        BufferLayout bLayout = createInstance(layoutClass);
         bLayout.setBuffer(buffer);
         return bLayout;
+    }
+
+    private static Class<? extends BufferLayout> retrieveLayoutClass(GlcdBufferType type) {
+        Class<? extends BufferLayout> layoutClass = null;
+        switch (type) {
+            case HORIZONTAL:
+                layoutClass = HorizontalBufferLayout.class;
+                break;
+            case VERTICAL:
+                layoutClass = VerticalBufferLayout.class;
+                break;
+        }
+        return layoutClass;
     }
 
     private static BufferLayout createInstance(Class<? extends BufferLayout> cls) {
@@ -90,17 +85,5 @@ public class BufferLayoutFactory {
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new BufferLayoutLoadException("Unable to create instance for buffer layout class: " + cls, e);
         }
-    }
-
-    private static Properties getLayoutProperties() {
-        if (layoutProperties == null) {
-            layoutProperties = new Properties();
-            try {
-                layoutProperties.load(BufferLayoutFactory.class.getClassLoader().getResourceAsStream(LAYOUT_FILE));
-            } catch (IOException e) {
-                throw new BufferLayoutLoadException("Unable to load layout mapping file from classpath", e);
-            }
-        }
-        return layoutProperties;
     }
 }

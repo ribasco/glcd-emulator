@@ -26,7 +26,6 @@
 package com.ibasco.glcdemulator.emulator.st7920;
 
 import com.ibasco.glcdemulator.annotations.Emulator;
-import com.ibasco.glcdemulator.emulator.GlcdBufferLayout;
 import com.ibasco.glcdemulator.emulator.GlcdEmulatorBase;
 import com.ibasco.glcdemulator.emulator.st7920.instructions.DdramSet;
 import com.ibasco.glcdemulator.exceptions.EmulatorProcessException;
@@ -34,10 +33,11 @@ import com.ibasco.glcdemulator.utils.ByteUtils;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.core.u8g2.U8g2ByteEvent;
 import com.ibasco.ucgdisplay.core.u8g2.U8g2Message;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBufferType;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -57,10 +57,10 @@ import java.util.concurrent.atomic.AtomicInteger;
                 GlcdBusInterface.PARALLEL_8080
         },
         defaultBus = GlcdBusInterface.PARALLEL_8080,
-        bufferLayout = GlcdBufferLayout.HORIZONTAL
+        bufferLayout = GlcdBufferType.HORIZONTAL
 )
 public class ST7920Emulator extends GlcdEmulatorBase {
-    private static final Logger log = getLogger(ST7920Emulator.class);
+    private static final Logger log = LoggerFactory.getLogger(ST7920Emulator.class);
 
     //<editor-fold desc="Constants">
     private static final int SER_RS_INSTRUCTION = 0xF8;
