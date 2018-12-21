@@ -32,6 +32,7 @@ import com.ibasco.glcdemulator.Controllers;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.util.Callback;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,10 @@ public class ResourceUtil {
 
     private static AtomicReference<Parent> lastRootNode = new AtomicReference<>();
 
+    public static InputStream getResourceAsStream(String resourceName) {
+        return Context.class.getClassLoader().getResourceAsStream(resourceName);
+    }
+
     public static URL getResource(String resourceName) {
         return Bootstrap.class.getClassLoader().getResource(resourceName);
     }
@@ -70,9 +75,17 @@ public class ResourceUtil {
         return getResource(String.format("views/%s.fxml", resourceName));
     }
 
+    public static byte[] readResourceAsBytes(String resource) {
+        try {
+            return IOUtils.toByteArray(getResourceAsStream(resource));
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not read resource", e);
+        }
+    }
+
     public static String readFileResource(String fileName) {
         try {
-            InputStream is = Context.class.getClassLoader().getResourceAsStream(fileName);
+            InputStream is = getResourceAsStream(fileName);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             StringBuilder sb = new StringBuilder();
             String line;
@@ -86,6 +99,7 @@ public class ResourceUtil {
         }
         return null;
     }
+
     /**
      * <p>Loads an FXML resource file with the controller specified. Using this method requires that you already have an fx:controller attribute assigned for the FXML file you are loading.</p>
      *
