@@ -799,10 +799,6 @@
             <artifactId>jSerialComm</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.ibasco.ucgdisplay</groupId>
-            <artifactId>ucgd-drivers-glcd</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.hildan.fxgson</groupId>
             <artifactId>fx-gson</artifactId>
         </dependency>
