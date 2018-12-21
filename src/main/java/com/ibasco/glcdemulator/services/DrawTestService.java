@@ -36,6 +36,9 @@ import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriver;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriverEventHandler;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
+import com.ibasco.ucgdisplay.drivers.glcd.exceptions.XBMDecodeException;
+import com.ibasco.ucgdisplay.drivers.glcd.utils.XBMData;
+import com.ibasco.ucgdisplay.drivers.glcd.utils.XBMUtils;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
@@ -43,9 +46,7 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.ByteArrayInputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DrawTestService extends Service<Void> {
@@ -83,7 +84,7 @@ public class DrawTestService extends Service<Void> {
         setExecutor(Context.getTaskExecutor());
     }
 
-    private File javaLogoFile;
+    private byte[] javaLogoFile;
 
     @Override
     public void start() {
@@ -103,13 +104,11 @@ public class DrawTestService extends Service<Void> {
         if (buffer.get() == null)
             throw new IllegalStateException("Buffer is not specified");
         driver = DriverFactory.createVirtual(display.get(), busInterface.get(), (GlcdDriverEventHandler) null);
-
         try {
-            URL url = ResourceUtil.getResource("images/java-logo-small.xbm");//Context.class.getClassLoader().getResource("images/java-logo.xbm");
-            if (url != null)
-                javaLogoFile = new File(url.toURI());
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException("Unable to load logo file");
+            XBMData xbmData = XBMUtils.decodeXbmFile(new ByteArrayInputStream(ResourceUtil.readResourceAsBytes("images/java-logo-small.xbm")));
+            javaLogoFile = xbmData.getData();
+        } catch (XBMDecodeException e) {
+            throw new IllegalStateException("Problem decoding byte stream to XBM", e);
         }
     }
 
@@ -137,6 +136,7 @@ public class DrawTestService extends Service<Void> {
                 while (!isCancelled()) {
                     driver.setFont(GlcdFont.FONT_10X20_ME);
                     driver.clearBuffer();
+
                     driver.drawXBM(0, 10, 32, 32, javaLogoFile);
 
                     int y = (driver.getHeight() / 2) + (driver.getAscent() / 2);
