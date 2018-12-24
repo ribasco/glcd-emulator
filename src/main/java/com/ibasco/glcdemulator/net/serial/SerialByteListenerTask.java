@@ -33,7 +33,6 @@ import com.ibasco.glcdemulator.enums.SerialStopBits;
 import com.ibasco.glcdemulator.net.ByteListenerTask;
 import com.ibasco.glcdemulator.net.ListenerOptions;
 import com.ibasco.glcdemulator.services.SerialPortService;
-import com.ibasco.glcdemulator.utils.PixelBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +58,10 @@ public class SerialByteListenerTask extends ByteListenerTask {
     private int dataBits = 8;
 
     private SerialPort serialPort;
+
+    private static final byte MSG_REQ = 0x7B;
+
+    private static final byte MSG_ACK = 0x7C;
 
     @Override
     protected void configure(ListenerOptions options) {
@@ -102,8 +105,7 @@ public class SerialByteListenerTask extends ByteListenerTask {
 
     @Override
     protected int calculateBufferSize() {
-        PixelBuffer displayBuffer = getBuffer();
-        return (((displayBuffer.getWidth() * displayBuffer.getHeight()) / 8) * 2) * 2;
+        return (getBuffer().getWidth() * getBuffer().getHeight()) / 8;
     }
 
     @Override
@@ -122,6 +124,7 @@ public class SerialByteListenerTask extends ByteListenerTask {
         log.info("Connected to serial device");
         int size = calculateBufferSize();
         log.info("Calculated buffer size: " + size);
+        boolean acknowledged = false;
 
         try (BufferedInputStream bis = new BufferedInputStream(serialPort.getInputStream(), size)) {
             log.info("Using serial port: {}", serialPort);
@@ -129,7 +132,17 @@ public class SerialByteListenerTask extends ByteListenerTask {
             setConnected(true);
             while (!isCancelled()) {
                 if (bis.available() > 0) {
-                    processByte((byte) bis.read());
+                    byte data = (byte) bis.read();
+                    if (!acknowledged) {
+                        if (data == MSG_REQ) {
+                            log.debug("Client request received. Sending ack");
+                            serialPort.writeBytes(new byte[]{MSG_ACK}, 1);
+                            acknowledged = true;
+                            reset();
+                        }
+                        continue;
+                    }
+                    processByte(data);
                 }
             }
         }

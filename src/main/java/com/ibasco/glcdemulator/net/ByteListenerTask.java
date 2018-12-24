@@ -66,6 +66,7 @@ abstract public class ByteListenerTask extends Task<Void> {
     private final ObjectProperty<PixelBuffer> buffer = new SimpleObjectProperty<>();
 
     private final ObjectProperty<ByteProcessStats> stats = new SimpleObjectProperty<>();
+
     //</editor-fold>
 
     //<editor-fold desc="Getter/Setters">
