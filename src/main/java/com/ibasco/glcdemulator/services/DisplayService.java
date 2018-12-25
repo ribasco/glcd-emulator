@@ -35,6 +35,7 @@ import com.ibasco.glcdemulator.utils.ByteProcessStats;
 import com.ibasco.glcdemulator.utils.GlcdByteProcessor;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdSetupInfo;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -44,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 /**
  * A background service that listens on a transport interface and process display related instructions.
@@ -242,7 +244,12 @@ public class DisplayService extends Service<Void> {
 
         ByteListenerTask task = createListenerTask(connectionType.get());
 
-        log.info("Creating display service task: {} (Display = {}, Bus Interface = {}, Byte Processor = {})", task.getClass().getSimpleName(), display.get().getName(), busInterface.get() != null ? busInterface.get().getDescription() : "N/A", byteProcessor.get() != null ? byteProcessor.get().getClass().getSimpleName() : "");
+        GlcdSetupInfo setupInfo = Arrays.stream(display.get().getSetupDetails())
+                .filter(setup -> setup.isSupported(busInterface.get()))
+                .findFirst()
+                .orElse(null);
+
+        log.info("Creating display service task: {} (Display = {}, Bus Interface = {}, Byte Processor = {}, Constructor = {})", task.getClass().getSimpleName(), display.get().getName(), busInterface.get() != null ? busInterface.get().getDescription() : "N/A", byteProcessor.get() != null ? byteProcessor.get().getClass().getSimpleName() : "", setupInfo.getFunction());
 
         task.listenerOptionsProperty().bind(connectionOptions);
         task.displayProperty().bind(display);
