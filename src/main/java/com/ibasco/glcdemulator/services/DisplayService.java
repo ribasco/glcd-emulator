@@ -244,12 +244,17 @@ public class DisplayService extends Service<Void> {
 
         ByteListenerTask task = createListenerTask(connectionType.get());
 
+        GlcdBusInterface bInt = getBusInterface() == null ? getDisplay().getBusInterfaces().get(0) : getBusInterface();
         GlcdSetupInfo setupInfo = Arrays.stream(display.get().getSetupDetails())
-                .filter(setup -> setup.isSupported(busInterface.get()))
+                .filter(setup -> busInterface.get() != null && setup.isSupported(bInt))
                 .findFirst()
                 .orElse(null);
 
-        log.info("Creating display service task: {} (Display = {}, Bus Interface = {}, Byte Processor = {}, Constructor = {})", task.getClass().getSimpleName(), display.get().getName(), busInterface.get() != null ? busInterface.get().getDescription() : "N/A", byteProcessor.get() != null ? byteProcessor.get().getClass().getSimpleName() : "", setupInfo.getFunction());
+        String setupFunction = "";
+        if (setupInfo != null)
+            setupFunction = setupInfo.getFunction();
+
+        log.info("Creating display service task: {} (Display = {}, Bus Interface = {}, Byte Processor = {}, Constructor = {})", task.getClass().getSimpleName(), display.get().getName(), busInterface.get() != null ? busInterface.get().getDescription() : "N/A", byteProcessor.get() != null ? byteProcessor.get().getClass().getSimpleName() : "", setupFunction);
 
         task.listenerOptionsProperty().bind(connectionOptions);
         task.displayProperty().bind(display);
