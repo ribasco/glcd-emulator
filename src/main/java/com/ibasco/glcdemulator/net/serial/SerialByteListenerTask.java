@@ -134,8 +134,9 @@ public class SerialByteListenerTask extends ByteListenerTask {
                 if (bis.available() > 0) {
                     byte data = (byte) bis.read();
                     if (!acknowledged) {
+                        log.info("Not acknowledged...Waiting");
                         if (data == MSG_REQ) {
-                            log.debug("Client request received. Sending ack");
+                            log.info("Client request received. Sending ack");
                             serialPort.writeBytes(new byte[]{MSG_ACK}, 1);
                             acknowledged = true;
                             reset();
