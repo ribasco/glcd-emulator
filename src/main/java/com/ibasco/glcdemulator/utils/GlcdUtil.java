@@ -29,6 +29,7 @@ import com.ibasco.glcdemulator.annotations.Emulator;
 import com.ibasco.glcdemulator.emulator.GlcdEmulator;
 import com.ibasco.ucgdisplay.drivers.glcd.Glcd;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdSetupInfo;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
 import io.github.classgraph.ClassGraph;
@@ -38,15 +39,48 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GlcdUtil {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdUtil.class);
+
+    private static final Map<GlcdBusInterface, Integer> busPriority = new HashMap<>();
+
+    static {
+        busPriority.put(GlcdBusInterface.PARALLEL_8080, 1);
+        busPriority.put(GlcdBusInterface.PARALLEL_6800, 2);
+        busPriority.put(GlcdBusInterface.SPI_HW_4WIRE, 3);
+        busPriority.put(GlcdBusInterface.SPI_SW_4WIRE, 4);
+        busPriority.put(GlcdBusInterface.SPI_SW_3WIRE, 5);
+        busPriority.put(GlcdBusInterface.I2C_HW, 6);
+        busPriority.put(GlcdBusInterface.I2C_SW, 7);
+        busPriority.put(GlcdBusInterface.PARALLEL_6800_KS0108, 8);
+        busPriority.put(GlcdBusInterface.SPI_HW_4WIRE_ST7920, 9);
+        busPriority.put(GlcdBusInterface.SPI_SW_4WIRE_ST7920, 10);
+        busPriority.put(GlcdBusInterface.SERIAL_HW, 11);
+        busPriority.put(GlcdBusInterface.SERIAL_SW, 12);
+        busPriority.put(GlcdBusInterface.SED1520, 99);
+    }
+
+    public static String findSetupFunction(GlcdDisplay display, GlcdBusInterface busInterface) {
+        if (display == null)
+            throw new IllegalArgumentException("Display cannot be null");
+        final GlcdBusInterface tmp = busInterface == null ? findPreferredBusInterface(display) : busInterface;
+        GlcdSetupInfo setupInfo = Arrays.stream(display.getSetupDetails())
+                .filter(setup -> setup.isSupported(tmp))
+                .findFirst()
+                .orElse(null);
+        return setupInfo != null ? setupInfo.getFunction() : null;
+    }
+
+    public static GlcdBusInterface findPreferredBusInterface(GlcdDisplay display) {
+        List<GlcdBusInterface> tmp = new ArrayList<>(display.getBusInterfaces());
+        tmp.sort(Comparator.comparing(busPriority::get));
+        return tmp.get(0);
+    }
 
     public static List<GlcdBusInterface> findSupportedBusInterface(Class<? extends GlcdEmulator> emulator) {
         return Arrays.asList(emulator.getAnnotation(Emulator.class).bus());
