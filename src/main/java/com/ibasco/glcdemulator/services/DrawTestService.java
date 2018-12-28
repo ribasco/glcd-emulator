@@ -29,6 +29,7 @@ import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.DriverFactory;
 import com.ibasco.glcdemulator.emulator.BufferLayout;
 import com.ibasco.glcdemulator.emulator.BufferLayoutFactory;
+import com.ibasco.glcdemulator.utils.GlcdUtil;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.glcdemulator.utils.ResourceUtil;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
@@ -98,12 +99,14 @@ public class DrawTestService extends Service<Void> {
     private void refreshDriver() {
         if (display.get() == null)
             throw new IllegalStateException("Controller cannot be null");
-        if (busInterface.get() == null) {
-            setBusInterface(GlcdBusInterface.PARALLEL_8080);
-        }
         if (buffer.get() == null)
             throw new IllegalStateException("Buffer is not specified");
-        driver = DriverFactory.createVirtual(display.get(), busInterface.get(), (GlcdDriverEventHandler) null);
+        GlcdBusInterface tmpBusInterface = busInterface.get();
+        if (!display.get().hasBusInterface(tmpBusInterface)) {
+            log.warn("The selected bus interface '{}' for display '{}' is not supported. Using default", tmpBusInterface.getDescription(), display.get());
+            tmpBusInterface = GlcdUtil.findPreferredBusInterface(display.get());
+        }
+        driver = DriverFactory.createVirtual(display.get(), tmpBusInterface, (GlcdDriverEventHandler) null);
         try {
             XBMData xbmData = XBMUtils.decodeXbmFile(new ByteArrayInputStream(ResourceUtil.readResourceAsBytes("images/java-logo-small.xbm")));
             javaLogoFile = xbmData.getData();
@@ -120,7 +123,6 @@ public class DrawTestService extends Service<Void> {
             refreshDriver();
         }
 
-        log.info("Creating display task");
         bufferLayout = BufferLayoutFactory.createBufferLayout(getDisplay(), getBuffer());
         bufferLayout.initialize();
         bufferLayout.reset();
@@ -131,7 +133,9 @@ public class DrawTestService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
                 buffer.get().clear();
-                log.info("START: Draw test (Display = {} :: {}, Bus = {}, Buffer Layout = {})", display.get().getController().name(), display.get().getName(), busInterface.get(), bufferLayout.getClass().getSimpleName());
+
+                String setupFunction = GlcdUtil.findSetupFunction(getDisplay(), getBusInterface());
+                log.info("START: Draw test (Display = {} :: {}, Bus = {}, Buffer Layout = {}, Constructor = {})", display.get().getController().name(), display.get().getName(), busInterface.get(), bufferLayout.getClass().getSimpleName(), setupFunction);
 
                 while (!isCancelled()) {
                     driver.setFont(GlcdFont.FONT_10X20_ME);

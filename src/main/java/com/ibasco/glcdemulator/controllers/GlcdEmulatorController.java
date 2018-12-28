@@ -1053,7 +1053,7 @@ public class GlcdEmulatorController extends Controller {
             btnSelect.setOnAction(ev -> {
                 GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
                 GlcdDisplay selectedDisplay = lvEmulators.getSelectionModel().getSelectedItem();
-                String displayController = selectedDisplay.getController().name() + " - " + selectedDisplay.getName();
+                String displayController = selectedDisplay.toString();
                 log.info("Selected display controller: {}", displayController);
                 profile.setDisplay(selectedDisplay);
                 log.info("Updating display with/height properties based on '{}'", displayController);
@@ -1112,7 +1112,7 @@ public class GlcdEmulatorController extends Controller {
         ObjectBinding<GlcdBusInterface> busInterfaceBinding = Bindings.createObjectBinding(() -> {
             GlcdBusInterface busInterface = profile.getBusInterface();
             if (busInterface == null) {
-                busInterface = profile.getDisplay().getBusInterfaces().stream().findFirst().orElse(null);
+                busInterface = GlcdUtil.findPreferredBusInterface(profile.getDisplay());
                 if (busInterface != null)
                     log.info("Bus interface is null, returning default: {}", busInterface.name());
                 else

@@ -33,6 +33,7 @@ import com.ibasco.glcdemulator.enums.SerialStopBits;
 import com.ibasco.glcdemulator.net.ByteListenerTask;
 import com.ibasco.glcdemulator.net.ListenerOptions;
 import com.ibasco.glcdemulator.services.SerialPortService;
+import com.ibasco.glcdemulator.utils.ByteUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,10 +135,17 @@ public class SerialByteListenerTask extends ByteListenerTask {
                 if (bis.available() > 0) {
                     byte data = (byte) bis.read();
                     if (!acknowledged) {
-                        log.info("Not acknowledged...Waiting");
+                        log.debug("Not acknowledged...Waiting: {}", ByteUtils.toHexString(data));
                         if (data == MSG_REQ) {
-                            log.info("Client request received. Sending ack");
+                            log.info("Received request from client. Sending ACK");
                             serialPort.writeBytes(new byte[]{MSG_ACK}, 1);
+                            //Wait until we have received a response form the client
+                            int bRead;
+                            while ((bRead = bis.available()) <= 0) {
+                                log.debug("Waiting for response..");
+                                Thread.sleep(1000);
+                            }
+                            log.debug("Response received. Acknowledging (Data: {}, Bytes: {})", ByteUtils.toHexString((byte) bis.read()), bRead);
                             acknowledged = true;
                             reset();
                         }
