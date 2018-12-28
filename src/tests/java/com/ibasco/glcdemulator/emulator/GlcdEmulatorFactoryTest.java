@@ -1,7 +1,7 @@
 /*-
  * ========================START=================================
  * Organization: Rafael Luis Ibasco
- * Project: GLCD Emulator
+ * Project: GLCD Simulator
  * Filename: GlcdEmulatorFactoryTest.java
  * 
  * ---------------------------------------------------------
