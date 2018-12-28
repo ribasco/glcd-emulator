@@ -9,14 +9,14 @@
     <packaging>jar</packaging>
     <version>1.0.0-alpha-SNAPSHOT</version>
     <inceptionYear>2018</inceptionYear>
-    <name>GLCD Emulator</name>
+    <name>GLCD Simulator</name>
     <url>https://github.com/ribasco/glcd-emulator</url>
     <organization>
         <name>Rafael Luis Ibasco</name>
         <url>https://github.com/ribasco</url>
     </organization>
 
-    <description>A cross-platform Graphics LCD emulator designed for embedded devices and single board computers
+    <description>A cross-platform Graphics LCD simulator for embedded devices and single board computers.
     </description>
 
     <properties>
