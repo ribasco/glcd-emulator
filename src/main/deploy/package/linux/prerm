@@ -21,7 +21,7 @@ case "$1" in
     remove|upgrade|deconfigure)
         echo Removing shortcut
 
-        xdg-desktop-menu uninstall --novendor /opt/GLCDEmulator/GLCDEmulator.desktop
+        xdg-desktop-menu uninstall --novendor /opt/GLCDSimulator/GLCDSimulator.desktop
 
 
         if [ "false" = "true" ]; then

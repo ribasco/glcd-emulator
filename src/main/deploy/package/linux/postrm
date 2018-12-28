@@ -23,9 +23,9 @@ case "$1" in
         if [ "$1" = "purge" ] ; then
             if [ "false" = "true" ]; then
                 echo Uninstalling daemon
-                rm -f /etc/init.d/glcd-emulator
+                rm -f /etc/init.d/glcd-simulator
 
-                update-rc.d glcd-emulator remove
+                update-rc.d glcd-simulator remove
             fi
         fi
     ;;
