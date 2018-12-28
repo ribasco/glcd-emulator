@@ -22,21 +22,21 @@ case "$1" in
         echo Adding shortcut to the menu
 
 
-        xdg-desktop-menu install --novendor /opt/GLCDEmulator/GLCDEmulator.desktop
+        xdg-desktop-menu install --novendor /opt/GLCDSimulator/GLCDSimulator.desktop
 
 
         if [ "false" = "true" ]; then
             echo Installing daemon
-            cp /opt/GLCDEmulator/glcd-emulator.init /etc/init.d/glcd-emulator
+            cp /opt/GLCDSimulator/glcd-simulator.init /etc/init.d/glcd-simulator
 
-            if [ -x "/etc/init.d/glcd-emulator" ]; then
-                update-rc.d glcd-emulator defaults
+            if [ -x "/etc/init.d/glcd-simulator" ]; then
+                update-rc.d glcd-simulator defaults
 
                 if [ "false" = "true" ]; then
                     if which invoke-rc.d >/dev/null 2>&1; then
-                        invoke-rc.d glcd-emulator start
+                        invoke-rc.d glcd-simulator start
                     else
-                        /etc/init.d/glcd-emulator start
+                        /etc/init.d/glcd-simulator start
                     fi
                 fi
 	        fi

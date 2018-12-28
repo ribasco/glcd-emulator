@@ -1,4 +1,4 @@
-Package: glcd-emulator
+Package: glcd-simulator
 Version: ${project.version}
 Section: misc
 Priority: optional
