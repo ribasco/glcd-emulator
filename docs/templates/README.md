@@ -1,4 +1,4 @@
-### Graphics LCD Emulator
+### Graphics LCD Simulator
 
 [![HitCount](http://hits.dwyl.io/{username}/ribasco/glcd-emulator.svg)](http://hits.dwyl.io/{username}/ribasco/glcd-emulator) 
 [![Build Status](https://travis-ci.org/ribasco/glcd-emulator.svg?branch=master)](https://travis-ci.org/ribasco/glcd-emulator)

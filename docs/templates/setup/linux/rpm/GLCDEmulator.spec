@@ -1,4 +1,4 @@
-Summary: GLCD Emulator
+Summary: GLCD Simulator
 Name: glcd-emulator
 Version: 0.1.0_alpha_SNAPSHOT
 Release: 1

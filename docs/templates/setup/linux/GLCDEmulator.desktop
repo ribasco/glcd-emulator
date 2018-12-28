@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=GLCD Emulator
-Comment=A cross-platform graphics LCD emulator for monochrome display devices.
+Name=GLCD Simulator
+Comment=A cross-platform Graphics LCD simulator for monochrome display devices.
 Exec=/opt/GLCDEmulator/GLCDEmulator
 Icon=/opt/GLCDEmulator/GLCDEmulator.png
 Terminal=false

@@ -1,4 +1,4 @@
-GLCD Emulator Copyright (C) 2018  Rafael Luis Ibasco
+GLCD Simulator Copyright (C) 2018  Rafael Luis Ibasco
 This program comes with ABSOLUTELY NO WARRANTY; for details click on the License tab.
 This is free software, and you are welcome to redistribute it
 under certain conditions.
