@@ -7,7 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdAboutController">
+<VBox xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdAboutController">
     <children>
         <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
             <children>
@@ -96,7 +96,7 @@
                         </Tab>
                     </tabs>
                 </JFXTabPane>
-                <Label layoutX="14.0" layoutY="14.0" text="GLCD Emulator">
+                <Label layoutX="14.0" layoutY="14.0" text="GLCD Simulator">
                     <font>
                         <Font name="Arial Black" size="39.0"/>
                     </font>

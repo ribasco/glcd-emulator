@@ -63,7 +63,7 @@ public class Bootstrap extends Application {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
-    private static final String APP_TITLE = "GLCD Emulator - " + Context.getAppVersion();
+    private static final String APP_TITLE = "GLCD Simulator - " + Context.getAppVersion();
 
     private static final String OPT_DEV_SHORT = "dev";
 
