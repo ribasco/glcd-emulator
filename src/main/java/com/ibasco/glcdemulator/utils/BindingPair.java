@@ -55,4 +55,12 @@ abstract class BindingPair<T> {
     public int hashCode() {
         return Objects.hash(value1, value2);
     }
+
+    @Override
+    public String toString() {
+        return "BindingPair{" +
+                "value1=" + value1 +
+                ", value2=" + value2 +
+                '}';
+    }
 }
