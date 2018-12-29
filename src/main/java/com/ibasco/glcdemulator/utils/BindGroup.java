@@ -99,8 +99,10 @@ public class BindGroup {
     }
 
     public void unbind() {
-        for (BindingPair pair : bindings)
+        for (BindingPair pair : bindings) {
+            log.debug("Unbinding pair: {}", pair);
             pair.unbind();
+        }
     }
 
     public void clear() {
