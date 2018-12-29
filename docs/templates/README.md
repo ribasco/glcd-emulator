@@ -7,4 +7,9 @@
 
 [Under construction]
 
+#### Project Resources
+
+- [Release](https://github.com/ribasco/glcd-emulator/releases)
+- [Snapshots](https://ci.appveyor.com/project/ribasco34191/glcd-emulator/build/artifacts)
+
 Project version: ${project.version}
