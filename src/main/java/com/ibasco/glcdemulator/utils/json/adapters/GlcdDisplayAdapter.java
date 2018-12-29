@@ -50,6 +50,7 @@ public class GlcdDisplayAdapter implements JsonSerializer<GlcdDisplay>, JsonDese
         String[] tokens = StringUtils.splitPreserveAllTokens(key, ":");
         GlcdControllerType controllerType = GlcdControllerType.valueOf(tokens[0]);
         String displayName = tokens[1];
+        log.debug("Finding display instance for type = {}, name = {}", controllerType, displayName);
         List<GlcdDisplay> res = GlcdUtil.findDisplay(p -> p.getController().equals(controllerType) && p.getName().equalsIgnoreCase(displayName));
         return res != null && !res.isEmpty() ? res.get(0) : null;
     }
