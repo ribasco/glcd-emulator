@@ -3,7 +3,7 @@
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Simulator
  * Filename: GlcdEmulatorController.java
- * 
+ *
  * ---------------------------------------------------------
  * %%
  * Copyright (C) 2018 Rafael Luis Ibasco
@@ -12,12 +12,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -810,8 +810,19 @@ public class GlcdEmulatorController extends Controller {
             }
         });
 
+        TableColumn<GlcdEmulatorProfile, String> controllerCol = new TableColumn<>("Controller");
+        controllerCol.setCellValueFactory(param -> Bindings.createStringBinding(() -> {
+            GlcdDisplay display = param.getValue().getDisplay();
+            return display.getController().name();
+        }, param.getValue().displayProperty()));
+
+        TableColumn<GlcdEmulatorProfile, String> displayNameCol = new TableColumn<>("Display Name");
+        displayNameCol.setCellValueFactory(param -> Bindings.createStringBinding(() -> {
+            return param.getValue().getDisplay().getName();
+        }, param.getValue().displayProperty()));
+
         //noinspection unchecked
-        tvProfiles.getColumns().setAll(idCol, nameCol, descCol, displayWidthCol, displayHeightCol, pixelSizeCol, activeCol, defaultCol, fileCol);
+        tvProfiles.getColumns().setAll(idCol, nameCol, descCol, controllerCol, displayNameCol, displayWidthCol, displayHeightCol, pixelSizeCol, activeCol, defaultCol, fileCol);
     }
 
     /**
