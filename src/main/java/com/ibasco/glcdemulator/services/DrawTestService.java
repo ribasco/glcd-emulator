@@ -29,6 +29,7 @@ import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.DriverFactory;
 import com.ibasco.glcdemulator.emulator.BufferLayout;
 import com.ibasco.glcdemulator.emulator.BufferLayoutFactory;
+import com.ibasco.glcdemulator.model.GlcdEmulatorProfile;
 import com.ibasco.glcdemulator.utils.GlcdUtil;
 import com.ibasco.glcdemulator.utils.PixelBuffer;
 import com.ibasco.glcdemulator.utils.ResourceUtil;
@@ -101,12 +102,16 @@ public class DrawTestService extends Service<Void> {
             throw new IllegalStateException("Controller cannot be null");
         if (buffer.get() == null)
             throw new IllegalStateException("Buffer is not specified");
-        GlcdBusInterface tmpBusInterface = busInterface.get();
-        if (!display.get().hasBusInterface(tmpBusInterface)) {
-            log.warn("The selected bus interface '{}' for display '{}' is not supported. Using default", tmpBusInterface.getDescription(), display.get());
-            tmpBusInterface = GlcdUtil.findPreferredBusInterface(display.get());
+
+        GlcdDisplay display = this.display.get();
+        GlcdBusInterface busInterface = this.busInterface.get();
+        if (!display.hasBusInterface(busInterface)) {
+            log.warn("The selected bus interface '{}' for display '{}' is not supported. Using default", busInterface.getDescription(), display);
+            busInterface = GlcdUtil.findPreferredBusInterface(display);
         }
-        driver = DriverFactory.createVirtual(display.get(), tmpBusInterface, (GlcdDriverEventHandler) null);
+        String constructor = GlcdUtil.findSetupFunction(getDisplay(), busInterface);
+        log.info("Refreshing virtual driver (Display: {}, Bus Interface: {}, Constructor: {})", display, busInterface, constructor);
+        driver = DriverFactory.createVirtual(display, busInterface, (GlcdDriverEventHandler) null);
         try {
             XBMData xbmData = XBMUtils.decodeXbmFile(new ByteArrayInputStream(ResourceUtil.readResourceAsBytes("images/java-logo-small.xbm")));
             javaLogoFile = xbmData.getData();
@@ -119,7 +124,6 @@ public class DrawTestService extends Service<Void> {
     protected Task<Void> createTask() {
 
         if (driver == null || invalidated.getAndSet(false)) {
-            log.debug("Refreshing virtual driver");
             refreshDriver();
         }
 
@@ -137,6 +141,9 @@ public class DrawTestService extends Service<Void> {
                 String setupFunction = GlcdUtil.findSetupFunction(getDisplay(), getBusInterface());
                 log.info("START: Draw test (Display = {} :: {}, Bus = {}, Buffer Layout = {}, Constructor = {})", display.get().getController().name(), display.get().getName(), busInterface.get(), bufferLayout.getClass().getSimpleName(), setupFunction);
 
+                GlcdEmulatorProfile profile = Context.getInstance().getProfileManager().getActiveProfile();
+
+                log.debug("[From profile]: Display = {}, Bus Interface: {}, Constructor: {}", profile.getDisplay(), profile.getBusInterface(), GlcdUtil.findSetupFunction(profile.getDisplay(), profile.getBusInterface()));
                 while (!isCancelled()) {
                     driver.setFont(GlcdFont.FONT_10X20_ME);
                     driver.clearBuffer();
