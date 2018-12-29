@@ -250,7 +250,7 @@ public class DisplayService extends Service<Void> {
                 .findFirst()
                 .orElse(null);
         String setupFunction = setupInfo != null ? setupInfo.getFunction() : "N/A";
-        log.info("Creating display service task: {} (Display = {}, Bus Interface = {}, Byte Processor = {}, Constructor = {})", task.getClass().getSimpleName(), display.get().getName(), busInterface.get() != null ? busInterface.get().getDescription() : "N/A", byteProcessor.get() != null ? byteProcessor.get().getClass().getSimpleName() : "", setupFunction);
+        log.info("Creating display service task: {} (Display = {}, Bus Interface = {}, Byte Processor = {}, Constructor = {})", task.getClass().getSimpleName(), display.get(), busInterface.get() != null ? busInterface.get().getDescription() : "N/A", byteProcessor.get() != null ? byteProcessor.get().getClass().getSimpleName() : "", setupFunction);
 
         task.listenerOptionsProperty().bind(connectionOptions);
         task.displayProperty().bind(display);
