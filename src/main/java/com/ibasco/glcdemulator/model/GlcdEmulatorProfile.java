@@ -312,6 +312,7 @@ public class GlcdEmulatorProfile extends GlcdConfig {
         b.append(getDisplaySizeWidth());
         b.append(getDisplaySizeHeight());
         b.append(getLcdPixelSize());
+        b.append(getDisplay());
         b.append("}");
         return b.toString();
     }
