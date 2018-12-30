@@ -640,7 +640,7 @@ public class GlcdEmulatorController extends Controller {
         });
 
         leftItems.add(emulatorStatusIndicator);
-        leftItems.add(new Label("Emulator"));
+        leftItems.add(new Label("Host"));
         leftItems.add(new Separator(Orientation.VERTICAL));
         leftItems.add(clientConnectionStatus);
         leftItems.add(new Label("Client"));
