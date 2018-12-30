@@ -17,6 +17,11 @@
 - [Java client (Using ucgdisplay)](https://github.com/ribasco/glcd-emulator-client-java)
 - C/C++ (Coming soon)
 
+## Project Resources
+
+- [Release](https://github.com/ribasco/glcd-emulator/releases)
+- [Snapshots](https://ci.appveyor.com/project/ribasco34191/glcd-emulator/build/artifacts)
+
 ## Installation
 
 Under construction
