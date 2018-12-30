@@ -64,7 +64,7 @@ Save current display as PNG format
 
 #### Developer mode
 
-In developer mode, allows you to play around with the functions provided by u8g2 and inspect the instructions generated.
+Developer mode allows you to play around with the functions provided by u8g2 and inspect the instructions generated. This is enabled by specifying the -dev flag parameter during startup. 
 
 ![Screenshot 06](docs/images/main05.jpg)
 
