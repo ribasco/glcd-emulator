@@ -1,11 +1,19 @@
 # Graphics LCD Simulator
 
+Graphics LCD prototyping tool for hobbyists
+
 [![HitCount](http://hits.dwyl.io/{username}/ribasco/glcd-emulator.svg)](http://hits.dwyl.io/{username}/ribasco/glcd-emulator)
 [![Build Status](https://travis-ci.org/ribasco/glcd-emulator.svg?branch=master)](https://travis-ci.org/ribasco/glcd-emulator)
 [![Build status](https://ci.appveyor.com/api/projects/status/720a6efdfw1hq7gi?svg=true)](https://ci.appveyor.com/project/ribasco34191/glcd-emulator)
 [![License: LGPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-![Screenshot 01](docs/images/main.jpg)
+#### MAX7219 Simulation
+
+![MAX7219](docs/images/main09.jpg)
+
+#### ST7920 Simulation
+
+![ST7920](docs/images/main.jpg)
 
 ## Requirements
 
@@ -66,7 +74,7 @@ Take screenshots (Use F5 key) and save it as PNG image format
 
 ### Developer mode
 
-Developer mode allows you to play around with the functions available in the u8g2 graphics library. You will be able to preview the output and inspect the generated instructions for the operation. This is enabled by specifying the `-dev` application startup parameter.
+Developer mode allows you to play around with the functions available in the u8g2 graphics library. You will be able to preview the output and inspect the generated instructions for the operation. Please note that this is not enabled by default, you can enable this by specifying the `-dev` application startup parameter.
 
 ![Developer mode](docs/images/main05.jpg)
 
