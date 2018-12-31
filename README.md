@@ -15,6 +15,10 @@ Graphics LCD prototyping tool for hobbyists
 
 ![ST7920](docs/images/main.jpg)
 
+## Demo
+
+[![YouTube Demo](https://img.youtube.com/vi/dgUQQN6_eOM/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+
 ## Overview
 
 The client can be configured to use either Serial or TCP/IP for data transmission.
