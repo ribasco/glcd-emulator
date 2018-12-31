@@ -1,4 +1,4 @@
-## Graphics LCD Simulator
+# Graphics LCD Simulator
 
 [![HitCount](http://hits.dwyl.io/{username}/ribasco/glcd-emulator.svg)](http://hits.dwyl.io/{username}/ribasco/glcd-emulator)
 [![Build Status](https://travis-ci.org/ribasco/glcd-emulator.svg?branch=master)](https://travis-ci.org/ribasco/glcd-emulator)
@@ -24,54 +24,56 @@
 
 ## Installation
 
-Under construction
+### Manual
 
-## Usage
+Extract the archive `glcd-emulator-<version>-amd64.zip` or `glcd-emulator-<version>-amd64.tar.gz` to any directory and use the run script to start the application
 
-Under construction
+### Installers
 
-## Limitations
-
-Under construction
+- Windows: `glcd-emulator-setup-amd64.exe`
+- Linux (Debian): `glcd-emulator-<version>-amd64.deb`
+- Mac OSX: `glcd-emulator-<version>-amd64.pkg`
 
 ## Features
 
-#### Cross-platform
+### Cross-platform
 
 Supports Windows, Mac OSX and Linux
 
-#### Supports arduino/c/c++ and java clients
+### Supports Arduino/c/c++ and Java clients
 
-#### Customizable look and feel
+See [Client Libraries](#Client-libraries)
 
-![Screenshot 02](docs/images/main02.jpg)
+### Customizable look and feel
 
-#### Font Browser
+![Customizable look and feel](docs/images/main02.jpg)
+
+### Font Browser
 
 Browse through all available u8g2 fonts
 
-![Screenshot 03](docs/images/main03.jpg)
+![Font Browser](docs/images/main03.jpg)
 
-#### Supports over 40+ displays
+### Supports over 40+ displays
 
-![Screenshot 04](docs/images/main04.jpg)
+![Supports over 40+ displays](docs/images/main04.jpg)
 
-#### Screenshots
+### Screenshots
 
-Save current display as PNG format
+Take screenshots (Use F5 key) and save it as PNG image format
 
-![Screenshot 05](docs/images/main08.png)
+![Screenshots](docs/images/main08.png)
 
-#### Developer mode
+### Developer mode
 
-In developer mode, allows you to play around with the functions provided by u8g2 and inspect the instructions generated.
+Developer mode allows you to play around with the functions available in the u8g2 graphics library. You will be able to preview the output and inspect the generated instructions for the operation.
 
-![Screenshot 06](docs/images/main05.jpg)
+![Developer mode](docs/images/main05.jpg)
 
-![Screenshot 07](docs/images/main06.jpg)
+![Developer mode](docs/images/main06.jpg)
 
-#### Profile Support
+### Profile Support
 
-For different configuration setups, you can store individual settings in their own profile.
+You can create profiles to store individual settings
 
-![Screenshot 08](docs/images/main07.jpg)
+![Profile Support](docs/images/main07.jpg)
