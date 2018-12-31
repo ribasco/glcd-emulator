@@ -68,7 +68,7 @@ Take screenshots (Use F5 key) and save it as PNG image format
 
 ### Developer mode
 
-Developer mode allows you to play around with the functions available in the u8g2 graphics library. You will be able to preview the output and inspect the generated instructions for the operation.
+Developer mode allows you to play around with the functions available in the u8g2 graphics library. You will be able to preview the output and inspect the generated instructions for the operation. This is enabled by specifying the `-dev` application startup parameter.
 
 ![Developer mode](docs/images/main05.jpg)
 
