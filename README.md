@@ -15,6 +15,16 @@ Graphics LCD prototyping tool for hobbyists
 
 ![ST7920](docs/images/main.jpg)
 
+## Overview
+
+The client can be configured to use either Serial or TCP/IP for data transmission.
+
+### Arduino
+
+The Arduino client extends from the [U8g2 class](https://github.com/olikraus/u8g2/blob/master/cppsrc/U8g2lib.h). It can then be used just like how it is used in any actual u8g2 development. Data is transmitted from the client to the simulator program (via Serial or TCP/IP)
+
+![Workflow](docs/images/workflow.png)
+
 ## Requirements
 
 - Java 8 or higher
@@ -36,7 +46,9 @@ Graphics LCD prototyping tool for hobbyists
 
 Extract the archive `glcd-emulator-<version>-amd64.zip` or `glcd-emulator-<version>-amd64.tar.gz` to any directory and use the run script to start the application
 
-### Installers
+### Installer
+
+Execute any of the files below whatever matches your target operating system.
 
 - Windows: `glcd-emulator-setup-amd64.exe`
 - Linux (Debian): `glcd-emulator-<version>-amd64.deb`
@@ -48,7 +60,7 @@ Extract the archive `glcd-emulator-<version>-amd64.zip` or `glcd-emulator-<versi
 
 Supports Windows, Mac OSX and Linux
 
-### Supports Arduino/c/c++ and Java clients
+### Client available for Arduino/C/C++ and Java clients
 
 See [Client Libraries](#Client-libraries)
 
@@ -63,6 +75,8 @@ Browse through all available u8g2 fonts
 ![Font Browser](docs/images/main03.jpg)
 
 ### Supports over 40+ displays
+
+Most displays are available and supported by the simulator, but some limitations may apply depending on the hardware used.
 
 ![Supports over 40+ displays](docs/images/main04.jpg)
 
