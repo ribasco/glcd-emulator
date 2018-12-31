@@ -31,7 +31,6 @@ import com.ibasco.glcdemulator.Controller;
 import com.ibasco.glcdemulator.Controllers;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.util.Callback;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +51,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ResourceUtil {
 
     private static final Logger log = LoggerFactory.getLogger(ResourceUtil.class);
-
-    private static Callback<Class<?>, Object> controllerFactory;
-
-    private static AtomicReference<Controller> lastController = new AtomicReference<>();
 
     private static AtomicReference<Parent> lastRootNode = new AtomicReference<>();
 
