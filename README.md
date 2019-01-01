@@ -17,7 +17,7 @@ Graphics LCD prototyping tool for hobbyists
 
 ## Demo
 
-[![YouTube Demo](https://img.youtube.com/vi/dgUQQN6_eOM/0.jpg)](https://www.youtube.com/watch?v=dgUQQN6_eOM)
+[![YouTube Demo](https://img.youtube.com/vi/dgUQQN6_eOM/0.jpg?)](https://www.youtube.com/watch?v=dgUQQN6_eOM)
 
 ## Overview
 
