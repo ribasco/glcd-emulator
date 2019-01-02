@@ -48,6 +48,7 @@ import com.ibasco.glcdemulator.utils.*;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusType;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdSize;
 import com.jfoenix.controls.*;
 import com.sun.javafx.event.EventUtil;
 import com.sun.javafx.stage.StageHelper;
@@ -76,17 +77,13 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
@@ -334,8 +331,14 @@ public class GlcdEmulatorController extends Controller {
     @FXML
     private JFXButton btnSelectEmulator;
 
+    //@FXML
+    //private JFXListView<GlcdDisplay> lvDisplays;
+
     @FXML
-    private JFXListView<GlcdDisplay> lvEmulators;
+    private TableView<GlcdDisplay> tvDisplays;
+
+    @FXML
+    private TextField txtDisplayFilter;
 
     @FXML
     private JFXButton btnSerialPortRefresh;
@@ -414,6 +417,8 @@ public class GlcdEmulatorController extends Controller {
     private ProfileManager profileManager;
 
     private final FilteredList<GlcdBusInterface> busInterfaceList = FXCollections.observableArrayList(GlcdBusInterface.values()).filtered(p -> true);
+
+    private FilteredList<GlcdDisplay> filteredDisplayList;
 
     //<editor-fold desc="String Converters">
     private StringConverter<SerialPort> serialPortStringConverter = new StringConverter<SerialPort>() {
@@ -1035,111 +1040,114 @@ public class GlcdEmulatorController extends Controller {
         }
     }
 
-    private JFXDialog getEmulatorBrowserDialog() {
+    private JFXDialog getDisplayBrowseDialog() {
         try {
+            GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
             Parent node = ResourceUtil.loadFxmlResource(Views.EMULATOR_BROWSE, GlcdEmulatorController.this);
 
-            JFXDialogLayout content = new JFXDialogLayout();
-            content.setHeading(new Label("Select the display controller for the current profile"));
-            content.setBody(node);
-            content.setPrefWidth(500);
-            content.setPrefHeight(400);
+            MenuItem miCopyConstructor = new MenuItem("Copy constructor");
+            miCopyConstructor.setOnAction(event -> {
+                GlcdDisplay selectedDisplay = tvDisplays.getSelectionModel().getSelectedItem();
+                ClipboardContent content = new ClipboardContent();
+                content.putString(GlcdUtil.findSetupFunction(selectedDisplay, null));
+                Clipboard.getSystemClipboard().setContent(content);
+            });
+
+            ContextMenu cMenu = new ContextMenu();
+            cMenu.getItems().setAll(miCopyConstructor);
+            tvDisplays.setContextMenu(cMenu);
+
+            TableColumn<GlcdDisplay, String> controllerCol = new TableColumn<>("Controller");
+            controllerCol.setCellValueFactory(new PropertyValueFactory<>("controller"));
+            TableColumn<GlcdDisplay, String> nameCol = new TableColumn<>("Name");
+            nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            TableColumn<GlcdDisplay, String> sizeCol = new TableColumn<>("Size");
+            sizeCol.setCellValueFactory(param -> Bindings.createStringBinding(() -> {
+                GlcdSize size = param.getValue().getDisplaySize();
+                return size.getDisplayWidth() + " x " + size.getDisplayHeight();
+            }));
+            TableColumn<GlcdDisplay, String> constructorCol = new TableColumn<>("Constructor");
+            constructorCol.setCellValueFactory(param -> Bindings.createStringBinding(() -> GlcdUtil.findSetupFunction(param.getValue(), null)));
+
+            //noinspection unchecked
+            tvDisplays.getColumns().setAll(controllerCol, nameCol, sizeCol, constructorCol);
+
             JFXButton btnSelect = new JFXButton("Select");
             JFXButton btnCancel = new JFXButton("Cancel");
             JFXButton btnRefresh = new JFXButton("Refresh");
-            btnRefresh.disableProperty().bind(scannerService.runningProperty());
+
+            JFXDialogLayout content = new JFXDialogLayout();
+            JFXDialog emulatorBrowseDialog = new JFXDialog(stackPaneRoot, content, JFXDialog.DialogTransition.RIGHT);
+
+            tvDisplays.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) {
+                    selectDisplay(emulatorBrowseDialog);
+                }
+            });
+
+            content.setHeading(new Label("Select the display controller for the current profile"));
+            content.setBody(node);
+            content.setPrefWidth(700);
+            content.setPrefHeight(400);
             content.setActions(btnSelect, btnCancel, btnRefresh);
 
-            JFXDialog emulatorBrowseDialog = new JFXDialog(stackPaneRoot, content, JFXDialog.DialogTransition.RIGHT);
+            btnRefresh.disableProperty().bind(scannerService.runningProperty());
             btnRefresh.setOnAction(e -> {
-                lvEmulators.getItems().clear();
+                //lvDisplays.getItems().clear();
                 scannerService.setFilter(ScannerService.FILTER_NONE);
                 scannerService.setForceRefresh(true);
                 scannerService.restart();
             });
-
             btnCancel.setOnAction(e -> emulatorBrowseDialog.close());
-            btnSelect.setOnAction(ev -> {
-                GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
-                GlcdDisplay selectedDisplay = lvEmulators.getSelectionModel().getSelectedItem();
-                log.info("Selected display: {}", selectedDisplay.toString());
-                profile.setDisplay(selectedDisplay);
-                log.info("Updating display with/height properties based on '{}'", selectedDisplay);
-                profile.setDisplaySizeWidth(selectedDisplay.getDisplaySize().getDisplayWidth());
-                profile.setDisplaySizeHeight(selectedDisplay.getDisplaySize().getDisplayHeight());
-                fitWindowToScreen();
-                emulatorBrowseDialog.close();
-            });
+            btnSelect.setOnAction(e -> selectDisplay(emulatorBrowseDialog));
 
-            lvEmulators.setCellFactory(new Callback<ListView<GlcdDisplay>, ListCell<GlcdDisplay>>() {
-                @Override
-                public ListCell<GlcdDisplay> call(ListView<GlcdDisplay> param) {
-                    return new ListCell<GlcdDisplay>() {
-                        @Override
-                        protected void updateItem(GlcdDisplay display, boolean empty) {
-                            super.updateItem(display, empty);
-                            Platform.runLater(() -> {
-                                if (empty) {
-                                    setText(null);
-                                } else {
-                                    setText(String.format("%s - %s (%dx%d)", display.getController().name(), display.getName().replaceAll("D_", ""), display.getDisplaySize().getDisplayWidth(), display.getDisplaySize().getDisplayHeight()));
-                                }
-                            });
-                        }
-                    };
-                }
+            txtDisplayFilter.textProperty().addListener((observable, oldValue, newValue) -> {
+                filteredDisplayList.setPredicate(display -> {
+                    if (!StringUtils.isBlank(newValue)) {
+                        String controller = display.getController().name().toLowerCase();
+                        String name = display.getName();
+                        String constructor = Objects.requireNonNull(GlcdUtil.findSetupFunction(display, null)).toLowerCase();
+                        String value = newValue.toLowerCase();
+                        return controller.contains(value) || name.contains(value) || constructor.contains(value);
+                    }
+                    return true;
+                });
             });
 
             scannerService.setOnSucceeded(event -> {
                 if (scannerService.getValue() != null) {
-                    lvEmulators.setItems(scannerService.getValue());
-                    GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
-                    if (lvEmulators.getItems().isEmpty())
+                    filteredDisplayList = new FilteredList<>(scannerService.getValue(), p -> true);
+                    tvDisplays.setItems(filteredDisplayList);
+                    if (tvDisplays.getItems().isEmpty())
                         return;
-                    if (lvEmulators.getItems().size() == 1)
-                        lvEmulators.getSelectionModel().selectFirst();
+                    if (tvDisplays.getItems().size() == 1)
+                        tvDisplays.getSelectionModel().selectFirst();
                     else {
-                        lvEmulators.getSelectionModel().select(profile.getDisplay());
+                        tvDisplays.getSelectionModel().select(profile.getDisplay());
+                        log.debug("Scrolling to item: {}", profile.getDisplay());
+                        tvDisplays.scrollTo(profile.getDisplay());
                     }
-
                 }
             });
 
             emulatorBrowseDialog.setOnDialogOpened(event1 -> scannerService.restart());
-
             return emulatorBrowseDialog;
         } catch (IOException e) {
             throw new EmulatorControllerException(e);
         }
     }
 
-    /*private void setupDrawTestService() {
+    private void selectDisplay(JFXDialog emulatorBrowseDialog) {
         GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
-
-        ObjectBinding<GlcdBusInterface> busInterfaceBinding = Bindings.createObjectBinding(() -> {
-            GlcdBusInterface busInterface = profile.getBusInterface();
-            if (busInterface == null) {
-                busInterface = GlcdUtil.findPreferredBusInterface(profile.getDisplay());
-                if (busInterface != null)
-                    log.info("Bus interface is null, returning default: {}", busInterface.name());
-                else
-                    log.warn("Bus interface not found for display: {}", profile.getDisplay().getName());
-            }
-            return busInterface;
-        }, profile.busInterfaceProperty());
-
-        StringBinding textBinding = Bindings.createStringBinding(() -> {
-            if (drawTestService.isRunning()) {
-                return "Stop Draw Test";
-            }
-            return "Start Draw Test";
-        }, drawTestService.runningProperty());
-
-        drawTestService.bufferProperty().bind(displayBuffer);
-        drawTestService.busInterfaceProperty().bind(busInterfaceBinding);
-        drawTestService.displayProperty().bind(profile.displayProperty());
-        btnDrawAnimTest.textProperty().bind(textBinding);
-    }*/
+        GlcdDisplay selectedDisplay = tvDisplays.getSelectionModel().getSelectedItem();
+        log.info("Selected display: {}", selectedDisplay.toString());
+        profile.setDisplay(selectedDisplay);
+        log.info("Updating display with/height properties based on '{}'", selectedDisplay);
+        profile.setDisplaySizeWidth(selectedDisplay.getDisplaySize().getDisplayWidth());
+        profile.setDisplaySizeHeight(selectedDisplay.getDisplaySize().getDisplayHeight());
+        fitWindowToScreen();
+        emulatorBrowseDialog.close();
+    }
 
     /**
      * Configure node properties, static entries, event handlers, action handlers etc.
@@ -1177,7 +1185,7 @@ public class GlcdEmulatorController extends Controller {
 
 
         btnSelectEmulator.setOnAction(event -> {
-            JFXDialog emulatorBrowserDialog = getEmulatorBrowserDialog();
+            JFXDialog emulatorBrowserDialog = getDisplayBrowseDialog();
             emulatorBrowserDialog.show();
         });
 

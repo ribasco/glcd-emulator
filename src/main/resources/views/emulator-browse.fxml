@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.*?>
-<VBox prefHeight="350.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="350.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <AnchorPane VBox.vgrow="ALWAYS">
             <children>
-                <JFXListView fx:id="lvEmulators" layoutX="22.0" layoutY="22.0" AnchorPane.bottomAnchor="0.0"
-                             AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                <GridPane vgap="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="324.0" minHeight="10.0" prefHeight="303.0" valignment="CENTER" vgrow="ALWAYS"/>
+                        <RowConstraints maxHeight="82.0" minHeight="6.0" prefHeight="27.0" valignment="CENTER" vgrow="NEVER"/>
+                    </rowConstraints>
+                    <children>
+                        <TableView fx:id="tvDisplays" prefHeight="200.0" prefWidth="200.0">
+                            <columns>
+                                <TableColumn prefWidth="75.0" text="C1"/>
+                                <TableColumn prefWidth="75.0" text="C2"/>
+                            </columns>
+                        </TableView>
+                        <HBox alignment="CENTER_LEFT" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                            <children>
+                                <JFXTextField fx:id="txtDisplayFilter" prefHeight="27.0" prefWidth="290.0" promptText="Filter" HBox.hgrow="ALWAYS"/>
+                            </children>
+                            <GridPane.margin>
+                                <Insets bottom="10.0" top="10.0"/>
+                            </GridPane.margin>
+                        </HBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                </GridPane>
             </children>
         </AnchorPane>
     </children>
