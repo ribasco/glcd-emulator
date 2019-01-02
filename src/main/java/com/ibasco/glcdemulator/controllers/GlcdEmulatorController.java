@@ -51,6 +51,7 @@ import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusType;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdSize;
 import com.jfoenix.controls.*;
 import com.sun.javafx.event.EventUtil;
+import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import com.sun.javafx.stage.StageHelper;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -536,6 +537,17 @@ public class GlcdEmulatorController extends Controller {
         drawTestService = new DrawTestService();
         profileManager = getContext().getProfileManager();
 
+        TextAreaSkin taSkin = new TextAreaSkin(taLog) {
+            @Override
+            public void populateContextMenu(ContextMenu contextMenu) {
+                super.populateContextMenu(contextMenu);
+                MenuItem miClear = new MenuItem("Clear");
+                miClear.setOnAction(event -> taLog.clear());
+                contextMenu.getItems().add(miClear);
+            }
+        };
+        taLog.setSkin(taSkin);
+
         OutputStream os = new TextAreaOutputStream(taLog);
         GlcdOutputStreamAppender.setStaticOutputStream(os);
 
@@ -1015,11 +1027,6 @@ public class GlcdEmulatorController extends Controller {
             tbListen.setSelected(false);
             throw new EmulatorControllerException("Could not start emulator service", e);
         }
-    }
-
-    private void handleTaskMessages(ObservableValue<? extends String> observableValue, String oldMsg, String newMsg) {
-        taLog.appendText(newMsg + "\n");
-        taLog.setScrollTop(Double.MAX_VALUE);
     }
 
     /**
