@@ -17,7 +17,7 @@ Graphics LCD prototyping tool for hobbyists
 
 ## Demo
 
-[![YouTube Demo](https://img.youtube.com/vi/dgUQQN6_eOM/0.jpg)](https://www.youtube.com/watch?v=dgUQQN6_eOM)
+[![YouTube Demo](https://img.youtube.com/vi/dgUQQN6_eOM/0.jpg?)](https://www.youtube.com/watch?v=dgUQQN6_eOM)
 
 ## Overview
 
@@ -35,7 +35,7 @@ The Arduino client extends from the [U8g2 class](https://github.com/olikraus/u8g
 
 ## Client libraries
 
-- [Arduino client](https://github.com/ribasco/glcd-emulator-client-arduino)
+- [Arduino client](https://github.com/ribasco/glcd-emulator-client-arduino) (Also available in [Platform IO](https://platformio.org/lib/show/5882/U8g2%20GLCD%20Remote%20Client))
 - [Java client (Using ucgdisplay)](https://github.com/ribasco/glcd-emulator-client-java)
 - C/C++ (Coming soon)
 
