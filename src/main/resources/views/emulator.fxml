@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import org.controlsfx.control.StatusBar?>
-<VBox fx:id="vbRoot" minHeight="726.0" minWidth="1119.0" prefHeight="726.0" prefWidth="1119.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdEmulatorController">
+<VBox fx:id="vbRoot" minHeight="726.0" minWidth="1119.0" prefHeight="726.0" prefWidth="1119.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdEmulatorController">
     <children>
         <MenuBar fx:id="mbMain" VBox.vgrow="ALWAYS">
             <menus>
@@ -219,9 +219,9 @@
                                                             </font>
                                                         </Label>
                                                         <JFXComboBox fx:id="cbPixelShape" layoutX="607.0" layoutY="116.0" prefHeight="25.0" prefWidth="213.0" promptText="Pixel Shape"/>
-                                                        <JFXTextField fx:id="tfSelectedDisplay" editable="false" layoutX="843.0" layoutY="33.0" prefHeight="26.0" prefWidth="196.0" text="Emulator"/>
+                                                        <JFXTextField fx:id="tfSelectedDisplay" editable="false" layoutX="843.0" layoutY="33.0" prefHeight="26.0" prefWidth="196.0" text="Display Controller"/>
                                                         <JFXButton fx:id="btnSelectEmulator" layoutX="1045.0" layoutY="34.0" prefHeight="25.0" prefWidth="60.0" text="Select"/>
-                                                        <Label layoutX="843.0" layoutY="11.0" text="Controller/Bus Interface:">
+                                                        <Label layoutX="843.0" layoutY="11.0" text="Display Controller">
                                                             <font>
                                                                 <Font name="System Bold" size="12.0"/>
                                                             </font>
