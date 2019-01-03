@@ -1050,7 +1050,7 @@ public class GlcdEmulatorController extends Controller {
     private JFXDialog getDisplayBrowseDialog() {
         try {
             GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
-            Parent node = ResourceUtil.loadFxmlResource(Views.EMULATOR_BROWSE, GlcdEmulatorController.this);
+            Parent node = ResourceUtil.loadFxmlResource(Views.DISPLAY_BROWSE, GlcdEmulatorController.this);
 
             MenuItem miCopyConstructor = new MenuItem("Copy constructor");
             miCopyConstructor.setOnAction(event -> {
@@ -1074,6 +1074,7 @@ public class GlcdEmulatorController extends Controller {
                 return size.getDisplayWidth() + " x " + size.getDisplayHeight();
             }));
             TableColumn<GlcdDisplay, String> constructorCol = new TableColumn<>("Constructor");
+            constructorCol.setPrefWidth(300);
             constructorCol.setCellValueFactory(param -> Bindings.createStringBinding(() -> GlcdUtil.findSetupFunction(param.getValue(), null)));
 
             //noinspection unchecked
