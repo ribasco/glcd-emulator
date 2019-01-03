@@ -28,7 +28,7 @@ package com.ibasco.glcdemulator.constants;
 public class Views {
     public static final String EMULATOR = "emulator";
 
-    public static final String EMULATOR_BROWSE = "emulator-browse";
+    public static final String DISPLAY_BROWSE = "emulator-browse";
 
     public static final String FONT_BROWSER_DIALOG = "font-browser-dialog";
 
