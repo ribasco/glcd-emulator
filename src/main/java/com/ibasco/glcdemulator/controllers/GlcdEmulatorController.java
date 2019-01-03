@@ -597,6 +597,12 @@ public class GlcdEmulatorController extends Controller {
         Label displaySize = new Label();
         displaySize.setTextAlignment(TextAlignment.CENTER);
         displaySize.textProperty().bind(Bindings.format("%d x %d", profile.displaySizeWidthProperty(), profile.displaySizeHeightProperty()));
+        profileManager.activeProfileProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                log.debug("Updating displaySize binds");
+                displaySize.textProperty().bind(Bindings.format("%d x %d", newValue.displaySizeWidthProperty(), newValue.displaySizeHeightProperty()));
+            }
+        });
 
         Label pixelSize = new Label();
         pixelSize.textProperty().bind(Bindings.format("%.2f", profile.lcdPixelSizeProperty()));
@@ -1148,8 +1154,10 @@ public class GlcdEmulatorController extends Controller {
     private void selectDisplay(JFXDialog emulatorBrowseDialog) {
         GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
         GlcdDisplay selectedDisplay = tvDisplays.getSelectionModel().getSelectedItem();
-        log.info("Selected display: {}", selectedDisplay.toString());
+        GlcdBusInterface selectedBusInterface = GlcdUtil.findPreferredBusInterface(selectedDisplay);
+        log.info("Selected display: {}, bus interface: {}", selectedDisplay, selectedBusInterface);
         profile.setDisplay(selectedDisplay);
+        //profile.setBusInterface(GlcdUtil.findPreferredBusInterface(selectedDisplay));
         log.info("Updating display with/height properties based on '{}'", selectedDisplay);
         profile.setDisplaySizeWidth(selectedDisplay.getDisplaySize().getDisplayWidth());
         profile.setDisplaySizeHeight(selectedDisplay.getDisplaySize().getDisplayHeight());
