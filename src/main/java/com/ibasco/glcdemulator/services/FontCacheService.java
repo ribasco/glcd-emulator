@@ -28,14 +28,16 @@ package com.ibasco.glcdemulator.services;
 import com.google.gson.reflect.TypeToken;
 import com.ibasco.glcdemulator.Context;
 import com.ibasco.glcdemulator.constants.Common;
+import static com.ibasco.glcdemulator.constants.Common.CACHE_DIR_PATH;
 import com.ibasco.glcdemulator.controls.GlcdScreen;
 import com.ibasco.glcdemulator.enums.PixelShape;
 import com.ibasco.glcdemulator.model.FontCacheEntry;
 import com.ibasco.glcdemulator.utils.*;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -51,8 +53,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-
-import static com.ibasco.glcdemulator.constants.Common.CACHE_DIR_PATH;
+import java.util.List;
 
 /**
  * A service that cache's font details (thumbnail previews, width, height etc)
@@ -67,34 +68,48 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
 
     private StringProperty cacheFilePath = new SimpleStringProperty(Common.FONT_CACHE_FILE_PATH);
 
-    private GlcdScreen screenBuffer;
+    private GlcdScreen fontScreen;
 
     private FontRenderer renderer;
+
+    private ListProperty<FontCacheEntry> entries = new SimpleListProperty<>();
 
     public FontCacheService() {
         setExecutor(Context.getTaskExecutor());
         renderer = FontRenderer.getInstance();
-        screenBuffer = createFontDisplay();
+        fontScreen = createFontDisplay();
+    }
+
+    public ObservableList<FontCacheEntry> getEntries() {
+        return entries.get();
+    }
+
+    public ListProperty<FontCacheEntry> entriesProperty() {
+        return entries;
+    }
+
+    public void setEntries(ObservableList<FontCacheEntry> entries) {
+        this.entries.set(entries);
     }
 
     @Override
     protected Task<ObservableList<FontCacheEntry>> createTask() {
+        if (entries.get() == null)
+            throw new IllegalStateException("Entries list cannot be null");
+
         return new Task<ObservableList<FontCacheEntry>>() {
             @Override
             protected ObservableList<FontCacheEntry> call() throws Exception {
-                ArrayList<FontCacheEntry> entries;
 
                 //Check if we have existing cached entries
-                entries = loadCacheEntries();
+                int cachedEntries = loadCacheEntries();
 
-                if (entries != null) {
+                if (entries.get() != null && cachedEntries > 0) {
                     log.debug("Font Cache Service: Found existing cached entries (Size: {})", entries.size());
-                    return FXCollections.observableArrayList(entries);
+                    return entries;
                 }
 
                 //Load from cache
-                entries = new ArrayList<>();
-
                 FileUtils.ensureDirectoryExistence(CACHE_DIR_PATH);
                 FileUtils.ensureDirectoryExistence(cacheDirPath.get());
                 GlcdFont[] values = GlcdFont.values();
@@ -108,15 +123,15 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
                         File cachedImagePath = createImageFile(font);
 
                         //Render a font with the provided text
-                        renderer.renderFont(screenBuffer, font, createPreviewText(font));
+                        renderer.renderFont(fontScreen, font, createPreviewText(font));
 
-                        double width = screenBuffer.getWidth(), height = screenBuffer.getHeight();
+                        double width = fontScreen.getWidth(), height = fontScreen.getHeight();
 
                         //Check if anything has been drawn to the display
-                        if (screenBuffer.getBuffer().isEmpty())
+                        if (fontScreen.getBuffer().isEmpty())
                             drawNotAvailableScreen(width, height);
                         else
-                            screenBuffer.refresh();
+                            fontScreen.refresh();
 
                         NodeUtil.saveNodeImageToFile(screenBuffer, cachedImagePath, width, height);
                         FontCacheEntry entry = new FontCacheEntry(info.getAscent(), info.getDescent(), font, cachedImagePath);
@@ -131,9 +146,9 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
                 log.info("Font Cache Service: Cache generation complete");
 
                 if (!entries.isEmpty()) {
-                    saveCacheEntries(entries);
+                    saveCacheEntries(entries.get());
                 }
-                return FXCollections.observableArrayList(entries);
+                return entries;
             }
         };
     }
@@ -181,13 +196,13 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
     }
 
     private void drawNotAvailableScreen(double width, double height) {
-        GraphicsContext gc = screenBuffer.getGraphicsContext2D();
+        GraphicsContext gc = fontScreen.getGraphicsContext2D();
         gc.clearRect(0, 0, width, height);
         gc.setFont(new Font("Verdana", 20));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.setFill(screenBuffer.getBacklightColor().darker());
+        gc.setFill(fontScreen.getBacklightColor().darker());
         gc.fillRect(0, 0, width, height);
-        gc.setFill(screenBuffer.getBacklightColor().invert());
+        gc.setFill(fontScreen.getBacklightColor().invert());
         gc.fillText("Preview Not Available", 120.0, 60.0);
     }
 
@@ -202,7 +217,7 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
         return new File(cacheDirPath.get() + File.separator + font.name() + ".png");
     }
 
-    private ArrayList<FontCacheEntry> loadCacheEntries() {
+    private int loadCacheEntries() {
         try {
             File cacheFile = new File(cacheFilePath.get());
             if (cacheFile.exists()) {
@@ -214,10 +229,10 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
         } catch (IOException e) {
             log.error("Error during cache-read operation", e);
         }
-        return null;
+        return 0;
     }
 
-    private void saveCacheEntries(ArrayList<FontCacheEntry> entries) {
+    private void saveCacheEntries(List<FontCacheEntry> entries) {
         try {
             String json = JsonUtils.toJson(entries);
             File cacheFile = new File(cacheFilePath.get());

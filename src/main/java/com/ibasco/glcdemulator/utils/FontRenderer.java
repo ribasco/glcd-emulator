@@ -85,11 +85,25 @@ public class FontRenderer {
         driver.setFont(GlcdFont.FONT_7X13B_TR); //default font
     }
 
+    private void initialize() {
+        log.debug("Initializing FontRenderer properties. Using display controller {}, Constructor = {}", display, GlcdUtil.findSetupFunction(display));
+        driver = DriverFactory.createVirtual(display);
+        driver.setFont(GlcdFont.FONT_7X13B_TR); //default font
+        bufferLayout = BufferLayoutFactory.createBufferLayout(display);
+    }
+
     public GlcdDriver getDriver() {
         return driver;
     }
 
-    public synchronized void renderFont(GlcdScreen screen, GlcdFont font, String text) {
+    public void setDisplay(GlcdDisplay display) {
+        synchronized (mutext) {
+            this.display = display;
+            initialize();
+        }
+    }
+
+    public void renderFont(GlcdScreen screen, GlcdFont font, String text) {
         synchronized (mutext) {
             try {
                 emulator.setBuffer(screen.getBuffer());

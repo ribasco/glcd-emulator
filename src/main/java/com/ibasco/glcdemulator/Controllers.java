@@ -25,10 +25,7 @@
  */
 package com.ibasco.glcdemulator;
 
-import com.ibasco.glcdemulator.controllers.*;
 import com.ibasco.glcdemulator.exceptions.ControllerLoadException;
-import com.ibasco.glcdemulator.model.FontCacheDetails;
-import com.ibasco.glcdemulator.services.FontCacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +43,10 @@ public class Controllers {
     private static final Map<Class<?>, Controller> controllerMap = new HashMap<>();
 
     private static final Logger log = LoggerFactory.getLogger(Controllers.class);
+
+    public static void initialize(Class<?> key, Object... args) {
+        getController(key, args);
+    }
 
     public static <T extends Controller> T getController(Class<?> key, Object... args) {
         if (args == null || args.length == 0) {
@@ -97,25 +98,5 @@ public class Controllers {
         });
         //noinspection unchecked
         return (T) controller;
-    }
-
-    public static GlcdDeveloperController getDeveloperController() {
-        return getController(GlcdDeveloperController.class);
-    }
-
-    public static GlcdEmulatorController getEmulatorController() {
-        return getController(GlcdEmulatorController.class);
-    }
-
-    public static GlcdEditProfileController getEditProfileController() {
-        return getController(GlcdEditProfileController.class);
-    }
-
-    public static GlcdFontBrowserController getFontBrowserController() {
-        return getController(GlcdFontBrowserController.class, new FontCacheService(), new FontCacheDetails());
-    }
-
-    public static GlcdAboutController getAboutController() {
-        return getController(GlcdAboutController.class);
     }
 }

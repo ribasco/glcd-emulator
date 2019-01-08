@@ -62,6 +62,7 @@ public class StageHelper {
         return createStageFromResource(owner, true, modality, title, viewResourceName, controller, scene, func);
     }
 
+    @Deprecated
     public static <T extends Parent> Stage createStageFromResource(Window owner, boolean resizable, Modality modality, String title, String viewResourceName, Controller controller, Scene scene, Consumer<T> func) {
         Stage stage;
         try {

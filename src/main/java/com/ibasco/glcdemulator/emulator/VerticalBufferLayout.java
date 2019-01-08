@@ -77,7 +77,7 @@ public class VerticalBufferLayout extends BufferLayout {
 
     @Override
     public void reset() {
-        log.debug("Resetting page buffer properties");
+        //log.debug("Resetting page buffer properties");
         xOffset = 0;
         yOffset = 0;
         pageIndex = 0;

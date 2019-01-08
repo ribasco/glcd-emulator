@@ -73,7 +73,7 @@ public class Stages {
 
     public static Stage getEditProfileStage() {
         if (editProfileStage == null) {
-            editProfileStage = StageHelper.createDialog(getPrimaryStage(), "Edit Profile", Views.EDIT_PROFILE_DIALOG, Controllers.getEditProfileController());
+            editProfileStage = StageHelper.createDialog(getPrimaryStage(), "Edit Profile", Views.EDIT_PROFILE_DIALOG);
         }
         return editProfileStage;
     }
@@ -85,7 +85,7 @@ public class Stages {
             fontBrowserStage = StageHelper.createDialog(Context.getPrimaryStage(),
                     "GLCD Font Browser",
                     Views.FONT_BROWSER_DIALOG,
-                    Controllers.getFontBrowserController(),
+                    null,
                     scene,
                     (Consumer<VBox>) drawersStack::setContent
             );

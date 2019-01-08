@@ -106,7 +106,21 @@ public class ResourceUtil {
      * @return The {@link javafx.scene.Node} or {@link Parent} root instance of the view
      */
     public static <T extends Parent> T loadFxmlResource(String resourceName) throws IOException {
-        return loadFxmlResource(resourceName, null);
+        FXMLLoader loader = new FXMLLoader();
+        T node = null;
+        try {
+            URL viewUrl = getFxmlResource(resourceName);
+            if (viewUrl == null)
+                return null;
+            loader.setClassLoader(ResourceUtil.class.getClassLoader());
+            loader.setControllerFactory(Controllers::getController);
+            loader.setLocation(viewUrl);
+            loader.setRoot(null);
+            node = loader.load();
+            return node;
+        } finally {
+            lastRootNode.set(node);
+        }
     }
 
     /**
@@ -121,6 +135,7 @@ public class ResourceUtil {
      *
      * @return The {@link javafx.scene.Node} or {@link Parent} root instance of the view
      */
+    @Deprecated
     public static <T extends Parent> T loadFxmlResource(String resourceName, Controller controller) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         T node = null;

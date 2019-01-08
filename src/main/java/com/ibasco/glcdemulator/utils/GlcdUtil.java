@@ -32,6 +32,7 @@ import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdSetupInfo;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdControllerType;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdSize;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
@@ -63,6 +64,14 @@ public class GlcdUtil {
         busPriority.put(GlcdBusInterface.SERIAL_HW, 11);
         busPriority.put(GlcdBusInterface.SERIAL_SW, 12);
         busPriority.put(GlcdBusInterface.SED1520, 99);
+    }
+
+    public static Predicate<GlcdDisplay> bySize(GlcdSize size) {
+        return p -> p.getDisplaySize().equals(size);
+    }
+
+    public static String findSetupFunction(GlcdDisplay display) {
+        return findSetupFunction(display, null);
     }
 
     public static String findSetupFunction(GlcdDisplay display, GlcdBusInterface busInterface) {

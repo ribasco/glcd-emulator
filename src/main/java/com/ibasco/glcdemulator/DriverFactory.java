@@ -3,7 +3,7 @@
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Simulator
  * Filename: DriverFactory.java
- * 
+ *
  * ---------------------------------------------------------
  * %%
  * Copyright (C) 2018 Rafael Luis Ibasco
@@ -12,12 +12,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -45,6 +45,20 @@ import java.util.function.Predicate;
 public class DriverFactory {
 
     private static final int DUMMY_I2C_ADDRESS = 0x10;
+
+    /**
+     * Creates a virtual driver based on the display parameter provided. A bus interface will be automatically be assigned.
+     *
+     * @param display
+     *         The display controller to be used
+     *
+     * @return The virtual {@link GlcdDriver} instance
+     *
+     * @see Glcd
+     */
+    public static GlcdDriver createVirtual(GlcdDisplay display) {
+        return createVirtual(display, GlcdUtil.findPreferredBusInterface(display), (GlcdDriverEventHandler) null);
+    }
 
     /**
      * Creates a virtual driver with the specified bus interface
@@ -90,9 +104,6 @@ public class DriverFactory {
     }
 
     public static GlcdDriver createVirtual(GlcdDisplay display, GlcdBusInterface busInterface, GlcdDriverEventHandler handler) {
-        if (busInterface == null)
-            throw new IllegalArgumentException("Bus interface cannot be null");
-
         GlcdConfig config = GlcdConfigBuilder
                 .create()
                 .display(display)
@@ -101,7 +112,7 @@ public class DriverFactory {
                 .build();
 
         //use a dummy i2c address
-        if (busInterface.name().contains("I2C")) {
+        if (busInterface != null && busInterface.name().contains("I2C")) {
             config.setDeviceAddress(DUMMY_I2C_ADDRESS);
         }
 

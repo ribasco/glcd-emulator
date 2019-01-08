@@ -25,15 +25,19 @@
  */
 package com.ibasco.glcdemulator.model;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 
 public class FontCacheDetails {
     private StringProperty previewText = new SimpleStringProperty();
 
+    private ListProperty<FontCacheEntry> entries = new SimpleListProperty<>(FXCollections.observableArrayList());
+
     private ObjectProperty<FontCacheEntry> activeEntry = new SimpleObjectProperty<>();
+
+    private ObjectProperty<FilteredList<FontCacheEntry>> filteredEntries = new SimpleObjectProperty<>(new FilteredList<>(entries.get()));
 
     public String getPreviewText() {
         return previewText.get();
@@ -59,5 +63,27 @@ public class FontCacheDetails {
         this.activeEntry.set(activeEntry);
     }
 
+    public ObservableList<FontCacheEntry> getEntries() {
+        return entries.get();
+    }
 
+    public ListProperty<FontCacheEntry> entriesProperty() {
+        return entries;
+    }
+
+    public void setEntries(ObservableList<FontCacheEntry> entries) {
+        this.entries.set(entries);
+    }
+
+    public FilteredList<FontCacheEntry> getFilteredEntries() {
+        return filteredEntries.get();
+    }
+
+    public ObjectProperty<FilteredList<FontCacheEntry>> filteredEntriesProperty() {
+        return filteredEntries;
+    }
+
+    public void setFilteredEntries(FilteredList<FontCacheEntry> filteredEntries) {
+        this.filteredEntries.set(filteredEntries);
+    }
 }

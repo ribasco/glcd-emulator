@@ -3,7 +3,7 @@
 <?import com.jfoenix.controls.JFXListView?>
 <?import javafx.scene.layout.*?>
 <VBox alignment="CENTER" style="-fx-background-color: #5A5A5A;" xmlns="http://javafx.com/javafx/8.0.171"
-      xmlns:fx="http://javafx.com/fxml/1">
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdFontDrawerController">
     <children>
         <AnchorPane>
             <children>

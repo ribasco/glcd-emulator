@@ -140,7 +140,12 @@
                             <bottom>
                                 <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                     <items>
-                                        <Pane prefHeight="30.0" prefWidth="95.0"/>
+                                        <Pane prefHeight="30.0" prefWidth="95.0">
+                                            <children>
+                                                <Label layoutY="6.0" text="Total Fonts: "/>
+                                                <Label fx:id="lblTotalFonts" layoutX="67.0" layoutY="7.0"/>
+                                            </children>
+                                        </Pane>
                                     </items>
                                 </ToolBar>
                             </bottom>

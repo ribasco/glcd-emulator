@@ -30,12 +30,12 @@ import com.ibasco.glcdemulator.constants.Views;
 import com.ibasco.glcdemulator.controls.GlcdScreen;
 import com.ibasco.glcdemulator.enums.PixelShape;
 import com.ibasco.glcdemulator.model.FontCacheDetails;
+import com.ibasco.glcdemulator.model.FontCacheEntry;
 import com.ibasco.glcdemulator.services.FontCacheService;
-import com.ibasco.glcdemulator.utils.DialogUtil;
-import com.ibasco.glcdemulator.utils.FontRenderer;
-import com.ibasco.glcdemulator.utils.PixelBuffer;
-import com.ibasco.glcdemulator.utils.ResourceUtil;
+import com.ibasco.glcdemulator.utils.*;
+import com.ibasco.ucgdisplay.drivers.glcd.GlcdDisplay;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdSize;
 import com.jfoenix.controls.*;
 import com.jfoenix.transitions.hamburger.HamburgerSlideCloseTransition;
 import javafx.application.Platform;
@@ -57,6 +57,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.TextAlignment;
+import javafx.util.StringConverter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,9 +90,6 @@ public class GlcdFontBrowserController extends Controller implements Initializab
     private AnchorPane apFontBrowser;
 
     @FXML
-    private StackPane spFontDetails;
-
-    @FXML
     private JFXHamburger hamLeftDrawer;
 
     @FXML
@@ -101,7 +100,7 @@ public class GlcdFontBrowserController extends Controller implements Initializab
 
     private static final String DEFAULT_TEXT = "ABC def 123";
 
-    private FontRenderer fontRenderer;
+    private FontRenderer fontRenderer = FontRenderer.getInstance();
 
     private FontCacheService fontCacheService;
 
@@ -148,24 +147,93 @@ public class GlcdFontBrowserController extends Controller implements Initializab
             }
         });
 
-        //Lazy-initialization
-        root.sceneProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                drawersStack = (JFXDrawersStack) newValue.getRoot();
-                //Context.getInstance().getThemeManager().applyTheme(newValue);
-            }
-        });
+        fontCacheService.entriesProperty().bind(details.entriesProperty());
 
         //Start retrieving cached entries
         if (fontCacheService.getState().equals(Worker.State.READY))
             fontCacheService.start();
 
-        //Show the left drawer once the cache is made available
         fontCacheService.setOnSucceeded(event -> {
-            /*Platform.runLater(() -> {
-                showTopDrawer(true);
-            });*/
+            cbFontSize.setItems(extractSizeInfoList(fontCacheService.getValue()));
+            GlcdFontDrawerController drawerController = Controllers.getController(GlcdFontDrawerController.class);
+            drawerController.selectFirst();
         });
+
+        cbFilterSize.selectedProperty().addListener((observable, oldValue, newValue) -> updateFilters());
+        cbFilterName.selectedProperty().addListener((observable, oldValue, newValue) -> updateFilters());
+        cbFontSize.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateFilters());
+        tfFontName.textProperty().addListener((observable, oldValue, newValue) -> updateFilters());
+        updateFilters();
+    }
+
+    private void updateFilters() {
+        Predicate<FontCacheEntry> p = e -> true;
+        if (cbFilterSize.isSelected() && !cbFontSize.getSelectionModel().isEmpty()) {
+            FontSizeInfo sizeInfo = cbFontSize.getSelectionModel().getSelectedItem();
+            log.debug("Updating font size filter: {}", sizeInfo);
+            p = p.and(e -> e.getMaxCharWidth() == sizeInfo.getWidth() && e.getMaxCharHeight() == sizeInfo.getHeight());
+        }
+        if (cbFilterName.isSelected() && !StringUtils.isBlank(tfFontName.getText())) {
+            String criteriaText = tfFontName.getText().toLowerCase();
+            p = p.and(e -> e.getFont().getKey().toLowerCase().contains(criteriaText) || e.getFont().name().toLowerCase().contains(criteriaText));
+        }
+
+        details.getFilteredEntries().setPredicate(p);
+        ((GlcdFontDrawerController) Controllers.getController(GlcdFontDrawerController.class)).selectFirst();
+        log.debug("Filtered count = {}", details.getFilteredEntries().size());
+        lblTotalFonts.setText(String.valueOf(details.getFilteredEntries().size()));
+    }
+
+    @SuppressWarnings("Duplicates")
+    private void resizeLcdOnScroll(ScrollEvent event) {
+        boolean forwardScroll = event.getDeltaY() >= 0;
+        if (!modifierCtrlPressed.get()) {
+            GlcdFontDrawerController drawerController = Controllers.getController(GlcdFontDrawerController.class);
+            if (!forwardScroll) {
+                drawerController.selectNextFont();
+            } else {
+                drawerController.selectPreviousFont();
+            }
+            return;
+        }
+        double value = fontDisplay.getPixelSize() + (forwardScroll ? 0.2 : -0.2);
+        if (value > 0.39) {
+            fontDisplay.setPixelSize(value);
+            fontDisplay.refresh();
+        }
+    }
+
+    private ObservableList<FontSizeInfo> extractSizeInfoList(ObservableList<FontCacheEntry> entries) {
+        return entries.stream()
+                .filter(f -> f.getMaxCharWidth() != 0 && f.getMaxCharHeight() != 0)
+                .filter(distinctByKey((Function<FontCacheEntry, String>) fontCacheEntry -> fontCacheEntry.getMaxCharWidth() + String.valueOf(fontCacheEntry.getMaxCharHeight())))
+                .sorted(Comparator.comparing(fontCacheEntry -> fontCacheEntry.getMaxCharWidth() * fontCacheEntry.getMaxCharHeight(), Integer::compareTo))
+                .map(FontSizeInfo::new)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), FXCollections::observableArrayList));
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
+    }
+
+    private void copyJavaName(ActionEvent actionEvent) {
+        ClipboardContent content = new ClipboardContent();
+        content.putString(tfFontNameJava.getText());
+        Clipboard.getSystemClipboard().setContent(content);
+    }
+
+    private void copyU8g2Name(ActionEvent actionEvent) {
+        ClipboardContent content = new ClipboardContent();
+        content.putString(tfFontNameCpp.getText());
+        Clipboard.getSystemClipboard().setContent(content);
+    }
+
+    private void rebuildCache(ActionEvent actionEvent) {
+        if (DialogUtil.promptConfirmation("Are you sure you want to rebuild the font cache?", "Rebuilding the whole cache may take a while")) {
+            showDrawer(false);
+            Platform.runLater(() -> fontCacheService.rebuild());
+        }
     }
 
     //<editor-fold desc="Initialize Properties and Bindings">
@@ -219,6 +287,7 @@ public class GlcdFontBrowserController extends Controller implements Initializab
         fontDisplay.setSpacing(0.0);
         fontDisplay.setMargin(20.0);
         fontDisplay.setPixelShape(PixelShape.RECTANGLE);
+        fontDisplay.setOnScroll(this::resizeLcdOnScroll);
     }
 
     private void initPreloaderBindings() {
@@ -252,10 +321,10 @@ public class GlcdFontBrowserController extends Controller implements Initializab
     }
 
     private void renderText(GlcdFont font, String text) {
-        if (fontCacheService.isRunning()) {
+        /*if (fontCacheService.isRunning()) {
             log.debug("Font cache service is currently running, skipping render.");
             return;
-        }
+        }*/
         fontRenderer.renderFont(fontDisplay, font, text);
         fontDisplay.refresh();
         drawFontHeader(font, fontDisplay);
@@ -263,7 +332,7 @@ public class GlcdFontBrowserController extends Controller implements Initializab
 
     private void drawFontHeader(GlcdFont font, GlcdScreen display) {
         GraphicsContext gc = display.getGraphicsContext2D();
-        gc.setFont(new Font("Verdana", 10));
+        gc.setFont(new Font("Consolas", 10));
         gc.setFill(Color.DARKGRAY);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);

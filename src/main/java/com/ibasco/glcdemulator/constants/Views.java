@@ -41,4 +41,6 @@ public class Views {
     public static final String ABOUT_DIALOG = "emulator-about";
 
     public static final String DEVELOPER_WINDOW = "emulator-dev";
+
+    public static final String SERIAL_SETTINGS_FC = "emulator-settings-serial-fc";
 }
