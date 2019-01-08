@@ -6,7 +6,7 @@
  * 
  * ---------------------------------------------------------
  * %%
- * Copyright (C) 2018 Rafael Luis Ibasco
+ * Copyright (C) 2018 - 2019 Rafael Luis Ibasco
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -25,6 +25,7 @@
  */
 package com.ibasco.glcdemulator;
 
+import static com.ibasco.glcdemulator.constants.Common.APP_CONFIG_PATH;
 import com.ibasco.glcdemulator.model.GlcdConfigApp;
 import com.ibasco.glcdemulator.utils.ResourceUtil;
 import javafx.application.HostServices;
@@ -44,8 +45,6 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
-
-import static com.ibasco.glcdemulator.constants.Common.APP_CONFIG_PATH;
 
 /**
  * Application Context

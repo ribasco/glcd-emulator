@@ -6,7 +6,7 @@
  * 
  * ---------------------------------------------------------
  * %%
- * Copyright (C) 2018 Rafael Luis Ibasco
+ * Copyright (C) 2018 - 2019 Rafael Luis Ibasco
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -28,7 +28,6 @@ package com.ibasco.glcdemulator.emulator.st7920.instructions;
 import com.ibasco.glcdemulator.emulator.st7920.ST7920Instruction;
 import com.ibasco.glcdemulator.emulator.st7920.ST7920InstructionFlag;
 import org.slf4j.Logger;
-
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class DdramSet extends ST7920Instruction {

@@ -6,7 +6,7 @@
  * 
  * ---------------------------------------------------------
  * %%
- * Copyright (C) 2018 Rafael Luis Ibasco
+ * Copyright (C) 2018 - 2019 Rafael Luis Ibasco
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -25,11 +25,10 @@
  */
 package com.ibasco.glcdemulator.enums;
 
+import static com.fazecast.jSerialComm.SerialPort.*;
 import com.ibasco.glcdemulator.utils.EnumValue;
 
 import java.util.Arrays;
-
-import static com.fazecast.jSerialComm.SerialPort.*;
 
 public enum SerialParity implements EnumValue<Integer> {
     NONE(NO_PARITY),
