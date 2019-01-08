@@ -38,15 +38,37 @@ public class FontCacheEntry {
 
     private ReadOnlyIntegerWrapper descent = new ReadOnlyIntegerWrapper();
 
+    private ReadOnlyIntegerWrapper maxCharWidth = new ReadOnlyIntegerWrapper();
+
+    private ReadOnlyIntegerWrapper maxCharHeight = new ReadOnlyIntegerWrapper();
+
     private ReadOnlyObjectWrapper<GlcdFont> font = new ReadOnlyObjectWrapper<>();
 
     private ReadOnlyObjectWrapper<File> image = new ReadOnlyObjectWrapper<>();
 
-    public FontCacheEntry(int ascent, int descent, GlcdFont font, File cachedImage) {
+    public FontCacheEntry(int ascent, int descent, int maxCharWidth, int maxCharHeight, GlcdFont font, File cachedImage) {
         this.ascent.set(ascent);
         this.descent.set(descent);
+        this.maxCharWidth.set(maxCharWidth);
+        this.maxCharHeight.set(maxCharHeight);
         this.font.set(font);
         this.image.set(cachedImage);
+    }
+
+    public int getMaxCharWidth() {
+        return maxCharWidth.get();
+    }
+
+    public ReadOnlyIntegerWrapper maxCharWidthProperty() {
+        return maxCharWidth;
+    }
+
+    public int getMaxCharHeight() {
+        return maxCharHeight.get();
+    }
+
+    public ReadOnlyIntegerWrapper maxCharHeightProperty() {
+        return maxCharHeight;
     }
 
     public File getImage() {

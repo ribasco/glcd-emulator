@@ -43,24 +43,33 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GlcdFontTopDrawerController extends Controller implements Initializable {
+public class GlcdFontDrawerController extends Controller implements Initializable {
 
-    private static final Logger log = LoggerFactory.getLogger(GlcdFontTopDrawerController.class);
+    private static final Logger log = LoggerFactory.getLogger(GlcdFontDrawerController.class);
 
     @FXML
     private JFXListView<FontCacheEntry> lvFonts;
 
-    private final FontCacheService fontCacheService;
+    private FontCacheDetails details;
 
-    private final FontCacheDetails details;
+    public GlcdFontDrawerController() {
+    }
 
-    public GlcdFontTopDrawerController(FontCacheService service, FontCacheDetails details) {
-        this.fontCacheService = service;
+    public GlcdFontDrawerController(FontCacheDetails details) {
         this.details = details;
+    }
+
+    public void setDetails(FontCacheDetails details) {
+        this.details = details;
+    }
+
+    public FontCacheDetails getDetails() {
+        return details;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        log.debug("Initializing Font Drawer controller");
         lvFonts.setOrientation(Orientation.HORIZONTAL);
         lvFonts.setCellFactory(this::listCellFactory);
         details.activeEntryProperty().bind(lvFonts.getSelectionModel().selectedItemProperty());

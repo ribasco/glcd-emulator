@@ -448,3 +448,7 @@
     -fx-alignment: center-left;
     -fx-spacing: 8;
 }
+
+#apFontDetails {
+    -fx-background-color: #2C2C2C;
+}

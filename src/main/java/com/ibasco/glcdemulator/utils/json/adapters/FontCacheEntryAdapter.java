@@ -38,9 +38,11 @@ public class FontCacheEntryAdapter implements JsonDeserializer<FontCacheEntry>, 
         JsonObject obj = json.getAsJsonObject();
         int ascent = obj.get("ascent").getAsInt();
         int descent = obj.get("descent").getAsInt();
+        int maxcharwidth = obj.get("maxwidth").getAsInt();
+        int maxcharheight = obj.get("maxheight").getAsInt();
         String fontKey = obj.get("font").getAsString();
         String imagePath = obj.get("image").getAsString();
-        return new FontCacheEntry(ascent, descent, GlcdFont.valueOf(fontKey), new File(imagePath));
+        return new FontCacheEntry(ascent, descent, maxcharwidth, maxcharheight, GlcdFont.valueOf(fontKey), new File(imagePath));
     }
 
     @Override
@@ -48,6 +50,8 @@ public class FontCacheEntryAdapter implements JsonDeserializer<FontCacheEntry>, 
         JsonObject obj = new JsonObject();
         obj.addProperty("ascent", src.getAscent());
         obj.addProperty("descent", src.getDescent());
+        obj.addProperty("maxwidth", src.getMaxCharWidth());
+        obj.addProperty("maxheight", src.getMaxCharHeight());
         obj.addProperty("font", src.getFont().name());
         obj.addProperty("image", src.getImage().getAbsolutePath());
         return obj;

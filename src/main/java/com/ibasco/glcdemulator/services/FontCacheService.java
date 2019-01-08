@@ -133,8 +133,8 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
                         else
                             fontScreen.refresh();
 
-                        NodeUtil.saveNodeImageToFile(screenBuffer, cachedImagePath, width, height);
-                        FontCacheEntry entry = new FontCacheEntry(info.getAscent(), info.getDescent(), font, cachedImagePath);
+                        NodeUtil.saveNodeImageToFile(fontScreen, cachedImagePath, width, height);
+                        FontCacheEntry entry = new FontCacheEntry(info.getAscent(), info.getDescent(), info.getMaxCharWidth(), info.getMaxCharHeight(), font, cachedImagePath);
                         entries.add(entry);
                     } catch (Exception e) {
                         log.warn("Font Cache Service: Unable to cache font '" + font.name() + "' (Reason: {})", e.toString());
@@ -224,7 +224,10 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
                 String json = org.apache.commons.io.FileUtils.readFileToString(cacheFile, StandardCharsets.UTF_8);
                 Type fooType = new TypeToken<ArrayList<FontCacheEntry>>() {
                 }.getType();
-                return JsonUtils.fromJson(json, fooType);
+                ArrayList<FontCacheEntry> cachedEntries = JsonUtils.fromJson(json, fooType);
+                entries.clear();
+                entries.addAll(cachedEntries);
+                return entries.size();
             }
         } catch (IOException e) {
             log.error("Error during cache-read operation", e);

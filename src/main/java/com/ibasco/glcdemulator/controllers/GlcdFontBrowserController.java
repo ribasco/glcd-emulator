@@ -3,7 +3,7 @@
  * Organization: Rafael Luis Ibasco
  * Project: GLCD Simulator
  * Filename: GlcdFontBrowserController.java
- * 
+ *
  * ---------------------------------------------------------
  * %%
  * Copyright (C) 2018 Rafael Luis Ibasco
@@ -12,12 +12,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -26,6 +26,7 @@
 package com.ibasco.glcdemulator.controllers;
 
 import com.ibasco.glcdemulator.Controller;
+import com.ibasco.glcdemulator.Controllers;
 import com.ibasco.glcdemulator.constants.Views;
 import com.ibasco.glcdemulator.controls.GlcdScreen;
 import com.ibasco.glcdemulator.enums.PixelShape;
@@ -41,7 +42,10 @@ import com.jfoenix.transitions.hamburger.HamburgerSlideCloseTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.VPos;
@@ -49,7 +53,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -64,13 +68,22 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class GlcdFontBrowserController extends Controller implements Initializable {
 
     private static final Logger log = LoggerFactory.getLogger(GlcdFontBrowserController.class);
 
+    //<editor-fold desc="FXML Properties">
     @FXML
     private GlcdScreen fontDisplay;
 
@@ -98,32 +111,70 @@ public class GlcdFontBrowserController extends Controller implements Initializab
     @FXML
     private JFXButton btnReloadCache;
 
+    @FXML
+    private JFXTextField tfFontNameCpp;
+
+    @FXML
+    private JFXTextField tfFontNameJava;
+
+    @FXML
+    private JFXTextField tfFontMaxWidth;
+
+    @FXML
+    private JFXTextField tfFontMaxHeight;
+
+    @FXML
+    private JFXTextField tfFontAscent;
+
+    @FXML
+    private JFXTextField tfFontDescent;
+
+    @FXML
+    private JFXComboBox<FontSizeInfo> cbFontSize;
+
+    @FXML
+    private JFXTextField tfFontName;
+
+    @FXML
+    private JFXRadioButton rbFilterSize;
+
+    @FXML
+    private JFXRadioButton rbFilterName;
+
+    @FXML
+    private JFXButton btnCopyU8g2;
+
+    @FXML
+    private JFXButton btnCopyJava;
+
+    @FXML
+    private JFXCheckBox cbFilterSize;
+
+    @FXML
+    private JFXCheckBox cbFilterName;
+
+    @FXML
+    private JFXComboBox<GlcdSize> cbDisplaySize;
+
+    @FXML
+    private Label lblTotalFonts;
+    //</editor-fold>
+
     private static final String DEFAULT_TEXT = "ABC def 123";
 
     private FontRenderer fontRenderer = FontRenderer.getInstance();
 
-    private FontCacheService fontCacheService;
+    private FontCacheService fontCacheService = new FontCacheService();
 
-    private FontCacheDetails details;
+    private FontCacheDetails details = new FontCacheDetails();
 
     private JFXDrawersStack drawersStack;
 
-    private JFXDrawer leftDrawer;
+    private JFXDrawer drawer;
 
     private HamburgerSlideCloseTransition transition;
 
-    public GlcdFontBrowserController(FontCacheService service, FontCacheDetails details) {
-        this.fontCacheService = service;
-        this.details = details;
-    }
-
-    public FontCacheService getFontCacheService() {
-        return fontCacheService;
-    }
-
-    public void setFontCacheService(FontCacheService fontCacheService) {
-        this.fontCacheService = fontCacheService;
-    }
+    private final AtomicBoolean modifierCtrlPressed = new AtomicBoolean(false);
 
     public FontCacheDetails getDetails() {
         return details;
@@ -133,17 +184,87 @@ public class GlcdFontBrowserController extends Controller implements Initializab
         this.details = details;
     }
 
+    private class FontSizeInfo {
+        private FontCacheEntry entry;
+
+        private FontSizeInfo(FontCacheEntry entry) {
+            this.entry = entry;
+        }
+
+        private int getArea() {
+            return entry.getMaxCharWidth() * entry.getMaxCharHeight();
+        }
+
+        private int getWidth() {
+            return entry.getMaxCharWidth();
+        }
+
+        private int getHeight() {
+            return entry.getMaxCharHeight();
+        }
+
+        private String getName() {
+            return entry.getMaxCharWidth() + " x " + entry.getMaxCharHeight();
+        }
+
+        @Override
+        public String toString() {
+            return getName();
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        log.debug("INITIALIZE: {}", fontDisplay);
         initFontDisplay();
         initDrawer();
         initPreloaderBindings();
         initPreviewTextBindings();
+        btnReloadCache.setOnAction(this::rebuildCache);
+        btnCopyU8g2.setOnAction(this::copyU8g2Name);
+        btnCopyJava.setOnAction(this::copyJavaName);
+        cbFontSize.disableProperty().bind(cbFilterSize.selectedProperty().not());
+        tfFontName.disableProperty().bind(cbFilterName.selectedProperty().not());
+        cbDisplaySize.setConverter(new StringConverter<GlcdSize>() {
+            @Override
+            public String toString(GlcdSize object) {
+                return object.getDisplayWidth() + " x " + object.getDisplayHeight();
+            }
 
-        btnReloadCache.setOnAction(event -> {
-            if (DialogUtil.promptConfirmation("Are you sure you want to rebuild the font cache?", "Rebuilding the whole cache may take a while")) {
-                showTopDrawer(false);
-                Platform.runLater(() -> fontCacheService.rebuild());
+            @Override
+            public GlcdSize fromString(String string) {
+                return null;
+            }
+        });
+        ObservableList<GlcdSize> sizeList = FXCollections.observableArrayList(GlcdSize.values());
+        sizeList.sort(Comparator.comparing(GlcdSize::getDisplayWidth, Integer::compareTo));
+        cbDisplaySize.setItems(sizeList);
+        cbDisplaySize.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                List<GlcdDisplay> res = GlcdUtil.findDisplay(GlcdUtil.bySize(newValue));
+                if (!res.isEmpty()) {
+                    GlcdDisplay display = res.get(0);
+                    log.debug("Choosing display size: {}, Selected display = {}", newValue, display);
+                    fontRenderer.setDisplay(display);
+                    //re-initialize the font display screen
+                    initFontDisplay();
+                }
+            }
+        });
+
+        //Lazy-initialization
+        root.sceneProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) //noinspection Duplicates
+            {
+                drawersStack = (JFXDrawersStack) newValue.getRoot();
+                drawersStack.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.CONTROL)
+                        modifierCtrlPressed.set(true);
+                });
+                drawersStack.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
+                    if (event.getCode() == KeyCode.CONTROL)
+                        modifierCtrlPressed.set(false);
+                });
             }
         });
 
@@ -241,8 +362,16 @@ public class GlcdFontBrowserController extends Controller implements Initializab
         details.previewTextProperty().bindBidirectional(tfPreviewText.textProperty());
         //Render text on new font selection
         details.activeEntryProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null)
+            if (newValue != null) {
+                //log.debug("ACTIVE ENTRY CHANGED: {}", fontDisplay.getBuffer());
                 renderText(newValue.getFont(), tfPreviewText.getText());
+                tfFontNameCpp.setText(newValue.getFont().getKey());
+                tfFontNameJava.setText(newValue.getFont().name());
+                tfFontAscent.setText(String.valueOf(newValue.getAscent()));
+                tfFontDescent.setText(String.valueOf(newValue.getDescent()));
+                tfFontMaxWidth.setText(String.valueOf(newValue.getMaxCharWidth()));
+                tfFontMaxHeight.setText(String.valueOf(newValue.getMaxCharHeight()));
+            }
         });
         //Render text if preview text changes
         tfPreviewText.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -257,26 +386,27 @@ public class GlcdFontBrowserController extends Controller implements Initializab
 
     private void initDrawer() {
         try {
-            GlcdFontTopDrawerController leftDrawerController = new GlcdFontTopDrawerController(fontCacheService, details);
-            VBox leftDrawerPane = ResourceUtil.loadFxmlResource(Views.FONT_BROWSER_TOPDRAWER, leftDrawerController);
-            leftDrawer = new JFXDrawer();
-            leftDrawer.setSidePane(leftDrawerPane);
-            leftDrawer.setDirection(JFXDrawer.DrawerDirection.TOP);
-            leftDrawer.setDefaultDrawerSize(150);
-            leftDrawer.setResizeContent(true);
-            leftDrawer.setOverLayVisible(false);
-            leftDrawer.setResizableOnDrag(false);
-            leftDrawer.setId("TOP");
+            Controllers.initialize(GlcdFontDrawerController.class, details);
+
+            VBox drawerPane = ResourceUtil.loadFxmlResource(Views.FONT_BROWSER_TOPDRAWER);
+
+            drawer = new JFXDrawer();
+            drawer.setSidePane(drawerPane);
+            drawer.setDirection(JFXDrawer.DrawerDirection.TOP);
+            drawer.setDefaultDrawerSize(150);
+            drawer.setResizeContent(true);
+            drawer.setOverLayVisible(false);
+            drawer.setResizableOnDrag(false);
+            drawer.setId("TOP");
 
             transition = new HamburgerSlideCloseTransition(hamLeftDrawer);
-            hamLeftDrawer.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> toggleTopDrawer());
+            hamLeftDrawer.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> toggleDrawer());
         } catch (IOException e) {
             log.error("There was a problem loading the view for '" + Views.FONT_BROWSER_TOPDRAWER + "'", e);
         }
     }
 
     private void initFontDisplay() {
-        fontRenderer = FontRenderer.getInstance();
         fontDisplay.setBuffer(new PixelBuffer(fontRenderer.getDriver().getWidth(), fontRenderer.getDriver().getHeight()));
         fontDisplay.setBacklightColor(Color.BLACK); //79ff4d
         fontDisplay.setActivePixelColor(Color.WHITE);
@@ -310,14 +440,14 @@ public class GlcdFontBrowserController extends Controller implements Initializab
     }
     //</editor-fold>
 
-    private void toggleTopDrawer() {
-        showTopDrawer(!leftDrawer.isOpened());
+    private void toggleDrawer() {
+        showDrawer(!drawer.isOpened());
     }
 
-    private void showTopDrawer(boolean show) {
+    private void showDrawer(boolean show) {
         transition.setRate(show ? 1 : -1);
         transition.play();
-        drawersStack.toggle(leftDrawer, show);
+        drawersStack.toggle(drawer, show);
     }
 
     private void renderText(GlcdFont font, String text) {
@@ -326,7 +456,6 @@ public class GlcdFontBrowserController extends Controller implements Initializab
             return;
         }*/
         fontRenderer.renderFont(fontDisplay, font, text);
-        fontDisplay.refresh();
         drawFontHeader(font, fontDisplay);
     }
 

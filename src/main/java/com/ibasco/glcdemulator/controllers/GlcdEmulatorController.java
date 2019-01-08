@@ -679,14 +679,6 @@ public class GlcdEmulatorController extends Controller {
         leftItems.add(connectionDetails);
     }
 
-    private void disableConnectionTypeOptions(boolean disable) {
-        pConnType.setDisable(disable);
-        for (Toggle toggle : connType.getToggles()) {
-            ToggleButton button = (ToggleButton) toggle;
-            button.setDisable(disable);
-        }
-    }
-
     private void activateProfile(GlcdEmulatorProfile profile) {
         glcdScreen.stop();
         try {
@@ -851,6 +843,7 @@ public class GlcdEmulatorController extends Controller {
     /**
      * Check if we have a default profile stored in the File System.
      */
+
     private void setupDefaultProfile() {
         //Load default profile
         int defaultProfileId = appConfig.getDefaultProfileId();
@@ -1056,7 +1049,7 @@ public class GlcdEmulatorController extends Controller {
     private JFXDialog getDisplayBrowseDialog() {
         try {
             GlcdEmulatorProfile profile = getContext().getProfileManager().getActiveProfile();
-            Parent node = ResourceUtil.loadFxmlResource(Views.DISPLAY_BROWSE, GlcdEmulatorController.this);
+            Parent node = ResourceUtil.loadFxmlResource(Views.DISPLAY_BROWSE);
 
             MenuItem miCopyConstructor = new MenuItem("Copy constructor");
             miCopyConstructor.setOnAction(event -> {
@@ -1303,11 +1296,11 @@ public class GlcdEmulatorController extends Controller {
                 ConnectionType type = (ConnectionType) newValue.getUserData();
                 switch (type) {
                     case TCP:
-                        view = ResourceUtil.loadFxmlResource("emulator-settings-tcp", GlcdEmulatorController.this);
+                        view = ResourceUtil.loadFxmlResource("emulator-settings-tcp");
                         setupConnTypeTcpBindings();
                         break;
                     case SERIAL:
-                        view = ResourceUtil.loadFxmlResource("emulator-settings-serial", GlcdEmulatorController.this);
+                        view = ResourceUtil.loadFxmlResource("emulator-settings-serial");
                         setupConnTypeSerialBindings();
                         break;
                 }
@@ -1343,7 +1336,7 @@ public class GlcdEmulatorController extends Controller {
 
     private Parent createFlowControlView() {
         try {
-            return ResourceUtil.loadFxmlResource("emulator-settings-serial-fc", this);
+            return ResourceUtil.loadFxmlResource(Views.SERIAL_SETTINGS_FC);
         } catch (IOException e) {
             throw new EmulatorControllerException("Problem loading Flow Control view", e);
         }
@@ -1620,7 +1613,7 @@ public class GlcdEmulatorController extends Controller {
             if (busInterface == null) {
                 busInterface = GlcdUtil.findPreferredBusInterface(profile.getDisplay());
                 if (busInterface != null)
-                    log.info("Bus interface is null, returning default: {}", busInterface.name());
+                    log.info("Bus interface is null, using preferred: {}", busInterface.name());
                 else
                     log.warn("Bus interface not found for display: {}", profile.getDisplay().getName());
             }
@@ -1639,15 +1632,14 @@ public class GlcdEmulatorController extends Controller {
         profileBindGroup.registerUnidirectional(drawTestService.displayProperty(), profile.displayProperty());
         profileBindGroup.registerUnidirectional(btnDrawAnimTest.textProperty(), textBinding);
 
-        //drawTestService.bufferProperty().bind(displayBuffer);
-        //drawTestService.busInterfaceProperty().bind(busInterfaceBinding);
-        //drawTestService.displayProperty().bind(profile.displayProperty());
-        //btnDrawAnimTest.textProperty().bind(textBinding);
-
-
         //Bidirectional Bindings
         profileBindGroup.registerBidirectional(glcdScreen.activePixelColorProperty(), profile.lcdActivePixelColorProperty());
         profileBindGroup.registerBidirectional(glcdScreen.inactivePixelColorProperty(), profile.lcdInactivePixelColorProperty());
+        profile.lcdActivePixelColorProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                profile.setLcdInactivePixelColor(newValue);
+            }
+        });
         profileBindGroup.registerBidirectional(glcdScreen.backlightColorProperty(), profile.lcdBacklightColorProperty());
         profileBindGroup.registerBidirectional(glcdScreen.contrastProperty(), profile.lcdContrastProperty());
         profileBindGroup.registerBidirectional(glcdScreen.pixelSizeProperty(), profile.lcdPixelSizeProperty());
@@ -1825,7 +1817,7 @@ public class GlcdEmulatorController extends Controller {
     //TODO: Fix edit bug
     private void profileEditAction(ActionEvent event) {
         GlcdEmulatorProfile selectedProfile = tvProfiles.getSelectionModel().getSelectedItem();
-        GlcdEditProfileController controller = Controllers.getEditProfileController();
+        GlcdEditProfileController controller = Controllers.getController(GlcdEditProfileController.class);
         Stage stage = Stages.getEditProfileStage();
         controller.setProfile(selectedProfile);
         controller.setOwner(stage);

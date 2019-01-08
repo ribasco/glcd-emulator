@@ -52,7 +52,7 @@ public class VerticalBufferLayout extends BufferLayout {
     @Override
     public void processByte(byte data) {
         if (pageBufferList.isEmpty())
-            throw new IllegalStateException("Page buffer is currently empty");
+            throw new IllegalStateException("Page buffer is currently empty.");
 
         if (pageIndex > (pageSize - 1))
             throw new IllegalStateException(String.format("Page index is greater than the maximum page limit (page index = %d, max page index = %d)", pageIndex, pageSize - 1));
@@ -73,6 +73,7 @@ public class VerticalBufferLayout extends BufferLayout {
     @Override
     public void initialize() {
         log.debug("Initializing page buffer strategy");
+        reset();
     }
 
     @Override

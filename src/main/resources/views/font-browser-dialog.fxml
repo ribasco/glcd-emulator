@@ -5,113 +5,121 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
-<VBox fx:id="root" prefHeight="546.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.text.*?>
+<VBox fx:id="root" prefHeight="546.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ibasco.glcdemulator.controllers.GlcdFontBrowserController">
     <children>
         <StackPane fx:id="spRoot" VBox.vgrow="ALWAYS">
             <children>
                 <AnchorPane fx:id="apFontBrowser">
                     <children>
-                        <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0"
-                                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <center>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0"
-                                            BorderPane.alignment="CENTER">
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                                     <children>
-                                        <JFXTabPane prefHeight="373.0" prefWidth="582.0" AnchorPane.bottomAnchor="0.0"
-                                                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                                                    AnchorPane.topAnchor="0.0">
+                                        <JFXTabPane prefHeight="373.0" prefWidth="582.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <tabs>
                                                 <Tab text="Preview">
                                                     <content>
-                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
-                                                                    prefWidth="200.0">
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                             <children>
-                                                                <VBox id="vbox-screen" alignment="CENTER"
-                                                                      AnchorPane.bottomAnchor="0.0"
-                                                                      AnchorPane.leftAnchor="0.0"
-                                                                      AnchorPane.rightAnchor="0.0"
-                                                                      AnchorPane.topAnchor="0.0">
-                                                                    <children>
-                                                                        <HBox alignment="CENTER" prefHeight="100.0"
-                                                                              prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                                <SplitPane dividerPositions="0.6673114119922631" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                    <items>
+                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                                                             <children>
-                                                                                <GlcdScreen fx:id="fontDisplay"
-                                                                                            HBox.hgrow="ALWAYS"/>
+                                                                                <VBox id="vbox-screen" alignment="CENTER" prefHeight="421.0" prefWidth="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                                    <children>
+                                                                                        <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
+                                                                                            <VBox.margin>
+                                                                                                <Insets bottom="5.0"/>
+                                                                                            </VBox.margin>
+                                                                                            <content>
+                                                                                                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="1026.0">
+                                                                                                    <children>
+                                                                                                        <GlcdScreen fx:id="fontDisplay"/>
+                                                                                                    </children>
+                                                                                                </HBox>
+                                                                                            </content>
+                                                                                        </ScrollPane>
+                                                                                        <JFXTextField id="font-browser-tf" fx:id="tfPreviewText" prefWidth="749.0" promptText="Enter text" VBox.vgrow="NEVER">
+                                                                                            <font>
+                                                                                                <Font size="18.0"/>
+                                                                                            </font>
+                                                                                            <padding>
+                                                                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                                                                            </padding>
+                                                                                            <VBox.margin>
+                                                                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                                                                            </VBox.margin>
+                                                                                        </JFXTextField>
+                                                                                    </children>
+                                                                                </VBox>
                                                                             </children>
-                                                                            <VBox.margin>
-                                                                                <Insets bottom="5.0"/>
-                                                                            </VBox.margin>
-                                                                        </HBox>
-                                                                        <JFXTextField id="font-browser-tf"
-                                                                                      fx:id="tfPreviewText"
-                                                                                      prefWidth="749.0"
-                                                                                      promptText="Enter text"
-                                                                                      VBox.vgrow="NEVER">
-                                                                            <font>
-                                                                                <Font size="18.0"/>
-                                                                            </font>
-                                                                            <padding>
-                                                                                <Insets bottom="10.0" left="10.0"
-                                                                                        right="10.0" top="10.0"/>
-                                                                            </padding>
-                                                                            <VBox.margin>
-                                                                                <Insets bottom="10.0" left="10.0"
-                                                                                        right="10.0" top="10.0"/>
-                                                                            </VBox.margin>
-                                                                        </JFXTextField>
-                                                                    </children>
-                                                                </VBox>
-                                                            </children>
-                                                        </AnchorPane>
-                                                    </content>
-                                                </Tab>
-                                                <Tab disable="true" text="Details">
-                                                    <content>
-                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
-                                                                    prefWidth="200.0">
-                                                            <children>
-                                                                <StackPane fx:id="spFontDetails" layoutX="72.0"
-                                                                           layoutY="21.0" prefHeight="189.0"
-                                                                           prefWidth="570.0"
-                                                                           AnchorPane.bottomAnchor="0.0"
-                                                                           AnchorPane.leftAnchor="0.0"
-                                                                           AnchorPane.rightAnchor="0.0"
-                                                                           AnchorPane.topAnchor="0.0">
-                                                                    <children>
-                                                                        <Accordion>
-                                                                            <panes>
-                                                                                <TitledPane animated="false"
-                                                                                            text="Info">
-                                                                                    <content>
-                                                                                        <AnchorPane minHeight="0.0"
-                                                                                                    minWidth="0.0"
-                                                                                                    prefHeight="180.0"
-                                                                                                    prefWidth="200.0"/>
-                                                                                    </content>
-                                                                                </TitledPane>
-                                                                                <TitledPane animated="false"
-                                                                                            text="Charsets">
-                                                                                    <content>
-                                                                                        <AnchorPane minHeight="0.0"
-                                                                                                    minWidth="0.0"
-                                                                                                    prefHeight="180.0"
-                                                                                                    prefWidth="200.0"/>
-                                                                                    </content>
-                                                                                </TitledPane>
-                                                                                <TitledPane animated="false"
-                                                                                            text="untitled 3">
-                                                                                    <content>
-                                                                                        <AnchorPane minHeight="0.0"
-                                                                                                    minWidth="0.0"
-                                                                                                    prefHeight="180.0"
-                                                                                                    prefWidth="200.0"/>
-                                                                                    </content>
-                                                                                </TitledPane>
-                                                                            </panes>
-                                                                        </Accordion>
-                                                                    </children>
-                                                                </StackPane>
+                                                                        </AnchorPane>
+                                                                        <AnchorPane fx:id="apFontDetails" minHeight="0.0" minWidth="0.0" prefHeight="421.0" prefWidth="321.0" SplitPane.resizableWithParent="false">
+                                                                            <children>
+                                                                                <GridPane hgap="10.0" layoutX="-8.0" prefWidth="298.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-8.0" AnchorPane.rightAnchor="-9.0" AnchorPane.topAnchor="0.0">
+                                                                                    <columnConstraints>
+                                                                                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="136.0" minWidth="10.0" prefWidth="122.0"/>
+                                                                                        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="208.0" minWidth="10.0" prefWidth="153.0"/>
+                                                                                        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="208.0" minWidth="10.0" prefWidth="60.0"/>
+                                                                                    </columnConstraints>
+                                                                                    <rowConstraints>
+                                                                                        <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="NEVER"/>
+                                                                                        <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="NEVER"/>
+                                                                                        <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="NEVER"/>
+                                                                                        <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="NEVER"/>
+                                                                                        <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="NEVER"/>
+                                                                                        <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="NEVER"/>
+                                                                                        <RowConstraints vgrow="ALWAYS"/>
+                                                                                    </rowConstraints>
+                                                                                    <children>
+                                                                                        <JFXTextField fx:id="tfFontNameCpp" editable="false" GridPane.columnIndex="1"/>
+                                                                                        <JFXTextField fx:id="tfFontNameJava" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                                                                        <Label text="c/c++ name:">
+                                                                                            <font>
+                                                                                                <Font name="System Bold" size="12.0"/>
+                                                                                            </font>
+                                                                                        </Label>
+                                                                                        <Label text="java:" GridPane.rowIndex="1">
+                                                                                            <font>
+                                                                                                <Font name="System Bold" size="12.0"/>
+                                                                                            </font>
+                                                                                        </Label>
+                                                                                        <Label text="ascent:" GridPane.rowIndex="2">
+                                                                                            <font>
+                                                                                                <Font name="System Bold" size="12.0"/>
+                                                                                            </font>
+                                                                                        </Label>
+                                                                                        <Label text="descent:" GridPane.rowIndex="3">
+                                                                                            <font>
+                                                                                                <Font name="System Bold" size="12.0"/>
+                                                                                            </font>
+                                                                                        </Label>
+                                                                                        <JFXTextField fx:id="tfFontAscent" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                                                                        <JFXTextField fx:id="tfFontDescent" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                                                                        <Label text="max char width:" GridPane.rowIndex="4">
+                                                                                            <font>
+                                                                                                <Font name="System Bold" size="12.0"/>
+                                                                                            </font>
+                                                                                        </Label>
+                                                                                        <Label text="max char height:" GridPane.rowIndex="5">
+                                                                                            <font>
+                                                                                                <Font name="System Bold" size="12.0"/>
+                                                                                            </font>
+                                                                                        </Label>
+                                                                                        <JFXTextField fx:id="tfFontMaxWidth" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                                                                        <JFXTextField fx:id="tfFontMaxHeight" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                                                                        <JFXButton fx:id="btnCopyU8g2" text="Copy" GridPane.columnIndex="2"/>
+                                                                                        <JFXButton fx:id="btnCopyJava" text="Copy" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                                                                                    </children>
+                                                                                    <padding>
+                                                                                        <Insets bottom="10.0" right="10.0" top="10.0"/>
+                                                                                    </padding>
+                                                                                </GridPane>
+                                                                            </children>
+                                                                        </AnchorPane>
+                                                                    </items>
+                                                                </SplitPane>
                                                             </children>
                                                         </AnchorPane>
                                                     </content>
@@ -124,9 +132,22 @@
                             <top>
                                 <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                     <items>
-                                        <JFXHamburger fx:id="hamLeftDrawer" prefHeight="28.0" prefWidth="28.0"
-                                                      styleClass="jfx-hamburger-icon"/>
-                                        <Pane prefHeight="0.0" prefWidth="5.0" HBox.hgrow="ALWAYS"/>
+                                        <JFXHamburger fx:id="hamLeftDrawer" prefHeight="28.0" prefWidth="28.0" styleClass="jfx-hamburger-icon"/>
+                                        <HBox alignment="CENTER" prefHeight="28.0" prefWidth="525.0" spacing="10.0">
+                                            <children>
+                                                <JFXCheckBox fx:id="cbFilterSize" text="Filter by Size"/>
+                                                <JFXComboBox fx:id="cbFontSize" prefHeight="26.0" prefWidth="121.0" promptText="Font Size"/>
+                                                <JFXCheckBox fx:id="cbFilterName" text="Filter by Name"/>
+                                                <JFXTextField fx:id="tfFontName"/>
+                                            </children>
+                                        </HBox>
+                                        <Pane prefHeight="28.0" prefWidth="152.0" HBox.hgrow="ALWAYS"/>
+                                        <Label text="Display Size:">
+                                            <font>
+                                                <Font name="System Bold" size="12.0"/>
+                                            </font>
+                                        </Label>
+                                        <JFXComboBox fx:id="cbDisplaySize" promptText="Size"/>
                                         <JFXButton fx:id="btnReloadCache" text="Reload Font Cache"/>
                                     </items>
                                     <BorderPane.margin>
@@ -152,17 +173,14 @@
                         </BorderPane>
                     </children>
                 </AnchorPane>
-                <StackPane fx:id="spFontCacheProgress" opacity="0.86" style="-fx-background-color: #000000;"
-                           visible="false">
+                <StackPane fx:id="spFontCacheProgress" opacity="0.86" style="-fx-background-color: #000000;" visible="false">
                     <children>
-                        <Label fx:id="lblLoadFonts" alignment="BOTTOM_CENTER" prefHeight="369.0" prefWidth="476.0"
-                               text="Caching fonts..." textAlignment="CENTER" visible="false" wrapText="true">
+                        <Label fx:id="lblLoadFonts" alignment="BOTTOM_CENTER" prefHeight="369.0" prefWidth="476.0" text="Caching fonts..." textAlignment="CENTER" visible="false" wrapText="true">
                             <font>
                                 <Font size="25.0"/>
                             </font>
                         </Label>
-                        <JFXSpinner fx:id="pbLoadFonts" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="208.0"
-                                    prefWidth="207.0" progress="0.28" visible="false"/>
+                        <JFXSpinner fx:id="pbLoadFonts" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="208.0" prefWidth="207.0" progress="0.28" visible="false"/>
                     </children>
                 </StackPane>
             </children>

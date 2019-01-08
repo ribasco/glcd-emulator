@@ -33,6 +33,11 @@ abstract public class BufferLayout {
 
     abstract public void processByte(byte data);
 
+    public void processBuffer(byte[] data) {
+        for (byte d : data)
+            processByte(d);
+    }
+
     abstract public void reset();
 
     abstract public void initialize();

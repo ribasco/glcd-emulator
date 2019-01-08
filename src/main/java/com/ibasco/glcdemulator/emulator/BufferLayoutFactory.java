@@ -58,6 +58,10 @@ public class BufferLayoutFactory {
         return bufferStrategyInstance;
     }
 
+    public static BufferLayout createBufferLayout(GlcdDisplay display) {
+        return createBufferLayout(display, null);
+    }
+
     public static BufferLayout createBufferLayout(GlcdDisplay display, PixelBuffer buffer) {
         log.debug("Buffer type/layout = {}", display.getBufferType());
         Class<? extends BufferLayout> layoutClass = retrieveLayoutClass(display.getBufferType());
