@@ -284,7 +284,7 @@ public class GlcdFontBrowserController extends Controller implements Initializab
         cbFilterName.selectedProperty().addListener((observable, oldValue, newValue) -> updateFilters());
         cbFontSize.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateFilters());
         tfFontName.textProperty().addListener((observable, oldValue, newValue) -> updateFilters());
-        lblTotalFonts.textProperty().bind(Bindings.createStringBinding(() -> String.valueOf(details.getEntries().size()), details.entriesProperty()));
+        lblTotalFonts.textProperty().bind(Bindings.createStringBinding(() -> String.valueOf(details.getFilteredEntries().size()), details.entriesProperty()));
         updateFilters();
     }
 
