@@ -237,7 +237,7 @@ public class GlcdFontBrowserController extends Controller implements Initializab
             }
         });
         ObservableList<GlcdSize> sizeList = FXCollections.observableArrayList(GlcdSize.values());
-        sizeList.sort(Comparator.comparing(GlcdSize::getDisplayWidth, Integer::compareTo));
+        sizeList.sort(Comparator.comparing(s -> s.getDisplayWidth() * s.getDisplayHeight(), Integer::compareTo));
         cbDisplaySize.setItems(sizeList);
         cbDisplaySize.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -284,6 +284,7 @@ public class GlcdFontBrowserController extends Controller implements Initializab
         cbFilterName.selectedProperty().addListener((observable, oldValue, newValue) -> updateFilters());
         cbFontSize.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateFilters());
         tfFontName.textProperty().addListener((observable, oldValue, newValue) -> updateFilters());
+        lblTotalFonts.textProperty().bind(Bindings.createStringBinding(() -> String.valueOf(details.getEntries().size()), details.entriesProperty()));
         updateFilters();
     }
 
@@ -302,7 +303,6 @@ public class GlcdFontBrowserController extends Controller implements Initializab
         details.getFilteredEntries().setPredicate(p);
         ((GlcdFontDrawerController) Controllers.getController(GlcdFontDrawerController.class)).selectFirst();
         log.debug("Filtered count = {}", details.getFilteredEntries().size());
-        lblTotalFonts.setText(String.valueOf(details.getFilteredEntries().size()));
     }
 
     @SuppressWarnings("Duplicates")
@@ -328,7 +328,7 @@ public class GlcdFontBrowserController extends Controller implements Initializab
         return entries.stream()
                 .filter(f -> f.getMaxCharWidth() != 0 && f.getMaxCharHeight() != 0)
                 .filter(distinctByKey((Function<FontCacheEntry, String>) fontCacheEntry -> fontCacheEntry.getMaxCharWidth() + String.valueOf(fontCacheEntry.getMaxCharHeight())))
-                .sorted(Comparator.comparing(fontCacheEntry -> fontCacheEntry.getMaxCharWidth() * fontCacheEntry.getMaxCharHeight(), Integer::compareTo))
+                .sorted(Comparator.comparing(FontCacheEntry::getMaxCharHeight, Integer::compareTo))
                 .map(FontSizeInfo::new)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), FXCollections::observableArrayList));
     }
