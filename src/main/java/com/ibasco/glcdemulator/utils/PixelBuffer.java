@@ -168,16 +168,6 @@ public class PixelBuffer {
     }
 
     /**
-     * Writes a 16-bit value to the buffer. Cursor is automatically adjusted.
-     *
-     * @param data
-     *         16-bit data to be written
-     */
-    public void write(short data) {
-
-    }
-
-    /**
      * Convenience method to check if the buffer is empty (all zero bits)
      *
      * @return True if the buffer is empty
