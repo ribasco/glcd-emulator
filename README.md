@@ -31,7 +31,7 @@ The Arduino client extends from the [U8g2 class](https://github.com/olikraus/u8g
 
 ## Requirements
 
-- Java 8 or higher
+- 64 bit Java 8 or higher
 
 ## Client libraries
 
@@ -43,6 +43,10 @@ The Arduino client extends from the [U8g2 class](https://github.com/olikraus/u8g
 
 - [Release](https://github.com/ribasco/glcd-emulator/releases)
 - [Snapshots](https://ci.appveyor.com/project/ribasco34191/glcd-emulator/build/artifacts)
+
+## Limitations
+
+- Does not yet support 32 bit java ([ucgdisplay](https://github.com/ribasco/ucgdisplay) only supports 64bit at the moment)
 
 ## Installation
 
