@@ -47,6 +47,7 @@ The Arduino client extends from the [U8g2 class](https://github.com/olikraus/u8g
 ## Limitations
 
 - Does not yet support 32 bit java ([ucgdisplay](https://github.com/ribasco/ucgdisplay) only supports 64bit at the moment)
+- Not yet compatible with Java 11
 
 ## Installation
 
