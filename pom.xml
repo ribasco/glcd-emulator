@@ -21,8 +21,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <openjfx.version>11.0.2</openjfx.version>
     </properties>
 
     <!-- License Information -->
@@ -33,6 +34,19 @@
             <distribution>manual</distribution>
         </license>
     </licenses>
+
+    <repositories>
+        <repository>
+            <id>bintray-ribasco</id>
+            <url>https://dl.bintray.com/jerady/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <!--
     -  More info about <bundler> inclusions/exclusions: https://github.com/javafx-maven-plugin/javafx-maven-plugin/issues/293#issuecomment-303016297
@@ -250,7 +264,8 @@
                             <bundler>pkg</bundler>
                             <appName>${project.artifactId}</appName>
                             <bundleArguments>
-                                <icon>${project.basedir}/src/main/deploy/package/macosx/${project.artifactId}.icns</icon>
+                                <icon>${project.basedir}/src/main/deploy/package/macosx/${project.artifactId}.icns
+                                </icon>
                                 <systemWide>false</systemWide>
                             </bundleArguments>
                         </configuration>
@@ -291,17 +306,29 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.0</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <compilerArgs>
-                            <!--<arg>&#45;&#45;add-modules</arg>-->
-                            <!--<arg>&#45;&#45;module-path="C:\Users\raffy\.m2\repository\org\openjfx\javafx-base\11.0.1\javafx-base-11.0.1-win.jar";"C:\Users\raffy\.m2\repository\org\openjfx\javafx-graphics\11.0.1\javafx-graphics-11.0.1-win.jar";"C:\Users\raffy\.m2\repository\org\openjfx\javafx-controls\11.0.1\javafx-controls-11.0.1-win.jar"</arg>-->
-                            <!--<arg>&#45;&#45;add-modules=javafx.controls</arg>-->
-                            <!--<arg>&#45;&#45;add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED</arg>
-                            <arg>&#45;&#45;add-exports=javafx.base/com.sun.javafx.reflect=ALL-UNNAMED</arg>
-                            <arg>&#45;&#45;add-exports=javafx.base/com.sun.javafx.beans=ALL-UNNAMED</arg>
-                            <arg>&#45;&#45;add-exports=javafx.graphics/com.sun.glass.utils=ALL-UNNAMED</arg>
-                            <arg>&#45;&#45;add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED</arg>-->
+                            <arg>--add-exports</arg>
+                            <arg>javafx.base/com.sun.javafx.event=glcd.simulator</arg>
+                            <arg>--add-exports</arg>
+                            <arg>javafx.graphics/com.sun.javafx.stage=glcd.simulator</arg>
+                            <arg>--add-exports</arg>
+                            <arg>javafx.graphics/com.sun.javafx.util=ALL-UNNAMED</arg>
+                            <arg>--add-exports</arg>
+                            <arg>javafx.base/com.sun.javafx.reflect=ALL-UNNAMED</arg>
+                            <arg>--add-exports</arg>
+                            <arg>javafx.base/com.sun.javafx.beans=ALL-UNNAMED</arg>
+                            <arg>--add-exports</arg>
+                            <arg>javafx.graphics/com.sun.glass.utils=ALL-UNNAMED</arg>
+                            <arg>--add-exports</arg>
+                            <arg>javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED</arg>
+                            <arg>--add-exports</arg>
+                            <arg>javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</arg>
+                            <arg>--add-exports</arg>
+                            <arg>javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix</arg>
+                            <arg>--add-exports</arg>
+                            <arg>javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED</arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>
@@ -447,6 +474,14 @@
         </pluginManagement>
 
         <plugins>
+            <!--<plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.3</version>
+                <configuration>
+                    <mainClass>com.ibasco.glcdemulator.Bootstrap</mainClass>
+                </configuration>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -543,31 +578,31 @@
                 <artifactId>javaparser-core</artifactId>
                 <version>3.8.2</version>
             </dependency>
-            <!--<dependency>
+            <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-swing</artifactId>
-                <version>11.0.1</version>
+                <version>${openjfx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-base</artifactId>
-                <version>11.0.1</version>
+                <version>${openjfx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-graphics</artifactId>
-                <version>11.0.1</version>
+                <version>${openjfx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-fxml</artifactId>
-                <version>11.0.1</version>
+                <version>${openjfx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-controls</artifactId>
-                <version>11.0.1</version>
-            </dependency>-->
+                <version>${openjfx.version}</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
             <dependency>
                 <groupId>commons-cli</groupId>
@@ -646,7 +681,7 @@
             <dependency>
                 <groupId>org.controlsfx</groupId>
                 <artifactId>controlsfx</artifactId>
-                <version>8.40.14</version>
+                <version>11.0.0</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
             <dependency>
@@ -692,11 +727,6 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>3.8.1</version>
             </dependency>
-            <dependency>
-                <groupId>de.jensd</groupId>
-                <artifactId>fontawesomefx</artifactId>
-                <version>8.9</version>
-            </dependency>
             <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -712,13 +742,104 @@
             <dependency>
                 <groupId>com.jfoenix</groupId>
                 <artifactId>jfoenix</artifactId>
-                <version>8.0.7</version>
+                <version>9.0.9</version>
+            </dependency>
+            <!-- FONT AWESOME -->
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-commons</artifactId>
+                <version>9.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-emojione</artifactId>
+                <version>3.1.1-9.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-controls</artifactId>
+                <version>9.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-icons525</artifactId>
+                <version>4.2.0-9.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-fontawesome</artifactId>
+                <version>4.7.0-9.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-materialicons</artifactId>
+                <version>2.2.0-9.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-materialstackicons</artifactId>
+                <version>2.1-5-9.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-octicons</artifactId>
+                <version>4.3.0-9.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-weathericons</artifactId>
+                <version>2.0.10-9.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-materialdesignfont</artifactId>
+                <version>2.0.26-9.1.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-        <!--<dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-materialdesignfont</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-materialstackicons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-weathericons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-octicons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-icons525</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-emojione</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-controls</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-fontawesome</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-materialicons</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
         </dependency>
@@ -737,7 +858,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>com.github.javaparser</groupId>
             <artifactId>javaparser-core</artifactId>
@@ -805,10 +926,6 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.jensd</groupId>
-            <artifactId>fontawesomefx</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

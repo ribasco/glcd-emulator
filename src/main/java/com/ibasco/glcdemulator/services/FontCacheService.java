@@ -34,6 +34,7 @@ import com.ibasco.glcdemulator.enums.PixelShape;
 import com.ibasco.glcdemulator.model.FontCacheEntry;
 import com.ibasco.glcdemulator.utils.*;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -97,7 +98,7 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
         if (entries.get() == null)
             throw new IllegalStateException("Entries list cannot be null");
 
-        return new Task<ObservableList<FontCacheEntry>>() {
+        return new Task<>() {
             @Override
             protected ObservableList<FontCacheEntry> call() throws Exception {
 
@@ -135,7 +136,7 @@ public class FontCacheService extends Service<ObservableList<FontCacheEntry>> {
 
                         NodeUtil.saveNodeImageToFile(fontScreen, cachedImagePath, width, height);
                         FontCacheEntry entry = new FontCacheEntry(info.getAscent(), info.getDescent(), info.getMaxCharWidth(), info.getMaxCharHeight(), font, cachedImagePath);
-                        entries.add(entry);
+                        Platform.runLater(() -> entries.add(entry));
                     } catch (Exception e) {
                         log.warn("Font Cache Service: Unable to cache font '" + font.name() + "' (Reason: {})", e.toString());
                     } finally {

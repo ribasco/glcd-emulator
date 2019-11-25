@@ -104,18 +104,19 @@ public class DriverFactory {
     }
 
     public static GlcdDriver createVirtual(GlcdDisplay display, GlcdBusInterface busInterface, GlcdDriverEventHandler handler) {
-        GlcdConfig config = GlcdConfigBuilder
-                .create()
-                .display(display)
-                .rotation(GlcdRotation.ROTATION_NONE)
-                .busInterface(busInterface)
-                .build();
+        GlcdConfigBuilder configBuilder = GlcdConfigBuilder
+                .create(display, busInterface)
+                .option(GlcdOption.ROTATION, GlcdRotation.ROTATION_NONE)
+                .option(GlcdOption.EXTRA_DEBUG_INFO, true);
+                //.display(display)
+                //.rotation(GlcdRotation.ROTATION_NONE)
+                //.busInterface(busInterface)
 
         //use a dummy i2c address
         if (busInterface != null && busInterface.name().contains("I2C")) {
-            config.setDeviceAddress(DUMMY_I2C_ADDRESS);
+            configBuilder.option(GlcdOption.I2C_DEVICE_ADDRESS, DUMMY_I2C_ADDRESS);
         }
 
-        return new GlcdDriver(config, true, handler);
+        return new GlcdDriver(configBuilder.build(), true, handler);
     }
 }

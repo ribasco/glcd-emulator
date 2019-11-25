@@ -28,7 +28,7 @@ package com.ibasco.glcdemulator;
 import com.ibasco.glcdemulator.exceptions.ThemeNotFoundException;
 import com.ibasco.glcdemulator.exceptions.ThemeRegistrationException;
 import com.ibasco.glcdemulator.utils.ResourceUtil;
-import com.sun.javafx.stage.StageHelper;
+//import com.sun.javafx.stage.StageHelper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Scene;
@@ -118,11 +118,12 @@ public class ThemeManager {
     }
 
     public void applyToAll() {
-        for (Stage stage : StageHelper.getStages()) {
+        //TODO: Fix
+        /*for (Stage stage : StageHelper.getStages()) {
             if (stage.getScene() != null) {
                 applyTheme(stage.getScene());
             }
-        }
+        }*/
     }
 
     public String getActiveTheme() {

@@ -72,12 +72,12 @@ public class GlcdAboutController extends Controller {
 
     @Override
     protected void initializeOnce() {
-        String licenseData = readFileResource("license.txt");
-        String thirdPartyData = readFileResource("third-party.txt");
+        String licenseData = readFileResource("/license.txt");
+        String thirdPartyData = readFileResource("/third-party.txt");
 
         taThirdParty.setText(thirdPartyData);
         taLicense.setText(licenseData);
-        lblLicenseShort.setText(readFileResource("license-short.txt"));
+        lblLicenseShort.setText(readFileResource("/license-short.txt"));
         taThirdParty.setWrapText(false);
         btnDonate.setOnAction(event -> Context.getInstance().getHostServices().showDocument(Common.DONATE_URL));
         linkWebsite.setOnAction(event -> Context.getInstance().getHostServices().showDocument(Common.PROJECT_URL));

@@ -51,7 +51,7 @@ import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusType;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdSize;
 import com.jfoenix.controls.*;
 import com.sun.javafx.event.EventUtil;
-import com.sun.javafx.scene.control.skin.TextAreaSkin;
+//import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import com.sun.javafx.stage.StageHelper;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -537,7 +537,8 @@ public class GlcdEmulatorController extends Controller {
         drawTestService = new DrawTestService();
         profileManager = getContext().getProfileManager();
 
-        TextAreaSkin taSkin = new TextAreaSkin(taLog) {
+        //TODO: Fix
+        /*TextAreaSkin taSkin = new TextAreaSkin(taLog) {
             @Override
             public void populateContextMenu(ContextMenu contextMenu) {
                 super.populateContextMenu(contextMenu);
@@ -546,7 +547,7 @@ public class GlcdEmulatorController extends Controller {
                 contextMenu.getItems().add(miClear);
             }
         };
-        taLog.setSkin(taSkin);
+        taLog.setSkin(taSkin);*/
 
         OutputStream os = new TextAreaOutputStream(taLog);
         GlcdOutputStreamAppender.setStaticOutputStream(os);
@@ -1011,13 +1012,14 @@ public class GlcdEmulatorController extends Controller {
      * Starts the emulator listen service
      */
     private void startDisplayService() {
-        ObservableList<Stage> stages = StageHelper.getStages();
+        //TODO: Fix
+        /*ObservableList<Stage> stages = StageHelper.getStages();
         for (Stage s : stages) {
             if ("U8G2 Font Browser".equals(s.getTitle()) && s.isShowing()) {
                 DialogUtil.showInfo("Cannot start service", "You cannot start the service while the font browser is open, please close the browser first and try again");
                 return;
             }
-        }
+        }*/
         try {
             //Update listener optins
             updateListenerOptions();

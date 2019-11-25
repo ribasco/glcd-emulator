@@ -135,7 +135,7 @@ public final class Context {
         String version = Context.class.getPackage().getImplementationVersion();
         if (StringUtils.isBlank(version)) {
             try {
-                URI versionFile = ResourceUtil.getResource("version.properties").toURI();
+                URI versionFile = ResourceUtil.getResource("/version.properties").toURI();
                 Properties appProperties = new Properties();
                 appProperties.load(new FileReader(new File(versionFile)));
                 version = appProperties.getProperty("version");

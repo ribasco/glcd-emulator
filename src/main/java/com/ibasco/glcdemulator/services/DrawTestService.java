@@ -38,6 +38,7 @@ import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriver;
 import com.ibasco.ucgdisplay.drivers.glcd.GlcdDriverEventHandler;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdBusInterface;
 import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFont;
+import com.ibasco.ucgdisplay.drivers.glcd.enums.GlcdFontMode;
 import com.ibasco.ucgdisplay.drivers.glcd.exceptions.XBMDecodeException;
 import com.ibasco.ucgdisplay.drivers.glcd.utils.XBMData;
 import com.ibasco.ucgdisplay.drivers.glcd.utils.XBMUtils;
@@ -113,7 +114,7 @@ public class DrawTestService extends Service<Void> {
         log.info("Refreshing virtual driver (Display: {}, Bus Interface: {}, Constructor: {})", display, busInterface, constructor);
         driver = DriverFactory.createVirtual(display, busInterface, (GlcdDriverEventHandler) null);
         try {
-            XBMData xbmData = XBMUtils.decodeXbmFile(new ByteArrayInputStream(ResourceUtil.readResourceAsBytes("images/java-logo-small.xbm")));
+            XBMData xbmData = XBMUtils.decodeXbmFile(new ByteArrayInputStream(ResourceUtil.readResourceAsBytes("/images/java-logo-small.xbm")));
             javaLogoFile = xbmData.getData();
         } catch (XBMDecodeException e) {
             throw new IllegalStateException("Problem decoding byte stream to XBM", e);
@@ -153,7 +154,7 @@ public class DrawTestService extends Service<Void> {
                     int y = (driver.getHeight() / 2) + (driver.getAscent() / 2);
                     String sampleText = "This is a test";
                     int textWidth = driver.getMaxCharWidth() * sampleText.length();
-                    driver.setFontMode(1);
+                    driver.setFontMode(GlcdFontMode.TRANSPARENT);
                     driver.drawString(xPos++, y, sampleText);
                     driver.sendBuffer();
 

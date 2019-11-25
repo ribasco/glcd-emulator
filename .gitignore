@@ -64,3 +64,4 @@ hs_err_pid*
 /.cache/
 /tmplib/
 /src/main/deploy
+/target/classes/

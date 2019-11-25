@@ -133,7 +133,8 @@ public class Bootstrap extends Application {
 
     private void initStageBindings() {
         Stage stage = Stages.getPrimaryStage();
-        stage.getIcons().add(new Image(ResourceUtil.getResource("images/icon.png").toExternalForm()));
+        //TODO: Fix
+        //stage.getIcons().add(new Image(ResourceUtil.getResource("/images/icon.png").toExternalForm()));
         appConfig.alwaysOnTopProperty().addListener((observable, oldValue, newValue) -> stage.setAlwaysOnTop(newValue));
         appConfig.maximizedProperty().bind(stage.maximizedProperty());
         appConfig.prefWindowWidthProperty().bind(stage.widthProperty());

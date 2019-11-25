@@ -48,5 +48,5 @@
     </root>
 
     <logger name="com.ibasco.glcdemulator" level="INFO"/>
-    <logger name="com.ibasco.ucgdisplay.core.util.concurrent.ThreadUtils" level="INFO"/>
+    <logger name="com.ibasco.ucgdisplay" level="DEBUG"/>
 </configuration>

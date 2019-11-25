@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -55,19 +56,20 @@ public class ResourceUtil {
     private static AtomicReference<Parent> lastRootNode = new AtomicReference<>();
 
     public static InputStream getResourceAsStream(String resourceName) {
-        return Context.class.getClassLoader().getResourceAsStream(resourceName);
+        log.debug("getResourceAsStream() : Getting resource: {}", resourceName);
+        return Objects.requireNonNull(Bootstrap.class.getResourceAsStream(resourceName));
     }
 
     public static URL getResource(String resourceName) {
-        return Bootstrap.class.getClassLoader().getResource(resourceName);
+        return Bootstrap.class.getResource(resourceName);
     }
 
     public static URL getStylesheet(String stylesheetName) {
-        return getResource(String.format("css/%s", stylesheetName));
+        return getResource(String.format("/css/%s", stylesheetName));
     }
 
     public static URL getFxmlResource(String resourceName) {
-        return getResource(String.format("views/%s.fxml", resourceName));
+        return getResource(String.format("/views/%s.fxml", resourceName));
     }
 
     public static byte[] readResourceAsBytes(String resource) {
