@@ -1,5 +1,5 @@
 Package: glcd-simulator
-Version: 1.0.0-alpha-SNAPSHOT
+Version: 1.1.1-alpha-SNAPSHOT
 Section: misc
 Priority: optional
 Architecture: all

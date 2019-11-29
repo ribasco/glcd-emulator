@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
@@ -135,11 +136,11 @@ public final class Context {
         String version = Context.class.getPackage().getImplementationVersion();
         if (StringUtils.isBlank(version)) {
             try {
-                URI versionFile = ResourceUtil.getResource("/version.properties").toURI();
+                InputStream versionFile = ResourceUtil.getResourceAsStream("/version.properties");
                 Properties appProperties = new Properties();
-                appProperties.load(new FileReader(new File(versionFile)));
+                appProperties.load(versionFile);
                 version = appProperties.getProperty("version");
-            } catch (URISyntaxException | IOException e) {
+            } catch (IOException e) {
                 log.error("Error loading version property file", e);
             }
         }

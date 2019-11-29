@@ -875,8 +875,9 @@ public class GlcdEmulatorController extends Controller {
         double step = modifierCtrlPressed.get() ? 1.0 : 0.1;
         if (event.getDeltaY() >= 0)
             activeProfile.incrementPixel(step);
-        else
+        else {
             activeProfile.decrementPixel(step);
+        }
     }
 
     private void updateDefaultProfile(GlcdEmulatorProfile profile) {

@@ -25,8 +25,7 @@
  */
 package com.ibasco.glcdemulator.utils;
 
-import com.ibasco.glcdemulator.Bootstrap;
-import com.ibasco.glcdemulator.Context;
+import com.ibasco.glcdemulator.BootstrapMain;
 import com.ibasco.glcdemulator.Controller;
 import com.ibasco.glcdemulator.Controllers;
 import javafx.fxml.FXMLLoader;
@@ -57,11 +56,11 @@ public class ResourceUtil {
 
     public static InputStream getResourceAsStream(String resourceName) {
         log.debug("getResourceAsStream() : Getting resource: {}", resourceName);
-        return Objects.requireNonNull(Bootstrap.class.getResourceAsStream(resourceName));
+        return Objects.requireNonNull(BootstrapMain.class.getResourceAsStream(resourceName));
     }
 
     public static URL getResource(String resourceName) {
-        return Bootstrap.class.getResource(resourceName);
+        return BootstrapMain.class.getResource(resourceName);
     }
 
     public static URL getStylesheet(String stylesheetName) {
